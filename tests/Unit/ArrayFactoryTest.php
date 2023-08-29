@@ -32,6 +32,7 @@ final class ArrayFactoryTest extends TestCase
             [
                 'default1' => 'default value 1',
                 'default2' => 'default value 2',
+                'fake' => 'value',
             ],
             StandaloneArrayFactory::createOne()
         );
@@ -46,6 +47,7 @@ final class ArrayFactoryTest extends TestCase
             [
                 'default1' => 'default value 1',
                 'default2' => 'override value 2',
+                'fake' => 'value',
                 'foo' => 'baz',
             ],
             StandaloneArrayFactory::new(['foo' => 'bar'])

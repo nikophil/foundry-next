@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Foundry;
 
+use Faker;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -61,6 +63,11 @@ abstract class Factory
         return $clone;
     }
 
+    final protected static function faker(): Faker\Generator
+    {
+        return Configuration::instance()->faker;
+    }
+
     /**
      * @internal
      *
@@ -68,7 +75,7 @@ abstract class Factory
      *
      * @return Parameters
      */
-    protected function normalizeAttributes(array|callable $attributes = []): array
+    final protected function normalizeAttributes(array|callable $attributes = []): array
     {
         $attributes = [$this->defaults(), ...$this->attributes, $attributes];
 

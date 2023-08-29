@@ -23,6 +23,7 @@ final class StandaloneArrayFactory extends ArrayFactory
         return [
             'default1' => 'default value 1',
             'default2' => 'default value 2',
+            'fake' => self::faker()->randomElement(['value']),
         ];
     }
 }

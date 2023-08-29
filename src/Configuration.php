@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Foundry;
 
+use Faker;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -20,8 +22,10 @@ final class Configuration
 {
     private static ?self $instance = null;
 
-    public function __construct(public readonly FactoryRegistry $factories)
-    {
+    public function __construct(
+        public readonly FactoryRegistry $factories,
+        public readonly Faker\Generator $faker,
+    ) {
     }
 
     public static function instance(): self
@@ -31,11 +35,16 @@ final class Configuration
 
     public static function boot(?self $configuration = null): void
     {
-        self::$instance = $configuration ?? new self(new FactoryRegistry([]));
+        self::$instance = $configuration ?? new self(new FactoryRegistry([]), Faker\Factory::create());
     }
 
     public static function shutdown(): void
     {
+        if (!self::$instance) {
+            return;
+        }
+
+        self::$instance->faker->unique(true);
         self::$instance = null;
     }
 }
