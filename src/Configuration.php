@@ -13,21 +13,35 @@ namespace Zenstruck\Foundry;
 
 use Faker;
 use Zenstruck\Foundry\Factory\FactoryRegistry;
+use Zenstruck\Foundry\Factory\ObjectFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
+ *
+ * @phpstan-import-type InstantiatorCallable from ObjectFactory
  */
 final class Configuration
 {
+    /**
+     * @readonly
+     *
+     * @var InstantiatorCallable
+     */
+    public $instantiator;
     /** @var \Closure():self|self|null */
     private static \Closure|self|null $instance = null;
 
+    /**
+     * @param InstantiatorCallable $instantiator
+     */
     public function __construct(
         public readonly FactoryRegistry $factories,
         public readonly Faker\Generator $faker,
+        callable $instantiator,
     ) {
+        $this->instantiator = $instantiator;
     }
 
     public static function instance(): self

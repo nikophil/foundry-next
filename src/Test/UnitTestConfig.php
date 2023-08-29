@@ -14,16 +14,28 @@ namespace Zenstruck\Foundry\Test;
 use Faker;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory\FactoryRegistry;
+use Zenstruck\Foundry\Factory\Object\Instantiator;
+use Zenstruck\Foundry\Factory\ObjectFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @phpstan-import-type InstantiatorCallable from ObjectFactory
  */
 final class UnitTestConfig
 {
+    /** @var InstantiatorCallable|null */
+    private static $instantiator;
     private static ?Faker\Generator $faker = null;
 
-    public static function configure(?Faker\Generator $faker = null): void
-    {
+    /**
+     * @param InstantiatorCallable|null $instantiator
+     */
+    public static function configure(
+        ?callable $instantiator = null,
+        ?Faker\Generator $faker = null,
+    ): void {
+        self::$instantiator = $instantiator;
         self::$faker = $faker;
     }
 
@@ -35,6 +47,10 @@ final class UnitTestConfig
         $faker = self::$faker ?? Faker\Factory::create();
         $faker->unique(true);
 
-        return new Configuration(new FactoryRegistry([]), $faker);
+        return new Configuration(
+            new FactoryRegistry([]),
+            $faker,
+            self::$instantiator ?? new Instantiator(),
+        );
     }
 }
