@@ -13,13 +13,16 @@ namespace Zenstruck\Foundry\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Tests\Fixture\StandaloneArrayFactory;
+use Zenstruck\Foundry\Test\Factories;
+use Zenstruck\Foundry\Tests\Fixture\Factories\StandaloneArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 final class ArrayFactoryTest extends TestCase
 {
+    use Factories;
+
     /**
      * @test
      */

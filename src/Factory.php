@@ -30,11 +30,7 @@ abstract class Factory
      */
     final public static function new(array|callable $attributes = []): static
     {
-        try {
-            return (new static())->with($attributes); // @phpstan-ignore-line
-        } catch (\ArgumentCountError) {
-            throw new \RuntimeException('Factories with dependencies (services) cannot be created before foundry is booted.');
-        }
+        return Configuration::instance()->factories->new(static::class)->with($attributes);
     }
 
     /**

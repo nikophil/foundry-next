@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture;
+namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
 use Zenstruck\Foundry\ArrayFactory;
 
