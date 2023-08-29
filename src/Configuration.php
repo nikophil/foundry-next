@@ -20,7 +20,8 @@ use Faker;
  */
 final class Configuration
 {
-    private static ?self $instance = null;
+    /** @var \Closure():self|self|null */
+    private static \Closure|self|null $instance = null;
 
     public function __construct(
         public readonly FactoryRegistry $factories,
@@ -30,21 +31,25 @@ final class Configuration
 
     public static function instance(): self
     {
-        return self::$instance ?? throw new \LogicException('Foundry is not yet booted. Ensure ZenstruckFoundryBundle is enabled. If in a test, ensure your TestCase has the Factories trait.');
+        if (!self::$instance) {
+            throw new \LogicException('Foundry is not yet booted. Ensure ZenstruckFoundryBundle is enabled. If in a test, ensure your TestCase has the Factories trait.');
+        }
+
+        return \is_callable(self::$instance) ? (self::$instance)() : self::$instance;
     }
 
-    public static function boot(?self $configuration = null): void
+    public static function isBooted(): bool
     {
-        self::$instance = $configuration ?? new self(new FactoryRegistry([]), Faker\Factory::create());
+        return null !== self::$instance;
+    }
+
+    public static function boot(\Closure|self $configuration): void
+    {
+        self::$instance = $configuration;
     }
 
     public static function shutdown(): void
     {
-        if (!self::$instance) {
-            return;
-        }
-
-        self::$instance->faker->unique(true);
         self::$instance = null;
     }
 }

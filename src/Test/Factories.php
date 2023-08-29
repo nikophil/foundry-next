@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Test;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Configuration;
 
 /**
@@ -24,7 +25,21 @@ trait Factories
      */
     public static function _bootFoundry(): void
     {
-        Configuration::boot();
+        if (!\is_subclass_of(static::class, KernelTestCase::class)) {
+            // unit test
+            Configuration::boot(UnitTestConfig::build());
+
+            return;
+        }
+
+        // integration test
+        Configuration::boot(static function() {
+            if (!static::getContainer()->has('.zenstruck_foundry.configuration')) {
+                throw new \LogicException('ZenstruckFoundryBundle is not enabled. Ensure it is added to your config/bundles.php.');
+            }
+
+            return static::getContainer()->get('.zenstruck_foundry.configuration');
+        });
     }
 
     /**
