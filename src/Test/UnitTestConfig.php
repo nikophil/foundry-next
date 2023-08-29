@@ -13,7 +13,7 @@ namespace Zenstruck\Foundry\Test;
 
 use Faker;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\FactoryRegistry;
+use Zenstruck\Foundry\Factory\FactoryRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

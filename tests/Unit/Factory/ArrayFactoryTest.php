@@ -9,34 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Integration;
+namespace Zenstruck\Foundry\Tests\Unit\Factory;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Tests\Fixture\Factories\ServiceArrayFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\StandaloneArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class ArrayFactoryTest extends KernelTestCase
+final class ArrayFactoryTest extends TestCase
 {
     use Factories;
-
-    /**
-     * @test
-     */
-    public function can_use_service(): void
-    {
-        $this->assertSame(
-            [
-                'router' => true,
-                'fake' => 'value',
-            ],
-            ServiceArrayFactory::createOne()
-        );
-    }
 
     /**
      * @test

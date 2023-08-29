@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry;
+namespace Zenstruck\Foundry\Factory;
+
+use Zenstruck\Foundry\Factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

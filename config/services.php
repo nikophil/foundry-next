@@ -4,7 +4,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Faker;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\FactoryRegistry;
+use Zenstruck\Foundry\Factory\FactoryRegistry;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()

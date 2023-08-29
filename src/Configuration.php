@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
+use Zenstruck\Foundry\Factory\FactoryRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

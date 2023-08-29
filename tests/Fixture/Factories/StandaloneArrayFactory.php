@@ -11,7 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
-use Zenstruck\Foundry\ArrayFactory;
+use Zenstruck\Foundry\Factory\ArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
