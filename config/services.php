@@ -16,6 +16,7 @@ return static function (ContainerConfigurator $container): void {
             ->args([tagged_iterator('foundry.factory')])
 
         ->set('.zenstruck_foundry.instantiator', Instantiator::class)
+            ->factory([Instantiator::class, 'withConstructor'])
 
         ->set('.zenstruck_foundry.configuration', Configuration::class)
             ->args([

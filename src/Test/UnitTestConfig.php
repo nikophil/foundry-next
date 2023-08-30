@@ -50,7 +50,7 @@ final class UnitTestConfig
         return new Configuration(
             new FactoryRegistry([]),
             $faker,
-            self::$instantiator ?? new Instantiator(),
+            self::$instantiator ?? Instantiator::withConstructor(),
         );
     }
 }
