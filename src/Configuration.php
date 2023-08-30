@@ -15,6 +15,7 @@ use Faker;
 use Zenstruck\Foundry\Factory\FactoryRegistry;
 use Zenstruck\Foundry\Factory\Object\Mapper;
 use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\Factory\Persistence\PersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -31,6 +32,7 @@ final class Configuration
      * @var InstantiatorCallable
      */
     public $instantiator;
+
     /** @var \Closure():self|self|null */
     private static \Closure|self|null $instance = null;
 
@@ -42,8 +44,19 @@ final class Configuration
         public readonly Faker\Generator $faker,
         callable $instantiator,
         public readonly Mapper $mapper,
+        private readonly ?PersistenceManager $persistence = null,
     ) {
         $this->instantiator = $instantiator;
+    }
+
+    public function persistence(): PersistenceManager
+    {
+        return $this->persistence ?? throw new \LogicException('No persistence manager configured. Note: persistence cannot be used in unit tests.');
+    }
+
+    public function isPersistenceEnabled(): bool
+    {
+        return (bool) $this->persistence;
     }
 
     public static function instance(): self
