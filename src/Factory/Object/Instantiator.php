@@ -23,7 +23,7 @@ final class Instantiator
     private const WITH_CONSTRUCTOR = '_with_constructor';
     private const WITHOUT_CONSTRUCTOR = '_without_constructor';
 
-    private function __construct(private string $mode)
+    private function __construct(private string|\Closure $mode)
     {
     }
 
@@ -43,13 +43,13 @@ final class Instantiator
             return $refClass->newInstanceWithoutConstructor();
         }
 
-        if (!$method = $this->factoryMethodFor($refClass)) {
+        if (!$factory = $this->factoryFor($refClass)) {
             return $refClass->newInstance();
         }
 
         $arguments = [];
 
-        foreach ($method->getParameters() as $parameter) {
+        foreach ($factory->getParameters() as $parameter) {
             /** @var \ReflectionParameter $parameter */
             if (\array_key_exists($parameter->name, $parameters)) {
                 $arguments[] = $parameters[$parameter->name];
@@ -63,17 +63,17 @@ final class Instantiator
                 continue;
             }
 
-            throw new \LogicException(\sprintf('Missing required argument "%s" for "%s::%s()".', $parameter->name, $class, $method->name));
+            throw new \LogicException(\sprintf('Missing required argument "%s" for "%s::%s()".', $parameter->name, $class, $factory->name));
         }
 
-        if ($method->isConstructor()) {
+        if ($factory instanceof \ReflectionMethod && $factory->isConstructor()) {
             return $refClass->newInstance(...$arguments);
         }
 
-        $object = $method->invoke(null, ...$arguments);
+        $object = $factory instanceof \ReflectionMethod ? $factory->invoke(null, ...$arguments) : $factory->invoke(...$arguments);
 
         if (!$object instanceof $class) {
-            throw new \LogicException(\sprintf('Named constructor "%s" for "%s" must return an instance of "%s".', $method->name, $class, $class));
+            throw new \LogicException(\sprintf('Named constructor "%s" for "%s" must return an instance of "%s".', $factory->name, $class, $class));
         }
 
         return $object;
@@ -94,11 +94,20 @@ final class Instantiator
         return new self($method);
     }
 
+    public static function with(callable $factory): self
+    {
+        return new self($factory(...));
+    }
+
     /**
      * @param \ReflectionClass<object> $class
      */
-    private function factoryMethodFor(\ReflectionClass $class): ?\ReflectionMethod
+    private function factoryFor(\ReflectionClass $class): \ReflectionFunction|\ReflectionMethod|null
     {
+        if ($this->mode instanceof \Closure) {
+            return new \ReflectionFunction(($this->mode)(...));
+        }
+
         if (self::WITH_CONSTRUCTOR === $this->mode) {
             return self::constructorFor($class);
         }

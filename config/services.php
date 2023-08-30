@@ -6,6 +6,7 @@ use Faker;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory\FactoryRegistry;
 use Zenstruck\Foundry\Factory\Object\Instantiator;
+use Zenstruck\Foundry\Factory\Object\Mapper;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -18,11 +19,14 @@ return static function (ContainerConfigurator $container): void {
         ->set('.zenstruck_foundry.instantiator', Instantiator::class)
             ->factory([Instantiator::class, 'withConstructor'])
 
+        ->set('.zenstruck_foundry.mapper', Mapper::class)
+
         ->set('.zenstruck_foundry.configuration', Configuration::class)
             ->args([
                 service('.zenstruck_foundry.factory_registry'),
                 service('.zenstruck_foundry.faker'),
                 service('.zenstruck_foundry.instantiator'),
+                service('.zenstruck_foundry.mapper'),
             ])
             ->public()
     ;

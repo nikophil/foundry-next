@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry;
 
 use Faker;
 use Zenstruck\Foundry\Factory\FactoryRegistry;
+use Zenstruck\Foundry\Factory\Object\Mapper;
 use Zenstruck\Foundry\Factory\ObjectFactory;
 
 /**
@@ -40,6 +41,7 @@ final class Configuration
         public readonly FactoryRegistry $factories,
         public readonly Faker\Generator $faker,
         callable $instantiator,
+        public readonly Mapper $mapper,
     ) {
         $this->instantiator = $instantiator;
     }

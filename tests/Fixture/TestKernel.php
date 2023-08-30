@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ServiceArrayFactory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\ServiceObjectFactory;
 use Zenstruck\Foundry\ZenstruckFoundryBundle;
 
 /**
@@ -43,6 +44,7 @@ final class TestKernel extends Kernel
         ]);
 
         $c->register(ServiceArrayFactory::class)->setAutowired(true)->setAutoconfigured(true);
+        $c->register(ServiceObjectFactory::class)->setAutowired(true)->setAutoconfigured(true);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void

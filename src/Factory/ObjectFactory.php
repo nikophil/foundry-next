@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Factory\Object\Instantiator;
+use Zenstruck\Foundry\Factory\Object\Mapper;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -36,6 +37,8 @@ abstract class ObjectFactory extends Factory
     /** @var InstantiatorCallable|null */
     private $instantiator;
 
+    private Mapper|false $mapper;
+
     /**
      * @return class-string<T>
      */
@@ -53,7 +56,13 @@ abstract class ObjectFactory extends Factory
             }
         }
 
-        $object = ($this->instantiator ?? Configuration::instance()->instantiator)($parameters, static::class());
+        $instantiator = $this->instantiator ?? Configuration::instance()->instantiator;
+        $object = $instantiator($parameters, static::class());
+
+        // don't use mapper if instantiator is a custom callback
+        if ($instantiator instanceof Instantiator && $mapper = $this->mapper ?? Configuration::instance()->mapper) {
+            $object = $mapper($object, $parameters);
+        }
 
         foreach ($this->afterInstantiate as $hook) {
             $hook($object, $parameters);
@@ -69,6 +78,44 @@ abstract class ObjectFactory extends Factory
     {
         $clone = clone $this;
         $clone->instantiator = $instantiator;
+
+        return $clone;
+    }
+
+    /**
+     * @param int-mask-of<Mapper::*>|callable(Mapper):Mapper $with
+     */
+    final public function configureMapping(callable|int $with): static
+    {
+        $mapper = $this->mapper ?? null;
+
+        if (!$mapper) {
+            $mapper = Configuration::instance()->mapper;
+        }
+
+        $clone = clone $this;
+
+        if (\is_int($with)) {
+            $clone->mapper = $mapper->withMode($with);
+
+            return $clone;
+        }
+
+        $mapper = $with($mapper);
+
+        if (!$mapper instanceof Mapper) {
+            throw new \LogicException('Mapper callback must return a Mapper instance.');
+        }
+
+        $clone->mapper = $mapper;
+
+        return $clone;
+    }
+
+    final public function disableMapping(): static
+    {
+        $clone = clone $this;
+        $clone->mapper = false;
 
         return $clone;
     }
