@@ -36,4 +36,9 @@ class SimpleModel
     {
         return $this->prop1;
     }
+
+    public function setProp1(string $prop1): void
+    {
+        $this->prop1 = $prop1;
+    }
 }

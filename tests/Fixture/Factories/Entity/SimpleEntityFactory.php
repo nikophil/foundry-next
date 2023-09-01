@@ -21,7 +21,12 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\SimpleModelFactory;
  * @extends SimpleModelFactory<SimpleEntity>
  *
  * @method static SimpleEntity|Proxy createOne(array|callable $attributes = [])
- * @phpstan-method static SimpleEntity&Proxy createOne(array|callable $attributes = [])
+ * @method static SimpleEntity|Proxy first(string $sortBy = 'id')
+ * @method static SimpleEntity|Proxy last(string $sortBy = 'id')
+ *
+ * @phpstan-method static (SimpleEntity&Proxy) createOne(array|callable $attributes = [])
+ * @phpstan-method static (SimpleEntity&Proxy) first(string $sortBy = 'id')
+ * @phpstan-method static (SimpleEntity&Proxy) last(string $sortBy = 'id')
  */
 final class SimpleEntityFactory extends SimpleModelFactory
 {

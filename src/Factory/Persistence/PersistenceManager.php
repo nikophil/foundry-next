@@ -25,6 +25,8 @@ interface PersistenceManager
 
     public function autoRefresh(): bool;
 
+    public function hasChanges(object $object): bool;
+
     /**
      * @param class-string $class
      */

@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Factory\Persistence\ORM;
 
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -50,14 +51,28 @@ final class ORMPersistenceManager implements PersistenceManager
         return $this->config['auto_persist'];
     }
 
+    public function hasChanges(object $object): bool
+    {
+        $em = $this->objectManagerFor($object::class);
+
+        if (!$em->contains($object)) {
+            return false;
+        }
+
+        // cannot use UOW::recomputeSingleEntityChangeSet() here as it wrongly computes embedded objects as changed
+        $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata($object::class), $object);
+
+        return (bool) $em->getUnitOfWork()->getEntityChangeSet($object);
+    }
+
     public function supports(string $class): bool
     {
         return (bool) $this->registry->getManagerForClass($class);
     }
 
-    public function objectManagerFor(string $class): ObjectManager
+    public function objectManagerFor(string $class): EntityManagerInterface
     {
-        return $this->registry->getManagerForClass($class) ?? throw new \LogicException(\sprintf('No manager found for "%s".', $class));
+        return $this->registry->getManagerForClass($class) ?? throw new \LogicException(\sprintf('No manager found for "%s".', $class)); // @phpstan-ignore-line
     }
 
     public function repositoryFor(string $class): RepositoryDecorator

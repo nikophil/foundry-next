@@ -30,9 +30,9 @@ final class PersistentObjectFactoryTest extends KernelTestCase
     /**
      * @test
      */
-    public function auto_persists(): void
+    public function can_create_and_update(): void
     {
-        SimpleEntityFactory::repo()->assert()->empty();
+        SimpleEntityFactory::repository()->assert()->empty();
 
         $entity = SimpleEntityFactory::createOne();
 
@@ -40,7 +40,20 @@ final class PersistentObjectFactoryTest extends KernelTestCase
         $this->assertSame('default1', $entity->getProp1());
         $this->assertSame('default1', $entity->_refresh()->getProp1());
 
-        SimpleEntityFactory::repo()->assert()->count(1);
+        SimpleEntityFactory::repository()->assert()
+            ->count(1)
+            ->exists(['prop1' => 'default1'])
+            ->notExists(['prop1' => 'invalid'])
+        ;
+
+        $this->assertSame($entity->id, SimpleEntityFactory::first()->id);
+        $this->assertSame($entity->id, SimpleEntityFactory::last()->id);
+
+        $entity->setProp1('new value');
+        $entity->_save();
+
+        $this->assertSame('new value', $entity->getProp1());
+        SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'new value']);
     }
 
     /**
@@ -48,14 +61,14 @@ final class PersistentObjectFactoryTest extends KernelTestCase
      */
     public function can_disable_auto_persist(): void
     {
-        SimpleEntityFactory::repo()->assert()->empty();
+        SimpleEntityFactory::repository()->assert()->empty();
 
         $entity = SimpleEntityFactory::new()->withoutPersisting()->create();
 
         $this->assertNull($entity->id);
         $this->assertSame('default1', $entity->getProp1());
 
-        SimpleEntityFactory::repo()->assert()->empty();
+        SimpleEntityFactory::repository()->assert()->empty();
     }
 
     /**
@@ -63,7 +76,24 @@ final class PersistentObjectFactoryTest extends KernelTestCase
      */
     public function auto_refreshes(): void
     {
-        $this->markTestIncomplete();
+        $object = SimpleEntityFactory::createOne();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'default1']);
+
+        self::ensureKernelShutdown();
+
+        // modify and save title "externally"
+        $ext = SimpleEntityFactory::first();
+        $ext->setProp1('external');
+        $ext->_save();
+
+        self::ensureKernelShutdown();
+
+        // "calling method" triggers auto-refresh
+        $this->assertSame('external', $object->getProp1());
+        SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'external']);
     }
 
     /**
@@ -71,7 +101,26 @@ final class PersistentObjectFactoryTest extends KernelTestCase
      */
     public function cannot_auto_refresh_if_changes_detected(): void
     {
-        $this->markTestIncomplete();
+        $object = SimpleEntityFactory::createOne();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->setProp1('new');
+
+        try {
+            $object->setProp1('new 1');
+        } catch (\RuntimeException) {
+            SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'default1']);
+            $object->_save();
+            $this->assertSame('new', $object->getProp1());
+            SimpleEntityFactory::repository()->assert()->exists(['prop1' => 'new']);
+
+            return;
+        }
+
+        $this->fail('Exception not thrown');
     }
 
     /**
@@ -88,5 +137,15 @@ final class PersistentObjectFactoryTest extends KernelTestCase
         $this->assertSame('value', $entity->_refresh()->getProp1());
 
         repo(SimpleEntity::class)->assert()->count(1);
+    }
+
+    protected static function modelClass(): string
+    {
+        return SimpleEntity::class;
+    }
+
+    protected static function factoryClass(): string
+    {
+        return SimpleEntityFactory::class;
     }
 }

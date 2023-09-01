@@ -29,9 +29,37 @@ abstract class PersistentObjectFactory extends ObjectFactory
     private array $afterPersist = [];
 
     /**
+     * @return T&Proxy
+     *
+     * @throws \RuntimeException If no objects exist
+     */
+    final public static function first(string $sortBy = 'id'): object
+    {
+        if (null === $proxy = static::repository()->first($sortBy)) {
+            throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
+        }
+
+        return $proxy;
+    }
+
+    /**
+     * @return T&Proxy
+     *
+     * @throws \RuntimeException If no objects exist
+     */
+    final public static function last(string $sortBy = 'id'): Proxy
+    {
+        if (null === $proxy = static::repository()->last($sortBy)) {
+            throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
+        }
+
+        return $proxy;
+    }
+
+    /**
      * @return RepositoryDecorator<T>
      */
-    final public static function repo(): RepositoryDecorator
+    final public static function repository(): RepositoryDecorator
     {
         return Configuration::instance()->persistence()->repositoryFor(static::class());
     }

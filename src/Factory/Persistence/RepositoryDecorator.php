@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\Factory\Persistence;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Factory;
+use Zenstruck\Foundry\Factory\ProxyGenerator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -39,24 +40,52 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         return new RepositoryAssertions($this);
     }
 
+    /**
+     * @return (T&Proxy)|null
+     */
+    public function first(string $sortBy = 'id'): ?object
+    {
+        return $this->findBy([], [$sortBy => 'ASC'], 1)[0] ?? null;
+    }
+
+    /**
+     * @return (T&Proxy)|null
+     */
+    public function last(string $sortedField = 'id'): ?object
+    {
+        return $this->findBy([], [$sortedField => 'DESC'], 1)[0] ?? null;
+    }
+
+    /**
+     * @return (T&Proxy)|null
+     */
     public function find($id): ?object
     {
-        return $this->inner->find($id);
+        return self::wrap($this->inner->find($id));
     }
 
+    /**
+     * @return list<T&Proxy>
+     */
     public function findAll(): array
     {
-        return $this->inner->findAll();
+        return \array_map(ProxyGenerator::wrap(...), $this->inner->findAll()); // @phpstan-ignore-line
     }
 
+    /**
+     * @return list<T&Proxy>
+     */
     public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
     {
-        return $this->inner->findBy($criteria, $orderBy, $limit, $offset);
+        return \array_map(ProxyGenerator::wrap(...), $this->inner->findBy($criteria, $orderBy, $limit, $offset)); // @phpstan-ignore-line
     }
 
+    /**
+     * @return (T&Proxy)|null
+     */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->inner->findOneBy($criteria);
+        return self::wrap($this->inner->findOneBy($criteria));
     }
 
     public function getClassName(): string
@@ -75,5 +104,15 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         }
 
         return \count($this->findBy($criteria));
+    }
+
+    /**
+     * @param ?T $object
+     *
+     * @return (T&Proxy)|null
+     */
+    private static function wrap(?object $object): ?object
+    {
+        return $object ? ProxyGenerator::wrap($object) : null;
     }
 }

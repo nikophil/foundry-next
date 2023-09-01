@@ -102,6 +102,10 @@ trait IsProxy
             return;
         }
 
+        if (self::_persistenceManager()->hasChanges($this->initializeLazyObject())) {
+            throw new \RuntimeException(\sprintf('Cannot auto refresh "%s" as there are unsaved changes. Be sure to call ->_save() or disable auto refreshing (see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#auto-refresh for details).', parent::class));
+        }
+
         $this->_refresh();
     }
 }
