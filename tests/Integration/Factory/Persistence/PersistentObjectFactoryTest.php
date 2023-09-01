@@ -46,7 +46,22 @@ final class PersistentObjectFactoryTest extends KernelTestCase
     /**
      * @test
      */
-    public function ensure_schema_is_reset(): void
+    public function can_disable_auto_persist(): void
+    {
+        SimpleEntityFactory::repo()->assert()->empty();
+
+        $entity = SimpleEntityFactory::new()->withoutPersisting()->create();
+
+        $this->assertNull($entity->id);
+        $this->assertSame('default1', $entity->getProp1());
+
+        SimpleEntityFactory::repo()->assert()->empty();
+    }
+
+    /**
+     * @test
+     */
+    public function auto_refreshes(): void
     {
         $this->markTestIncomplete();
     }

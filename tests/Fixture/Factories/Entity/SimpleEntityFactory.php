@@ -11,19 +11,19 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Factories\Entity;
 
-use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Factory\Persistence\Proxy;
 use Zenstruck\Foundry\Tests\Fixture\Entity\SimpleEntity;
+use Zenstruck\Foundry\Tests\Fixture\Factories\SimpleModelFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @extends PersistentObjectFactory<SimpleEntity>
+ * @extends SimpleModelFactory<SimpleEntity>
  *
  * @method static SimpleEntity|Proxy createOne(array|callable $attributes = [])
  * @phpstan-method static SimpleEntity&Proxy createOne(array|callable $attributes = [])
  */
-final class SimpleEntityFactory extends PersistentObjectFactory
+final class SimpleEntityFactory extends SimpleModelFactory
 {
     public static function class(): string
     {

@@ -44,7 +44,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
         $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->managerFor(static::class())->autoPersist();
 
         if (!$persist) {
-            return $proxy;
+            return $proxy->_disableAutoRefresh();
         }
 
         if (!$configuration->isPersistenceEnabled()) {

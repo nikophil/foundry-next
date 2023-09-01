@@ -12,28 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Zenstruck\Foundry\Tests\Fixture\Model\SimpleModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\Entity]
-class SimpleEntity
+class SimpleEntity extends SimpleModel
 {
-    #[ORM\Id]
-    #[ORM\Column]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    public ?int $id = null;
-
-    #[ORM\Column]
-    private string $prop1;
-
-    public function __construct(string $prop1)
-    {
-        $this->prop1 = $prop1;
-    }
-
-    public function getProp1(): string
-    {
-        return $this->prop1;
-    }
 }

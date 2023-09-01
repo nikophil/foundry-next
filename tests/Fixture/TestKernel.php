@@ -51,12 +51,19 @@ final class TestKernel extends Kernel
                 'auto_generate_proxy_classes' => true,
                 'auto_mapping' => true,
                 'mappings' => [
-                    'Test' => [
+                    'Entity' => [
                         'is_bundle' => false,
                         'type' => 'attribute',
                         'dir' => '%kernel.project_dir%/tests/Fixture/Entity',
                         'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Entity',
-                        'alias' => 'Test',
+                        'alias' => 'Entity',
+                    ],
+                    'Model' => [
+                        'is_bundle' => false,
+                        'type' => 'attribute',
+                        'dir' => '%kernel.project_dir%/tests/Fixture/Model',
+                        'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Model',
+                        'alias' => 'Model',
                     ],
                 ],
             ],
