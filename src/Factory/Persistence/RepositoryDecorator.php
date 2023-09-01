@@ -11,15 +11,19 @@
 
 namespace Zenstruck\Foundry\Factory\Persistence;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
+use Zenstruck\Foundry\Factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T of object
  * @implements ObjectRepository<T>
+ *
+ * @phpstan-import-type Parameters from Factory
  */
-final class RepositoryDecorator implements ObjectRepository
+final class RepositoryDecorator implements ObjectRepository, \Countable
 {
     /**
      * @internal
@@ -28,6 +32,11 @@ final class RepositoryDecorator implements ObjectRepository
      */
     public function __construct(private ObjectRepository $inner)
     {
+    }
+
+    public function assert(): RepositoryAssertions
+    {
+        return new RepositoryAssertions($this);
     }
 
     public function find($id): ?object
@@ -53,5 +62,18 @@ final class RepositoryDecorator implements ObjectRepository
     public function getClassName(): string
     {
         return $this->inner->getClassName();
+    }
+
+    /**
+     * @param Parameters $criteria
+     */
+    public function count(array $criteria = []): int
+    {
+        if ($this->inner instanceof EntityRepository) {
+            // use query to avoid loading all entities
+            return $this->inner->count($criteria);
+        }
+
+        return \count($this->findBy($criteria));
     }
 }

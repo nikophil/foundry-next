@@ -12,6 +12,10 @@
 namespace Zenstruck\Foundry;
 
 use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Factory\Persistence\Proxy;
+use Zenstruck\Foundry\Factory\Persistence\RepositoryDecorator;
+use Zenstruck\Foundry\Factory\ProxyGenerator;
 
 /**
  * Create an anonymous factory for the given class.
@@ -25,33 +29,62 @@ use Zenstruck\Foundry\Factory\ObjectFactory;
  */
 function factory(string $class, array|callable $attributes = []): ObjectFactory
 {
-    $anonymousClassName = 'FoundryAnonymousFactory_'.\str_replace('\\', '', $class);
-    $anonymousClassName = \preg_replace('/\W/', '', $anonymousClassName); // sanitize for anonymous classes
+    return (ProxyGenerator::anonymousFactoryFor($class, persistent: false))::new($attributes);
+}
 
-    /** @var class-string<ObjectFactory<T>> $anonymousClassName */
-    if (!\class_exists($anonymousClassName)) {
-        $factoryClass = ObjectFactory::class;
+/**
+ * Create an object with an anonymous factory.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                    $class
+ * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ *
+ * @return T
+ */
+function object(string $class, array|callable $attributes = []): object
+{
+    return factory($class, $attributes)->create();
+}
 
-        $anonymousClassCode = <<<CODE
-            /**
-             * @internal
-             */
-            final class {$anonymousClassName} extends {$factoryClass}
-            {
-                public static function class(): string
-                {
-                    return "{$class}";
-                }
+/**
+ * Create an anonymous "persistent" factory for the given class.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                    $class
+ * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ *
+ * @return PersistentObjectFactory<T>
+ */
+function persistent_factory(string $class, array|callable $attributes = []): PersistentObjectFactory
+{
+    return (ProxyGenerator::anonymousFactoryFor($class, persistent: true))::new($attributes);
+}
 
-                protected function defaults(): array|callable
-                {
-                    return [];
-                }
-            }
-            CODE;
+/**
+ * Create a "persistent" object with an anonymous factory.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                    $class
+ * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ *
+ * @return T&Proxy
+ */
+function persistent_object(string $class, array|callable $attributes = []): object
+{
+    return persistent_factory($class, $attributes)->create();
+}
 
-        eval($anonymousClassCode);
-    }
-
-    return $anonymousClassName::new($attributes);
+/**
+ * @template T of object
+ *
+ * @param class-string<T> $class
+ *
+ * @return RepositoryDecorator<T>
+ */
+function repo(string $class): RepositoryDecorator
+{
+    return Configuration::instance()->persistence()->repositoryFor($class);
 }

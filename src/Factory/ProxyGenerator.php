@@ -9,10 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Factory\Persistence;
+namespace Zenstruck\Foundry\Factory;
 
 use Symfony\Component\VarExporter\LazyObjectInterface;
 use Symfony\Component\VarExporter\ProxyHelper;
+use Zenstruck\Foundry\Factory\Persistence\IsProxy;
+use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Factory\Persistence\Proxy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -31,6 +34,46 @@ final class ProxyGenerator
     public static function wrap(object $object): object
     {
         return self::generateClassFor($object)::createLazyProxy(static fn() => $object); // @phpstan-ignore-line
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $class
+     *
+     * @return ($persistent is true ? class-string<PersistentObjectFactory<T>> : class-string<ObjectFactory<T>>)
+     */
+    public static function anonymousFactoryFor(string $class, bool $persistent): string
+    {
+        $anonymousClassName = 'FoundryAnonymousFactory_'.\str_replace('\\', '', $class);
+        $anonymousClassName = \preg_replace('/\W/', '', $anonymousClassName); // sanitize for anonymous classes
+
+        /** @var class-string<ObjectFactory<T>> $anonymousClassName */
+        if (!\class_exists($anonymousClassName)) {
+            $factoryClass = $persistent ? PersistentObjectFactory::class : ObjectFactory::class;
+
+            $anonymousClassCode = <<<CODE
+                /**
+                 * @internal
+                 */
+                final class {$anonymousClassName} extends {$factoryClass}
+                {
+                    public static function class(): string
+                    {
+                        return "{$class}";
+                    }
+
+                    protected function defaults(): array|callable
+                    {
+                        return [];
+                    }
+                }
+                CODE;
+
+            eval($anonymousClassCode);
+        }
+
+        return $anonymousClassName;
     }
 
     /**

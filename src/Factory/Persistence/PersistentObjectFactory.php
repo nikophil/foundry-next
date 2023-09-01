@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Factory\Persistence;
 
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\Factory\ProxyGenerator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
