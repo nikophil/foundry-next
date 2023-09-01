@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Factory\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Factories\SimpleModelFactory;
@@ -128,6 +129,87 @@ abstract class SimpleModelFactoryTest extends KernelTestCase
         }
 
         $this->fail('Exception not thrown');
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_auto_refresh(): void
+    {
+        $object = $this->factory()->create();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->_disableAutoRefresh();
+        $object->setProp1('new');
+        $object->setProp1('new 2');
+        $object->_enableAutoRefresh();
+        $object->_save();
+
+        $this->assertSame('new 2', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_manually_refresh(): void
+    {
+        $object = $this->factory()->create()->_disableAutoRefresh();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        self::ensureKernelShutdown();
+
+        // modify and save title "externally"
+        $ext = $this->factory()->first();
+        $ext->setProp1('external');
+        $ext->_save();
+
+        self::ensureKernelShutdown();
+
+        // "calling method" triggers auto-refresh
+        $this->assertSame('external', $object->_refresh()->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_auto_refresh_with_callback(): void
+    {
+        $object = $this->factory()->create();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->_withoutAutoRefresh(function(SimpleModel&Proxy $object) {
+            $object->setProp1('new');
+            $object->setProp1('new 2');
+            $object->_save();
+        });
+
+        $this->assertSame('new 2', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_delete(): void
+    {
+        $object = $this->factory()->create();
+
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->_delete();
+
+        $this->factory()->repository()->assert()->empty();
     }
 
     /**

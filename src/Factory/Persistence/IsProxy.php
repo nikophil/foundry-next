@@ -21,18 +21,30 @@ use Zenstruck\Foundry\Configuration;
  */
 trait IsProxy
 {
-    private ?bool $autoRefresh = null;
+    private ?bool $_autoRefresh = null;
 
     public function _enableAutoRefresh(): static
     {
-        $this->autoRefresh = true;
+        $this->_autoRefresh = true;
 
         return $this;
     }
 
     public function _disableAutoRefresh(): static
     {
-        $this->autoRefresh = false;
+        $this->_autoRefresh = false;
+
+        return $this;
+    }
+
+    public function _withoutAutoRefresh(callable $callback): static
+    {
+        $original = $this->_autoRefresh;
+        $this->_autoRefresh = false;
+
+        $callback($this);
+
+        $this->_autoRefresh = $original;
 
         return $this;
     }
@@ -93,12 +105,12 @@ trait IsProxy
 
     private function _autoRefresh(): void
     {
-        if (null === $this->autoRefresh && !Configuration::instance()->isPersistenceEnabled()) {
+        if (null === $this->_autoRefresh && !Configuration::instance()->isPersistenceEnabled()) {
             // unit test
             return;
         }
 
-        if (!($this->autoRefresh ?? self::_persistenceManager()->autoRefresh())) {
+        if (!($this->_autoRefresh ?? self::_persistenceManager()->autoRefresh())) {
             return;
         }
 

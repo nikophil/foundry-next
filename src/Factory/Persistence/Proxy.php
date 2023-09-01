@@ -20,6 +20,11 @@ interface Proxy
 
     public function _disableAutoRefresh(): static;
 
+    /**
+     * @param callable(static):void $callback
+     */
+    public function _withoutAutoRefresh(callable $callback): static;
+
     public function _save(): static;
 
     public function _refresh(): static;
