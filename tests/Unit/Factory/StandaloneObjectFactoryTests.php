@@ -13,14 +13,11 @@ namespace Zenstruck\Foundry\Tests\Unit\Factory;
 
 use Zenstruck\Foundry\Factory\Object\Instantiator;
 use Zenstruck\Foundry\Factory\Object\Mapper;
-use Zenstruck\Foundry\Tests\Fixture\Entity\SimpleEntity;
 use Zenstruck\Foundry\Tests\Fixture\Factories\StandaloneObjectFactory;
 use Zenstruck\Foundry\Tests\Fixture\SimpleObject;
 
 use function Zenstruck\Foundry\factory;
 use function Zenstruck\Foundry\object;
-use function Zenstruck\Foundry\persistent_factory;
-use function Zenstruck\Foundry\persistent_object;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -284,13 +281,5 @@ trait StandaloneObjectFactoryTests
         $this->assertSame('value1-constructor', $object->getProp1());
         $this->assertSame('value2-constructor', $object->getProp2());
         $this->assertNull($object->getProp3());
-
-        $object = persistent_factory(SimpleEntity::class, ['prop1' => 'value1'])->create();
-
-        $this->assertSame('value1', $object->getProp1());
-
-        $object = persistent_object(SimpleEntity::class, ['prop1' => 'value1']);
-
-        $this->assertSame('value1', $object->getProp1());
     }
 }
