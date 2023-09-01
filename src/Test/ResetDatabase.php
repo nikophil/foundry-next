@@ -35,9 +35,9 @@ trait ResetDatabase
             return;
         }
 
-        static::bootKernel();
+        $kernel = static::bootKernel();
 
-        Configuration::instance()->persistence()->resetDatabase();
+        Configuration::instance()->persistence()->resetDatabase($kernel);
 
         static::ensureKernelShutdown();
     }
@@ -52,9 +52,9 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        static::bootKernel();
+        $kernel = static::bootKernel();
 
-        Configuration::instance()->persistence()->resetSchema();
+        Configuration::instance()->persistence()->resetSchema($kernel);
 
         static::ensureKernelShutdown();
     }

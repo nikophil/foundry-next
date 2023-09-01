@@ -27,6 +27,14 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /** @var list<callable(T&Proxy):void> */
     private array $afterPersist = [];
 
+    /**
+     * @return RepositoryDecorator<T>
+     */
+    final public static function repo(): RepositoryDecorator
+    {
+        return Configuration::instance()->persistence()->repositoryFor(static::class());
+    }
+
     final public function create(callable|array $attributes = []): object
     {
         $object = parent::create($attributes);
@@ -68,4 +76,9 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         return $clone;
     }
+
+    /**
+     * @return class-string<T>
+     */
+    abstract public static function class(): string;
 }

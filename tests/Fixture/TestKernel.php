@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture;
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -31,6 +32,7 @@ final class TestKernel extends Kernel
     public function registerBundles(): iterable
     {
         yield new FrameworkBundle();
+        yield new DoctrineBundle();
         yield new ZenstruckFoundryBundle();
     }
 
@@ -41,6 +43,23 @@ final class TestKernel extends Kernel
             'secret' => 'S3CRET',
             'router' => ['utf8' => true],
             'test' => true,
+        ]);
+
+        $c->loadFromExtension('doctrine', [
+            'dbal' => ['url' => 'sqlite:///%kernel.project_dir%/var/data.db'],
+            'orm' => [
+                'auto_generate_proxy_classes' => true,
+                'auto_mapping' => true,
+                'mappings' => [
+                    'Test' => [
+                        'is_bundle' => false,
+                        'type' => 'attribute',
+                        'dir' => '%kernel.project_dir%/tests/Fixture/Entity',
+                        'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Entity',
+                        'alias' => 'Test',
+                    ],
+                ],
+            ],
         ]);
 
         $c->register(ServiceArrayFactory::class)->setAutowired(true)->setAutoconfigured(true);

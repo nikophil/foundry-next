@@ -14,8 +14,8 @@ namespace Zenstruck\Foundry\Tests\Unit\Factory\Persistence;
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\Factory\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Entity\SimpleEntity;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\SimpleEntityFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -29,15 +29,15 @@ final class PersistentObjectFactoryTest extends TestCase
      */
     public function can_create(): void
     {
-        $entity1 = Entity1Factory::createOne();
+        $entity1 = SimpleEntityFactory::createOne();
 
-        $this->assertInstanceOf(Entity1::class, $entity1);
+        $this->assertInstanceOf(SimpleEntity::class, $entity1);
         $this->assertInstanceOf(Proxy::class, $entity1);
         $this->assertSame('default1', $entity1->getProp1());
 
-        $entity2 = Entity1Factory::createOne(['prop1' => 'value']);
+        $entity2 = SimpleEntityFactory::createOne(['prop1' => 'value']);
 
-        $this->assertInstanceOf(Entity1::class, $entity2);
+        $this->assertInstanceOf(SimpleEntity::class, $entity2);
         $this->assertInstanceOf(Proxy::class, $entity2);
         $this->assertSame('value', $entity2->getProp1());
     }

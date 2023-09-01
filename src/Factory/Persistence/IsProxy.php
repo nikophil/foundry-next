@@ -51,18 +51,18 @@ trait IsProxy
         $om = self::_objectManager();
 
         if ($om->contains($this->initializeLazyObject())) {
-            $om->refresh($this->lazyObjectReal);
+            $om->refresh($this->lazyObjectState->realInstance);
 
             return $this;
         }
 
-        $id = $om->getClassMetadata(parent::class)->getIdentifierValues($this->lazyObjectReal);
+        $id = $om->getClassMetadata(parent::class)->getIdentifierValues($this->lazyObjectState->realInstance);
 
         if (!$id || !$object = $om->find(parent::class, $id)) {
             throw new \RuntimeException('object no longer exists...');
         }
 
-        $this->lazyObjectReal = $object;
+        $this->lazyObjectState->realInstance = $object;
 
         return $this;
     }

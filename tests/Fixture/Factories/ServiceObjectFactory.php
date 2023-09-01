@@ -17,10 +17,12 @@ use Zenstruck\Foundry\Tests\Fixture\SimpleObject;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @extends ObjectFactory<SimpleObject>
  */
 final class ServiceObjectFactory extends ObjectFactory
 {
-    public function __construct(private UrlGeneratorInterface $router)
+    public function __construct(private ?UrlGeneratorInterface $router = null)
     {
     }
 

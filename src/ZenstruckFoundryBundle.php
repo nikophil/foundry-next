@@ -23,7 +23,7 @@ final class ZenstruckFoundryBundle extends AbstractBundle
     public function boot(): void
     {
         if ($this->container && !Configuration::isBooted()) {
-            Configuration::boot(fn() => $this->container->get('.zenstruck_foundry.configuration'));
+            Configuration::boot($this->container->get('.zenstruck_foundry.configuration')); // @phpstan-ignore-line
         }
     }
 
@@ -34,5 +34,12 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         ;
 
         $configurator->import('../config/services.php');
+
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['DoctrineBundle'])) {
+            $configurator->import('../config/persistence.php');
+            $configurator->import('../config/orm.php');
+        }
     }
 }

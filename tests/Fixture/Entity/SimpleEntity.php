@@ -11,11 +11,20 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-class Entity1
+#[ORM\Entity]
+class SimpleEntity
 {
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    public ?int $id = null;
+
+    #[ORM\Column]
     private string $prop1;
 
     public function __construct(string $prop1)
