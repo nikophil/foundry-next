@@ -9,6 +9,7 @@ return static function (ContainerConfigurator $container): void {
         ->set('.zenstruck_foundry.persistence_manager.orm', ORMPersistenceManager::class)
             ->args([
                 service('doctrine'),
+                abstract_arg('config'),
             ])
             ->tag('.foundry.persistence_manager')
     ;

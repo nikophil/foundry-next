@@ -37,7 +37,9 @@ trait ResetDatabase
 
         $kernel = static::bootKernel();
 
-        Configuration::instance()->persistence()->resetDatabase($kernel);
+        foreach (Configuration::instance()->persistence()->managers() as $manager) {
+            $manager->resetDatabase($kernel);
+        }
 
         static::ensureKernelShutdown();
     }
@@ -54,7 +56,9 @@ trait ResetDatabase
 
         $kernel = static::bootKernel();
 
-        Configuration::instance()->persistence()->resetSchema($kernel);
+        foreach (Configuration::instance()->persistence()->managers() as $manager) {
+            $manager->resetSchema($kernel);
+        }
 
         static::ensureKernelShutdown();
     }

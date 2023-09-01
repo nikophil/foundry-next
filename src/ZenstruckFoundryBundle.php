@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry;
 
+use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -27,6 +28,42 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         }
     }
 
+    public function configure(DefinitionConfigurator $definition): void
+    {
+        $definition->rootNode() // @phpstan-ignore-line
+            ->children()
+                ->arrayNode('orm')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('auto_persist')
+                            ->info('Automatically persist entities when created.')
+                            ->defaultTrue()
+                        ->end()
+                        ->booleanNode('auto_refresh')
+                            ->info('Automatically refresh entities on entity method calls.')
+                            ->defaultTrue()
+                        ->end()
+                        ->arrayNode('reset')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->arrayNode('connections')
+                                    ->info('DBAL connections to reset with ResetDatabase trait')
+                                    ->defaultValue(['default'])
+                                    ->scalarPrototype()->end()
+                                ->end()
+                                ->arrayNode('entity_managers')
+                                    ->info('Entity Managers to reset with ResetDatabase trait')
+                                    ->defaultValue(['default'])
+                                    ->scalarPrototype()->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
     public function loadExtension(array $config, ContainerConfigurator $configurator, ContainerBuilder $container): void // @phpstan-ignore-line
     {
         $container->registerForAutoconfiguration(Factory::class)
@@ -40,6 +77,10 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         if (isset($bundles['DoctrineBundle'])) {
             $configurator->import('../config/persistence.php');
             $configurator->import('../config/orm.php');
+
+            $container->getDefinition('.zenstruck_foundry.persistence_manager.orm')
+                ->replaceArgument(1, $config['orm'])
+            ;
         }
     }
 }

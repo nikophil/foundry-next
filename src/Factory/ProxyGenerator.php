@@ -102,7 +102,7 @@ final class ProxyGenerator
             [
                 \sprintf('implements \%s, \Symfony\Component\VarExporter\LazyObjectInterface', Proxy::class),
                 \sprintf('use \%s, \Symfony\Component\VarExporter\LazyProxyTrait;', IsProxy::class),
-                "\$this->autoRefresh();\n\n        if (isset(\$this->lazyObjectReal)) {",
+                "\$this->_autoRefresh();\n\n        if (isset(\$this->lazyObjectReal)) {",
             ],
             $proxyCode
         );

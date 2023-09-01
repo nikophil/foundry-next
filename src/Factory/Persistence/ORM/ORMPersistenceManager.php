@@ -29,8 +29,25 @@ use Zenstruck\Foundry\Factory\Persistence\RepositoryDecorator;
  */
 final class ORMPersistenceManager implements PersistenceManager
 {
-    public function __construct(private ManagerRegistry $registry)
+    /**
+     * @param array{
+     *     auto_persist: bool,
+     *     auto_refresh: bool,
+     *     reset: array{connections: string[], entity_managers: string[]}
+     * } $config
+     */
+    public function __construct(private ManagerRegistry $registry, private array $config)
     {
+    }
+
+    public function autoPersist(): bool
+    {
+        return $this->config['auto_persist'];
+    }
+
+    public function autoRefresh(): bool
+    {
+        return $this->config['auto_persist'];
     }
 
     public function supports(string $class): bool
@@ -144,7 +161,7 @@ final class ORMPersistenceManager implements PersistenceManager
      */
     private function managers(): array
     {
-        return \array_keys($this->registry->getManagerNames()); // todo customize object managers
+        return $this->config['reset']['entity_managers'];
     }
 
     /**
@@ -152,6 +169,6 @@ final class ORMPersistenceManager implements PersistenceManager
      */
     private function connections(): array
     {
-        return \array_keys($this->registry->getConnectionNames()); // todo customize connections
+        return $this->config['reset']['connections'];
     }
 }

@@ -21,7 +21,7 @@ use Zenstruck\Foundry\Configuration;
  */
 trait IsProxy
 {
-    private bool $autoRefresh = false;
+    private ?bool $autoRefresh = null;
 
     public function _enableAutoRefresh(): static
     {
@@ -78,17 +78,27 @@ trait IsProxy
 
     public function _repo(): RepositoryDecorator
     {
-        return Configuration::instance()->persistence()->repositoryFor(parent::class);
+        return self::_persistenceManager()->repositoryFor(parent::class);
     }
 
     private static function _objectManager(): ObjectManager
     {
-        return Configuration::instance()->persistence()->objectManagerFor(parent::class);
+        return self::_persistenceManager()->objectManagerFor(parent::class);
     }
 
-    private function autoRefresh(): void
+    private static function _persistenceManager(): PersistenceManager
     {
-        if (!$this->autoRefresh) {
+        return Configuration::instance()->persistence()->managerFor(parent::class);
+    }
+
+    private function _autoRefresh(): void
+    {
+        if (null === $this->autoRefresh && !Configuration::instance()->isPersistenceEnabled()) {
+            // unit test
+            return;
+        }
+
+        if (!($this->autoRefresh ?? self::_persistenceManager()->autoRefresh())) {
             return;
         }
 

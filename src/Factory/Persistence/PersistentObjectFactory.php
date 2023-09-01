@@ -39,14 +39,15 @@ abstract class PersistentObjectFactory extends ObjectFactory
     final public function create(callable|array $attributes = []): object
     {
         $object = parent::create($attributes);
+        $configuration = Configuration::instance();
         $proxy = ProxyGenerator::wrap($object);
-        $persist = $this->persist ?? Configuration::instance()->isPersistenceEnabled();
+        $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->managerFor(static::class())->autoPersist();
 
         if (!$persist) {
             return $proxy;
         }
 
-        if (!Configuration::instance()->isPersistenceEnabled()) {
+        if (!$configuration->isPersistenceEnabled()) {
             throw new \LogicException('Persistence cannot be used in unit tests.');
         }
 

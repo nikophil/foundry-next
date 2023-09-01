@@ -21,6 +21,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 interface PersistenceManager
 {
+    public function autoPersist(): bool;
+
+    public function autoRefresh(): bool;
+
     /**
      * @param class-string $class
      */

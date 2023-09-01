@@ -27,7 +27,7 @@ return static function (ContainerConfigurator $container): void {
                 service('.zenstruck_foundry.faker'),
                 service('.zenstruck_foundry.instantiator'),
                 service('.zenstruck_foundry.mapper'),
-                service('.zenstruck_foundry.persistence_manager')->nullOnInvalid(),
+                service('.zenstruck_foundry.persistence_registry')->nullOnInvalid(),
             ])
             ->public()
     ;
