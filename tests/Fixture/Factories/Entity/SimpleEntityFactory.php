@@ -35,7 +35,7 @@ final class SimpleEntityFactory extends SimpleModelFactory
         return SimpleEntity::class;
     }
 
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'prop1' => 'default1',

@@ -22,7 +22,7 @@ use Zenstruck\Foundry\Tests\Fixture\Model\SimpleModel;
  */
 abstract class SimpleModelFactory extends PersistentObjectFactory
 {
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'prop1' => 'default1',

@@ -63,7 +63,7 @@ final class ProxyGenerator
                         return "{$class}";
                     }
 
-                    protected function defaults(): array|callable
+                    protected function defaults(): array
                     {
                         return [];
                     }

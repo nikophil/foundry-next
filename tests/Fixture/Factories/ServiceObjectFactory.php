@@ -31,7 +31,7 @@ final class ServiceObjectFactory extends ObjectFactory
         return SimpleObject::class;
     }
 
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'prop1' => $this->router ? 'router' : 'none',

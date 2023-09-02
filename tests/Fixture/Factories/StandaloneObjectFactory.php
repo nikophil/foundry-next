@@ -26,7 +26,7 @@ final class StandaloneObjectFactory extends ObjectFactory
         return SimpleObject::class;
     }
 
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'prop1' => 'value1',

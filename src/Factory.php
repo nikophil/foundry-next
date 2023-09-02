@@ -20,7 +20,7 @@ use Faker;
  *
  * @template T
  * @phpstan-type Parameters = array<string,mixed>
- * @phpstan-type Attributes = Parameters|callable():array<string,mixed>
+ * @phpstan-type Attributes = Parameters|callable():Parameters
  */
 abstract class Factory
 {
@@ -93,7 +93,7 @@ abstract class Factory
     }
 
     /**
-     * @return Attributes
+     * @return Parameters
      */
-    abstract protected function defaults(): array|callable;
+    abstract protected function defaults(): array;
 }

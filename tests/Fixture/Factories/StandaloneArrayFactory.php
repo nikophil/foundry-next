@@ -18,7 +18,7 @@ use Zenstruck\Foundry\Factory\ArrayFactory;
  */
 final class StandaloneArrayFactory extends ArrayFactory
 {
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'default1' => 'default value 1',
