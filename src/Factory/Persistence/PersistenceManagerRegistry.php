@@ -20,6 +20,8 @@ use Doctrine\Persistence\ObjectManager;
  */
 final class PersistenceManagerRegistry
 {
+    public static bool $hasDatabaseBeenReset = false;
+
     /**
      * @param PersistenceManager[] $managers
      */

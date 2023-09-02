@@ -27,7 +27,7 @@ use function Zenstruck\Foundry\repo;
  * @template M of StandardModel
  * @template F of StandardModelFactory<M>
  */
-abstract class StandardModelFactoryTest extends KernelTestCase
+abstract class StandardModelFactoryTestCase extends KernelTestCase
 {
     use Factories, ResetDatabase;
 

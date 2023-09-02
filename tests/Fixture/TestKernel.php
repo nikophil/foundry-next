@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture;
 
+use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -34,6 +35,10 @@ final class TestKernel extends Kernel
         yield new FrameworkBundle();
         yield new DoctrineBundle();
         yield new ZenstruckFoundryBundle();
+
+        if (\getenv('USE_DAMA_DOCTRINE_TEST_BUNDLE')) {
+            yield new DAMADoctrineTestBundle();
+        }
     }
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
@@ -46,7 +51,7 @@ final class TestKernel extends Kernel
         ]);
 
         $c->loadFromExtension('doctrine', [
-            'dbal' => ['url' => 'sqlite:///%kernel.project_dir%/var/data.db'],
+            'dbal' => ['url' => \getenv('DATABASE_URL') ?: 'sqlite:///%kernel.project_dir%/var/data.db'],
             'orm' => [
                 'auto_generate_proxy_classes' => true,
                 'auto_mapping' => true,

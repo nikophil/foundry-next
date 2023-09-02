@@ -14,14 +14,14 @@ namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\ORM;
 use Zenstruck\Foundry\Tests\Fixture\Entity\StandardEntity;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\StandardEntityFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\StandardModelFactory;
-use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactoryTest;
+use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactoryTestCase;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @extends StandardModelFactoryTest<StandardEntity, StandardEntityFactory>
+ * @extends StandardModelFactoryTestCase<StandardEntity, StandardEntityFactory>
  */
-final class StandardEntityFactoryTest extends StandardModelFactoryTest
+final class StandardEntityFactoryTest extends StandardModelFactoryTestCase
 {
     protected function modelClass(): string
     {

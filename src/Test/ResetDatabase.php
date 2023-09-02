@@ -11,16 +11,17 @@
 
 namespace Zenstruck\Foundry\Test;
 
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Factory\Persistence\ORM\ORMPersistenceManager;
+use Zenstruck\Foundry\Factory\Persistence\PersistenceManagerRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 trait ResetDatabase
 {
-    private static bool $_hasDatabaseBeenReset = false;
-
     /**
      * @internal
      * @beforeClass
@@ -31,8 +32,14 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        if (self::$_hasDatabaseBeenReset) {
+        if (PersistenceManagerRegistry::$hasDatabaseBeenReset) {
             return;
+        }
+
+        if ($isDAMADoctrineTestBundleEnabled = (\class_exists(ORMPersistenceManager::class) && ORMPersistenceManager::isDAMADoctrineTestBundleEnabled())) {
+            // disable static connections for this operation
+            // :warning: the kernel should not be booted before calling this!
+            StaticDriver::setKeepStaticConnections(false);
         }
 
         $kernel = static::bootKernel();
@@ -41,7 +48,13 @@ trait ResetDatabase
             $manager->resetDatabase($kernel);
         }
 
+        if ($isDAMADoctrineTestBundleEnabled) {
+            // re-enable static connections
+            StaticDriver::setKeepStaticConnections(true);
+        }
+
         static::ensureKernelShutdown();
+        PersistenceManagerRegistry::$hasDatabaseBeenReset = true;
     }
 
     /**

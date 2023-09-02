@@ -21,6 +21,7 @@
         "zenstruck/assert": "^1.4"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^7.2",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/orm": "^2.16",
         "phpstan/phpstan": "^1.4",

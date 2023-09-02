@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Factory\Persistence\ORM;
 
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +39,11 @@ final class ORMPersistenceManager implements PersistenceManager
      */
     public function __construct(private ManagerRegistry $registry, private array $config)
     {
+    }
+
+    public static function isDAMADoctrineTestBundleEnabled(): bool
+    {
+        return \class_exists(StaticDriver::class) && StaticDriver::isKeepStaticConnections();
     }
 
     public function autoPersist(): bool
@@ -115,7 +121,10 @@ final class ORMPersistenceManager implements PersistenceManager
 
     public function resetSchema(KernelInterface $kernel): void
     {
-        // todo dama support
+        if (self::isDAMADoctrineTestBundleEnabled()) {
+            // not required as the DAMADoctrineTestBundle wraps each test in a transaction
+            return;
+        }
 
         $application = self::application($kernel);
 
