@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Zenstruck\Foundry\Factory\Persistence\ORM\ORMPersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -56,6 +57,10 @@ final class ZenstruckFoundryBundle extends AbstractBundle
                                     ->defaultValue(['default'])
                                     ->scalarPrototype()->end()
                                 ->end()
+                                ->enumNode('mode')
+                                    ->info('Reset mode to use with ResetDatabase trait')
+                                    ->defaultValue(ORMPersistenceManager::RESET_MODE_SCHEMA)
+                                    ->values([ORMPersistenceManager::RESET_MODE_SCHEMA, ORMPersistenceManager::RESET_MODE_MIGRATE])
                             ->end()
                         ->end()
                     ->end()

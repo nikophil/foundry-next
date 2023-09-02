@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Tests\Fixture;
 
 use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -36,6 +37,7 @@ final class TestKernel extends Kernel
 
         if (\getenv('DATABASE_URL')) {
             yield new DoctrineBundle();
+            yield new DoctrineMigrationsBundle();
         }
 
         yield new ZenstruckFoundryBundle();
@@ -52,6 +54,14 @@ final class TestKernel extends Kernel
             'secret' => 'S3CRET',
             'router' => ['utf8' => true],
             'test' => true,
+        ]);
+
+        $c->loadFromExtension('zenstruck_foundry', [
+            'orm' => [
+                'reset' => [
+                    'mode' => \getenv('DATABASE_RESET_MODE') ?: 'schema',
+                ],
+            ],
         ]);
 
         if (\getenv('DATABASE_URL')) {
@@ -76,6 +86,12 @@ final class TestKernel extends Kernel
                             'alias' => 'Model',
                         ],
                     ],
+                ],
+            ]);
+
+            $c->loadFromExtension('doctrine_migrations', [
+                'migrations_paths' => [
+                    'Zenstruck\Foundry\Tests\Fixture\Migrations' => '%kernel.project_dir%/tests/Fixture/Migrations',
                 ],
             ]);
         }

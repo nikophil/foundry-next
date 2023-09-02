@@ -30,11 +30,18 @@ use Zenstruck\Foundry\Factory\Persistence\RepositoryDecorator;
  */
 final class ORMPersistenceManager implements PersistenceManager
 {
+    public const RESET_MODE_SCHEMA = 'schema';
+    public const RESET_MODE_MIGRATE = 'migrate';
+
     /**
      * @param array{
      *     auto_persist: bool,
      *     auto_refresh: bool,
-     *     reset: array{connections: string[], entity_managers: string[]}
+     *     reset: array{
+     *          connections: string[],
+     *          entity_managers: string[],
+     *          mode: self::RESET_MODE_*,
+     *     }
      * } $config
      */
     public function __construct(private ManagerRegistry $registry, private array $config)
@@ -134,7 +141,13 @@ final class ORMPersistenceManager implements PersistenceManager
 
     private function createSchema(Application $application): void
     {
-        // todo migration support
+        if (self::RESET_MODE_MIGRATE === $this->config['reset']['mode']) {
+            $this->runCommand($application, 'doctrine:migrations:migrate', [
+                '--no-interaction' => true,
+            ]);
+
+            return;
+        }
 
         foreach ($this->managers() as $manager) {
             $this->runCommand($application, 'doctrine:schema:update', [
@@ -146,12 +159,11 @@ final class ORMPersistenceManager implements PersistenceManager
 
     private function dropSchema(Application $application): void
     {
-        // todo migration support
-
         foreach ($this->managers() as $manager) {
             $this->runCommand($application, 'doctrine:schema:drop', [
                 '--em' => $manager,
                 '--force' => true,
+                '--full-database' => true,
             ]);
         }
     }
