@@ -15,14 +15,10 @@ jobs:
         php: [ 8.1, 8.2, 8.3 ]
         deps: [ highest ]
         symfony: [ 6.3.*, 6.4.* ]
-        database: [ postgres ]
+        database: [ mysql ]
         include:
           - php: 8.1
             deps: lowest
-            symfony: '*'
-            database: postgres
-          - php: 8.2
-            deps: highest
             symfony: '*'
             database: mysql
           - php: 8.2
