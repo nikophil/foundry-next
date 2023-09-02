@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\MappedSuperclass]
-class SimpleModel
+class StandardModel
 {
     #[ORM\Id]
     #[ORM\Column]

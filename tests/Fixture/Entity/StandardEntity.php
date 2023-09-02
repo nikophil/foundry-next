@@ -12,12 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\SimpleModel;
+use Zenstruck\Foundry\Tests\Fixture\Model\StandardModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\Entity]
-class SimpleEntity extends SimpleModel
+class StandardEntity extends StandardModel
 {
 }

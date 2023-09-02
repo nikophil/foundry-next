@@ -12,15 +12,15 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
 use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
-use Zenstruck\Foundry\Tests\Fixture\Model\SimpleModel;
+use Zenstruck\Foundry\Tests\Fixture\Model\StandardModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @template T of SimpleModel
+ * @template T of StandardModel
  * @extends PersistentObjectFactory<T>
  */
-abstract class SimpleModelFactory extends PersistentObjectFactory
+abstract class StandardModelFactory extends PersistentObjectFactory
 {
     protected function defaults(): array
     {
