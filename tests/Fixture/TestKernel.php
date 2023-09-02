@@ -33,7 +33,11 @@ final class TestKernel extends Kernel
     public function registerBundles(): iterable
     {
         yield new FrameworkBundle();
-        yield new DoctrineBundle();
+
+        if (\getenv('DATABASE_URL')) {
+            yield new DoctrineBundle();
+        }
+
         yield new ZenstruckFoundryBundle();
 
         if (\getenv('USE_DAMA_DOCTRINE_TEST_BUNDLE')) {
@@ -50,29 +54,31 @@ final class TestKernel extends Kernel
             'test' => true,
         ]);
 
-        $c->loadFromExtension('doctrine', [
-            'dbal' => ['url' => \getenv('DATABASE_URL') ?: 'sqlite:///%kernel.project_dir%/var/data.db'],
-            'orm' => [
-                'auto_generate_proxy_classes' => true,
-                'auto_mapping' => true,
-                'mappings' => [
-                    'Entity' => [
-                        'is_bundle' => false,
-                        'type' => 'attribute',
-                        'dir' => '%kernel.project_dir%/tests/Fixture/Entity',
-                        'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Entity',
-                        'alias' => 'Entity',
-                    ],
-                    'Model' => [
-                        'is_bundle' => false,
-                        'type' => 'attribute',
-                        'dir' => '%kernel.project_dir%/tests/Fixture/Model',
-                        'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Model',
-                        'alias' => 'Model',
+        if (\getenv('DATABASE_URL')) {
+            $c->loadFromExtension('doctrine', [
+                'dbal' => ['url' => \getenv('DATABASE_URL')],
+                'orm' => [
+                    'auto_generate_proxy_classes' => true,
+                    'auto_mapping' => true,
+                    'mappings' => [
+                        'Entity' => [
+                            'is_bundle' => false,
+                            'type' => 'attribute',
+                            'dir' => '%kernel.project_dir%/tests/Fixture/Entity',
+                            'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Entity',
+                            'alias' => 'Entity',
+                        ],
+                        'Model' => [
+                            'is_bundle' => false,
+                            'type' => 'attribute',
+                            'dir' => '%kernel.project_dir%/tests/Fixture/Model',
+                            'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Model',
+                            'alias' => 'Model',
+                        ],
                     ],
                 ],
-            ],
-        ]);
+            ]);
+        }
 
         $c->register(ServiceArrayFactory::class)->setAutowired(true)->setAutoconfigured(true);
         $c->register(ServiceObjectFactory::class)->setAutowired(true)->setAutoconfigured(true);

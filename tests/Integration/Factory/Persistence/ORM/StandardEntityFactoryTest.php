@@ -23,6 +23,13 @@ use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactory
  */
 final class StandardEntityFactoryTest extends StandardModelFactoryTestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        if (!\getenv('DATABASE_URL')) {
+            self::markTestSkipped('No database available.');
+        }
+    }
+
     protected function modelClass(): string
     {
         return StandardEntity::class;

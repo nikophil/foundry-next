@@ -43,9 +43,12 @@ trait ResetDatabase
         }
 
         $kernel = static::bootKernel();
+        $configuration = Configuration::instance();
 
-        foreach (Configuration::instance()->persistence()->managers() as $manager) {
-            $manager->resetDatabase($kernel);
+        if ($configuration->isPersistenceEnabled()) {
+            foreach (Configuration::instance()->persistence()->managers() as $manager) {
+                $manager->resetDatabase($kernel);
+            }
         }
 
         if ($isDAMADoctrineTestBundleEnabled) {
