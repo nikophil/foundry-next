@@ -80,6 +80,18 @@ jobs:
         env:
           DATABASE_MIGRATE_MODE: migrate
 
+      - name: Test with "dama"
+        if: matrix.database == 'mysql' || matrix.database == 'postgres'
+        run: vendor/bin/phpunit -c phpunit.dama.xml.dist
+        shell: bash
+
+      - name: Test with "dama" and "migrate"
+        if: matrix.database == 'mysql' || matrix.database == 'postgres'
+        run: vendor/bin/phpunit -c phpunit.dama.xml.dist
+        shell: bash
+        env:
+          DATABASE_MIGRATE_MODE: migrate
+
   code-coverage:
     uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
 
