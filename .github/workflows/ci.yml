@@ -8,23 +8,56 @@ on:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}, SF ${{ matrix.symfony }} - ${{ matrix.deps }}
+    name: P:${{ matrix.php }}, S:${{ matrix.symfony }}, D:${{ matrix.database }}${{ matrix.deps == 'lowest' && ' (lowest)' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [ 8.1, 8.2, 8.3 ]
         deps: [ highest ]
         symfony: [ 6.3.*, 6.4.* ]
+        database: [ mysql, none ]
         include:
           - php: 8.1
             deps: lowest
             symfony: '*'
+            database: mysql
+    env:
+      DATABASE_URL: ${{ matrix.database == 'mysql' && 'mysql://root:root@localhost:3306/foundry' || '' }}
+      DB_USER: root
+      DB_PASSWORD: root
     steps:
-      - uses: zenstruck/.github@php-test-symfony
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php: ${{ matrix.php }}
-          symfony: ${{ matrix.symfony }}
-          deps: ${{ matrix.deps }}
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: flex
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.deps }}
+          composer-options: --prefer-dist
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony }}
+
+      - name: Set up MySQL
+        if: matrix.database == 'mysql'
+        run: sudo /etc/init.d/mysql start
+
+      - name: Test
+        run: vendor/bin/phpunit
+        shell: bash
+
+      - name: Test with "migrate"
+        if: matrix.database == 'mysql'
+        run: vendor/bin/phpunit
+        shell: bash
+        env:
+          DATABASE_MIGRATE_MODE: migrate
 
   code-coverage:
     uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
