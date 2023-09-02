@@ -8,23 +8,44 @@ on:
 
 jobs:
   tests:
-    name: P:${{ matrix.php }}, S:${{ matrix.symfony }}, D:${{ matrix.database }}${{ matrix.deps == 'lowest' && ' (lowest)' }}
+    name: P:${{ matrix.php }}, S:${{ matrix.symfony }}, D:${{ matrix.database }}${{ matrix.deps == 'lowest' && ' (lowest)' || '' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [ 8.1, 8.2, 8.3 ]
         deps: [ highest ]
         symfony: [ 6.3.*, 6.4.* ]
-        database: [ mysql, none ]
+        database: [ postgres ]
         include:
           - php: 8.1
             deps: lowest
             symfony: '*'
+            database: postgres
+          - php: 8.2
+            deps: highest
+            symfony: '*'
             database: mysql
+          - php: 8.2
+            deps: highest
+            symfony: '*'
+            database: none
     env:
-      DATABASE_URL: ${{ matrix.database == 'mysql' && 'mysql://root:root@localhost:3306/foundry' || '' }}
+      DATABASE_URL: ${{ matrix.database == 'mysql' && 'mysql://root:root@localhost:3306/foundry' || matrix.database == 'postgres' && 'postgresql://root:root@localhost:5432/foundry' || '' }}
       DB_USER: root
       DB_PASSWORD: root
+    services:
+      postgres:
+        image: ${{ matrix.database == 'postgres' && 'postgres' || '' }}
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -53,7 +74,7 @@ jobs:
         shell: bash
 
       - name: Test with "migrate"
-        if: matrix.database == 'mysql'
+        if: matrix.database == 'mysql' || matrix.database == 'postgres'
         run: vendor/bin/phpunit
         shell: bash
         env:
