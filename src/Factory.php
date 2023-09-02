@@ -32,7 +32,7 @@ abstract class Factory
      */
     final public static function new(array|callable $attributes = []): static
     {
-        return Configuration::instance()->factories->new(static::class)->with($attributes);
+        return Configuration::instance()->factories->new(static::class)->initialize()->with($attributes);
     }
 
     /**
@@ -90,6 +90,14 @@ abstract class Factory
         });
 
         return $parameters;
+    }
+
+    /**
+     * Override to adjust default attributes & config.
+     */
+    protected function initialize(): static
+    {
+        return $this;
     }
 
     /**
