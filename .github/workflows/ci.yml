@@ -29,15 +29,20 @@ jobs:
             deps: highest
             symfony: '*'
             database: mysql|mongo
+          - php: 8.2
+            deps: highest
+            symfony: '*'
+            database: pgsql|mongo
     env:
       DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'pgsql') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
       MONGO_URL: ${{ contains(matrix.database, 'mongo') && 'mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb' || '' }}
     services:
       postgres:
-        image: ${{ contains(matrix.database, 'pgsql') && 'postgres' || '' }}
+        image: ${{ contains(matrix.database, 'pgsql') && 'postgres:15' || '' }}
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
+          POSTGRES_DB: foundry
         ports:
           - 5432:5432
         options: >-
@@ -105,16 +110,29 @@ jobs:
           DATABASE_MIGRATE_MODE: migrate
 
   code-coverage:
-    name: Code Coverage with Codecov
+    name: Code Coverage
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: mysql://root:root@localhost:3306/foundry
+      DATABASE_URL: postgresql://root:root@localhost:5432/foundry
       MONGO_URL: mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb
     services:
       mongo:
         image: mongo:4
         ports:
           - 27017:27017
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: foundry
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -130,9 +148,6 @@ jobs:
         uses: ramsey/composer-install@v2
         with:
           composer-options: --prefer-dist
-
-      - name: Set up MySQL
-        run: sudo /etc/init.d/mysql start
 
       - name: Test with coverage
         run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
