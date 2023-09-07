@@ -2,19 +2,9 @@ version: '3.9'
 
 services:
   mongo:
-    image: mongo:4.4
-    tmpfs:
-      - /data
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
-      - MONGO_INITDB_DATABASE=mongo
-      - MONGO_NON_ROOT_USERNAME=mongo
-      - MONGO_NON_ROOT_PASSWORD=mongo
+    image: mongo:4
     ports:
       - 27018:27017
-    volumes:
-      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
       timeout: 10s
