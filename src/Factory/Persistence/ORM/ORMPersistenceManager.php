@@ -15,52 +15,25 @@ use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Factory\Persistence\PersistenceManager;
-use Zenstruck\Foundry\Factory\Persistence\RepositoryDecorator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
+ *
+ * @method EntityManagerInterface objectManagerFor(string $class)
  */
-final class ORMPersistenceManager implements PersistenceManager
+final class ORMPersistenceManager extends PersistenceManager
 {
     public const RESET_MODE_SCHEMA = 'schema';
     public const RESET_MODE_MIGRATE = 'migrate';
 
-    /**
-     * @param array{
-     *     auto_persist: bool,
-     *     auto_refresh: bool,
-     *     reset: array{
-     *          connections: string[],
-     *          entity_managers: string[],
-     *          mode: self::RESET_MODE_*,
-     *     }
-     * } $config
-     */
-    public function __construct(private ManagerRegistry $registry, private array $config)
-    {
-    }
-
     public static function isDAMADoctrineTestBundleEnabled(): bool
     {
         return \class_exists(StaticDriver::class) && StaticDriver::isKeepStaticConnections();
-    }
-
-    public function autoPersist(): bool
-    {
-        return $this->config['auto_persist'];
-    }
-
-    public function autoRefresh(): bool
-    {
-        return $this->config['auto_persist'];
     }
 
     public function hasChanges(object $object): bool
@@ -77,21 +50,6 @@ final class ORMPersistenceManager implements PersistenceManager
         return (bool) $em->getUnitOfWork()->getEntityChangeSet($object);
     }
 
-    public function supports(string $class): bool
-    {
-        return (bool) $this->registry->getManagerForClass($class);
-    }
-
-    public function objectManagerFor(string $class): EntityManagerInterface
-    {
-        return $this->registry->getManagerForClass($class) ?? throw new \LogicException(\sprintf('No manager found for "%s".', $class)); // @phpstan-ignore-line
-    }
-
-    public function repositoryFor(string $class): RepositoryDecorator
-    {
-        return new RepositoryDecorator($this->objectManagerFor($class)->getRepository($class));
-    }
-
     public function resetDatabase(KernelInterface $kernel): void
     {
         $application = self::application($kernel);
@@ -101,7 +59,7 @@ final class ORMPersistenceManager implements PersistenceManager
 
             if ($databasePlatform instanceof PostgreSQLPlatform) {
                 // let's drop all connections to the database to be able to drop it
-                $this->runCommand(
+                self::runCommand(
                     $application,
                     'dbal:run-sql',
                     [
@@ -119,8 +77,8 @@ final class ORMPersistenceManager implements PersistenceManager
                 $dropParams['--if-exists'] = true;
             }
 
-            $this->runCommand($application, 'doctrine:database:drop', $dropParams);
-            $this->runCommand($application, 'doctrine:database:create', ['--connection' => $connection]);
+            self::runCommand($application, 'doctrine:database:drop', $dropParams);
+            self::runCommand($application, 'doctrine:database:create', ['--connection' => $connection]);
         }
 
         $this->createSchema($application);
@@ -142,7 +100,7 @@ final class ORMPersistenceManager implements PersistenceManager
     private function createSchema(Application $application): void
     {
         if (self::RESET_MODE_MIGRATE === $this->config['reset']['mode']) {
-            $this->runCommand($application, 'doctrine:migrations:migrate', [
+            self::runCommand($application, 'doctrine:migrations:migrate', [
                 '--no-interaction' => true,
             ]);
 
@@ -150,7 +108,7 @@ final class ORMPersistenceManager implements PersistenceManager
         }
 
         foreach ($this->managers() as $manager) {
-            $this->runCommand($application, 'doctrine:schema:update', [
+            self::runCommand($application, 'doctrine:schema:update', [
                 '--em' => $manager,
                 '--force' => true,
             ]);
@@ -160,35 +118,12 @@ final class ORMPersistenceManager implements PersistenceManager
     private function dropSchema(Application $application): void
     {
         foreach ($this->managers() as $manager) {
-            $this->runCommand($application, 'doctrine:schema:drop', [
+            self::runCommand($application, 'doctrine:schema:drop', [
                 '--em' => $manager,
                 '--force' => true,
                 '--full-database' => true,
             ]);
         }
-    }
-
-    /**
-     * @param array<string,scalar> $parameters
-     */
-    private function runCommand(Application $application, string $command, array $parameters = [], bool $canFail = false): void
-    {
-        $exit = $application->run(
-            new ArrayInput(\array_merge(['command' => $command], $parameters)),
-            $output = new BufferedOutput()
-        );
-
-        if (0 !== $exit && !$canFail) {
-            throw new \RuntimeException(\sprintf('Error running "%s": %s', $command, $output->fetch()));
-        }
-    }
-
-    private static function application(KernelInterface $kernel): Application
-    {
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        return $application;
     }
 
     /**

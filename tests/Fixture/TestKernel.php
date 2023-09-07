@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\Tests\Fixture;
 use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
+use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -38,6 +39,10 @@ final class TestKernel extends Kernel
         if (\getenv('DATABASE_URL')) {
             yield new DoctrineBundle();
             yield new DoctrineMigrationsBundle();
+        }
+
+        if (\getenv('MONGO_URL')) {
+            yield new DoctrineMongoDBBundle();
         }
 
         yield new ZenstruckFoundryBundle();
@@ -92,6 +97,36 @@ final class TestKernel extends Kernel
             $c->loadFromExtension('doctrine_migrations', [
                 'migrations_paths' => [
                     'Zenstruck\Foundry\Tests\Fixture\Migrations' => '%kernel.project_dir%/tests/Fixture/Migrations',
+                ],
+            ]);
+        }
+
+        if (\getenv('MONGO_URL')) {
+            $c->loadFromExtension('doctrine_mongodb', [
+                'connections' => [
+                    'default' => ['server' => '%env(resolve:MONGO_URL)%'],
+                ],
+                'default_database' => 'mongo',
+                'document_managers' => [
+                    'default' => [
+                        'auto_mapping' => true,
+                        'mappings' => [
+                            'Document' => [
+                                'is_bundle' => false,
+                                'type' => 'attribute',
+                                'dir' => '%kernel.project_dir%/tests/Fixture/Document',
+                                'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Document',
+                                'alias' => 'Document',
+                            ],
+                            'Model' => [
+                                'is_bundle' => false,
+                                'type' => 'attribute',
+                                'dir' => '%kernel.project_dir%/tests/Fixture/Model',
+                                'prefix' => 'Zenstruck\Foundry\Tests\Fixture\Model',
+                                'alias' => 'Model',
+                            ],
+                        ],
+                    ],
                 ],
             ]);
         }

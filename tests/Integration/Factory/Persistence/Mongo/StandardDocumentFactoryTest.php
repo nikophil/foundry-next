@@ -12,9 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\Mongo;
 
 use Zenstruck\Foundry\Tests\Fixture\Document\StandardDocument;
-use Zenstruck\Foundry\Tests\Fixture\Entity\StandardEntity;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Document\StandardDocumentFactory;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\StandardEntityFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\StandardModelFactory;
 use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactoryTestCase;
 
