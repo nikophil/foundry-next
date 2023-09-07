@@ -29,12 +29,12 @@ jobs:
             deps: highest
             symfony: '*'
             database: mysql|mongo
-#          - php: 8.2
-#            deps: highest
-#            symfony: '*'
-#            database: pgsql|mongo
+          - php: 8.2
+            deps: highest
+            symfony: '*'
+            database: pgsql|mongo
     env:
-      DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'pgsql') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
+      DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry?serverVersion=5.7.42' || contains(matrix.database, 'pgsql') && 'postgresql://root:root@localhost:5432/foundry?serverVersion=15' || '' }}
       MONGO_URL: ${{ contains(matrix.database, 'mongo') && 'mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb' || '' }}
     services:
       postgres:
@@ -113,7 +113,7 @@ jobs:
     name: Code Coverage
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgresql://root:root@localhost:5432/foundry
+      DATABASE_URL: postgresql://root:root@localhost:5432/foundry?serverVersion=15
       MONGO_URL: mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb
     services:
       mongo:
