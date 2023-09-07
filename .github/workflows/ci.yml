@@ -15,23 +15,28 @@ jobs:
         php: [ 8.1, 8.2 ]
         deps: [ highest ]
         symfony: [ 6.3.*, 6.4.* ]
-        database: [ mysql ]
+        database: [ mysql, mongo ]
         include:
           - php: 8.1
             deps: lowest
             symfony: '*'
-            database: mysql
+            database: mysql|mongo
           - php: 8.2
             deps: highest
             symfony: '*'
             database: none
+          - php: 8.2
+            deps: highest
+            symfony: '*'
+            database: mysql|mongo
     env:
-      DATABASE_URL: ${{ matrix.database == 'mysql' && 'mysql://root:root@localhost:3306/foundry' || matrix.database == 'postgres' && 'postgresql://root:root@localhost:5432/foundry' || '' }}
+      DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'postgres') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
+      MONGO_URL: ${{ contains(matrix.database, 'mongo') && 'mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb' || '' }}
       DB_USER: root
       DB_PASSWORD: root
     services:
       postgres:
-        image: ${{ matrix.database == 'postgres' && 'postgres' || '' }}
+        image: ${{ contains(matrix.database, 'postgres') && 'postgres' || '' }}
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
@@ -42,6 +47,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mongo:
+        image: ${{ contains(matrix.database, 'mongo') && 'mongo:4' || '' }}
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -62,7 +71,7 @@ jobs:
           SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
       - name: Set up MySQL
-        if: matrix.database == 'mysql'
+        if: contains(matrix.database, 'mysql')
         run: sudo /etc/init.d/mysql start
 
       - name: Test
@@ -70,19 +79,19 @@ jobs:
         shell: bash
 
       - name: Test with "migrate"
-        if: matrix.database == 'mysql' || matrix.database == 'postgres'
+        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
         run: vendor/bin/phpunit
         shell: bash
         env:
           DATABASE_MIGRATE_MODE: migrate
 
       - name: Test with "dama"
-        if: matrix.database == 'mysql' || matrix.database == 'postgres'
+        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
         run: vendor/bin/phpunit -c phpunit.dama.xml.dist
         shell: bash
 
       - name: Test with "dama" and "migrate"
-        if: matrix.database == 'mysql' || matrix.database == 'postgres'
+        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
         run: vendor/bin/phpunit -c phpunit.dama.xml.dist
         shell: bash
         env:
