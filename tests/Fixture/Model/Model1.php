@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\MappedSuperclass]
 #[MongoDB\MappedSuperclass]
-abstract class StandardModel
+abstract class Model1
 {
     #[ORM\Id]
     #[ORM\Column]
@@ -27,7 +27,7 @@ abstract class StandardModel
     #[MongoDB\Id(type: 'int', strategy: 'INCREMENT')]
     public ?int $id = null;
 
-    protected ?Relation $relation = null;
+    protected ?Model2 $relation = null;
 
     #[ORM\Column]
     #[MongoDB\Field(type: 'string')]
@@ -48,12 +48,12 @@ abstract class StandardModel
         $this->prop1 = $prop1;
     }
 
-    public function getRelation(): ?Relation
+    public function getRelation(): ?Model2
     {
         return $this->relation;
     }
 
-    public function setRelation(?Relation $relation): void
+    public function setRelation(?Model2 $relation): void
     {
         $this->relation = $relation;
     }

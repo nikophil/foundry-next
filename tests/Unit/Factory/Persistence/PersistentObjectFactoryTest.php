@@ -14,9 +14,9 @@ namespace Zenstruck\Foundry\Tests\Unit\Factory\Persistence;
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\Factory\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Tests\Fixture\Entity\StandardEntity;
-use Zenstruck\Foundry\Tests\Fixture\Entity\StandardRelationEntity;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\StandardEntityFactory;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
 
 use function Zenstruck\Foundry\persistent_factory;
 
@@ -32,15 +32,15 @@ final class PersistentObjectFactoryTest extends TestCase
      */
     public function can_create(): void
     {
-        $entity1 = StandardEntityFactory::createOne();
+        $entity1 = Entity1Factory::createOne();
 
-        $this->assertInstanceOf(StandardEntity::class, $entity1);
+        $this->assertInstanceOf(Entity1::class, $entity1);
         $this->assertInstanceOf(Proxy::class, $entity1);
         $this->assertSame('default1', $entity1->getProp1());
 
-        $entity2 = StandardEntityFactory::createOne(['prop1' => 'value']);
+        $entity2 = Entity1Factory::createOne(['prop1' => 'value']);
 
-        $this->assertInstanceOf(StandardEntity::class, $entity2);
+        $this->assertInstanceOf(Entity1::class, $entity2);
         $this->assertInstanceOf(Proxy::class, $entity2);
         $this->assertSame('value', $entity2->getProp1());
     }
@@ -50,12 +50,12 @@ final class PersistentObjectFactoryTest extends TestCase
      */
     public function can_create_with_relationship(): void
     {
-        $entity1 = StandardEntityFactory::createOne([
-            'relation' => persistent_factory(StandardRelationEntity::class, ['prop1' => 'value']),
+        $entity1 = Entity1Factory::createOne([
+            'relation' => persistent_factory(Entity2::class, ['prop1' => 'value']),
         ]);
 
         $this->assertSame('default1', $entity1->getProp1());
-        $this->assertInstanceOf(StandardRelationEntity::class, $entity1->getRelation());
+        $this->assertInstanceOf(Entity2::class, $entity1->getRelation());
         $this->assertSame('value', $entity1->getRelation()->getProp1());
     }
 }

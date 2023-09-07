@@ -9,44 +9,46 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Entity;
+namespace Zenstruck\Foundry\Tests\Fixture\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\Relation;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[ORM\Entity]
-class StandardRelationEntity extends Relation
+#[ORM\MappedSuperclass]
+#[MongoDB\MappedSuperclass]
+abstract class Model2
 {
-    #[ORM\Id]
-    #[ORM\Column]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    public ?int $id = null;
-
-    /** @var Collection<int,StandardEntity> */
-    #[ORM\OneToMany(mappedBy: 'relation', targetEntity: StandardEntity::class)]
+    /** @var Collection<int,Model1> */
     protected Collection $models;
+    #[ORM\Column]
+    #[MongoDB\Field(type: 'string')]
+    private string $prop1;
 
     public function __construct(string $prop1)
     {
-        parent::__construct($prop1);
-
+        $this->prop1 = $prop1;
         $this->models = new ArrayCollection();
     }
 
+    public function getProp1(): string
+    {
+        return $this->prop1;
+    }
+
     /**
-     * @return Collection<int,StandardEntity>
+     * @return Collection<int,Model1>
      */
     public function getModels(): Collection
     {
         return $this->models;
     }
 
-    public function addModel(StandardEntity $model): void
+    public function addModel(Model1 $model): void
     {
         if (!$this->models->contains($model)) {
             $this->models->add($model);
@@ -54,7 +56,7 @@ class StandardRelationEntity extends Relation
         }
     }
 
-    public function removeModel(StandardEntity $model): void
+    public function removeModel(Model1 $model): void
     {
         if ($this->models->removeElement($model)) {
             // set the owning side to null (unless already changed)

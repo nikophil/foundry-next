@@ -12,12 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Zenstruck\Foundry\Tests\Fixture\Model\Relation;
+use Zenstruck\Foundry\Tests\Fixture\Model\Model2;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[MongoDB\EmbeddedDocument]
-class EmbeddedDocument extends Relation
+class Document2 extends Model2
 {
 }

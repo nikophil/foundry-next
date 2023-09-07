@@ -11,20 +11,20 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\Mongo;
 
-use Zenstruck\Foundry\Tests\Fixture\Document\EmbeddedDocument;
-use Zenstruck\Foundry\Tests\Fixture\Document\StandardDocument;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Document\StandardDocumentFactory;
-use Zenstruck\Foundry\Tests\Fixture\Factories\StandardModelFactory;
-use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactoryTestCase;
+use Zenstruck\Foundry\Tests\Fixture\Document\Document1;
+use Zenstruck\Foundry\Tests\Fixture\Document\Document2;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Document\Document1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
 use function Zenstruck\Foundry\factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @extends StandardModelFactoryTestCase<StandardDocument, StandardDocumentFactory>
+ * @extends StandardFactoryTestCase<Document1, Document1Factory>
  */
-final class StandardDocumentFactoryTest extends StandardModelFactoryTestCase
+final class StandardDocumentFactoryTest extends StandardFactoryTestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -39,26 +39,26 @@ final class StandardDocumentFactoryTest extends StandardModelFactoryTestCase
     public function embed_one(): void
     {
         $object = $this->factory()->create([
-            'relation' => factory(EmbeddedDocument::class, ['prop1' => 'value']),
+            'relation' => factory(Document2::class, ['prop1' => 'value']),
         ]);
 
-        $this->assertInstanceOf(EmbeddedDocument::class, $object->getRelation());
+        $this->assertInstanceOf(Document2::class, $object->getRelation());
 
         self::ensureKernelShutdown();
 
         $object = $this->factory()::first();
 
-        $this->assertInstanceOf(EmbeddedDocument::class, $object->getRelation());
+        $this->assertInstanceOf(Document2::class, $object->getRelation());
         $this->assertSame('value', $object->getRelation()->getProp1());
     }
 
     protected function modelClass(): string
     {
-        return StandardDocument::class;
+        return Document1::class;
     }
 
-    protected function factory(): StandardModelFactory
+    protected function factory(): Model1Factory
     {
-        return StandardDocumentFactory::new();
+        return Document1Factory::new();
     }
 }

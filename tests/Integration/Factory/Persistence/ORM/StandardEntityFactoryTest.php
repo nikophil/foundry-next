@@ -11,11 +11,11 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\ORM;
 
-use Zenstruck\Foundry\Tests\Fixture\Entity\StandardEntity;
-use Zenstruck\Foundry\Tests\Fixture\Entity\StandardRelationEntity;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\StandardEntityFactory;
-use Zenstruck\Foundry\Tests\Fixture\Factories\StandardModelFactory;
-use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardModelFactoryTestCase;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
 use function Zenstruck\Foundry\persistent_factory;
 use function Zenstruck\Foundry\repo;
@@ -23,9 +23,9 @@ use function Zenstruck\Foundry\repo;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @extends StandardModelFactoryTestCase<StandardEntity, StandardEntityFactory>
+ * @extends StandardFactoryTestCase<Entity1, Entity1Factory>
  */
-final class StandardEntityFactoryTest extends StandardModelFactoryTestCase
+final class StandardEntityFactoryTest extends StandardFactoryTestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -39,18 +39,18 @@ final class StandardEntityFactoryTest extends StandardModelFactoryTestCase
      */
     public function many_to_one_relationship(): void
     {
-        repo(StandardRelationEntity::class)->assert()->empty();
+        repo(Entity2::class)->assert()->empty();
 
         $object = $this->factory()->create([
-            'relation' => persistent_factory(StandardRelationEntity::class, ['prop1' => 'value']),
+            'relation' => persistent_factory(Entity2::class, ['prop1' => 'value']),
         ]);
 
-        $this->assertInstanceOf(StandardRelationEntity::class, $object->getRelation());
-        repo(StandardRelationEntity::class)->assert()->count(1);
+        $this->assertInstanceOf(Entity2::class, $object->getRelation());
+        repo(Entity2::class)->assert()->count(1);
 
         self::ensureKernelShutdown();
 
-        $relation = persistent_factory(StandardRelationEntity::class)::first();
+        $relation = persistent_factory(Entity2::class)::first();
 
         $this->assertCount(1, $relation->getModels());
         $this->assertSame('value', $relation->getProp1());
@@ -58,11 +58,11 @@ final class StandardEntityFactoryTest extends StandardModelFactoryTestCase
 
     protected function modelClass(): string
     {
-        return StandardEntity::class;
+        return Entity1::class;
     }
 
-    protected function factory(): StandardModelFactory
+    protected function factory(): Model1Factory
     {
-        return StandardEntityFactory::new();
+        return Entity1Factory::new();
     }
 }

@@ -12,15 +12,15 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Zenstruck\Foundry\Tests\Fixture\Model\Relation;
-use Zenstruck\Foundry\Tests\Fixture\Model\StandardModel;
+use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
+use Zenstruck\Foundry\Tests\Fixture\Model\Model2;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[MongoDB\Document]
-class StandardDocument extends StandardModel
+class Document1 extends Model1
 {
-    #[MongoDB\EmbedOne(targetDocument: EmbeddedDocument::class)]
-    protected ?Relation $relation = null;
+    #[MongoDB\EmbedOne(targetDocument: Document2::class)]
+    protected ?Model2 $relation = null;
 }
