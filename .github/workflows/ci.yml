@@ -32,8 +32,6 @@ jobs:
     env:
       DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'pgsql') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
       MONGO_URL: ${{ contains(matrix.database, 'mongo') && 'mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb' || '' }}
-      DB_USER: root
-      DB_PASSWORD: root
     services:
       postgres:
         image: ${{ contains(matrix.database, 'pgsql') && 'postgres' || '' }}
@@ -107,7 +105,43 @@ jobs:
           DATABASE_MIGRATE_MODE: migrate
 
   code-coverage:
-    uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
+    name: Code Coverage with Codecov
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: mysql://root:root@localhost:3306/foundry
+      MONGO_URL: mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb
+    services:
+      mongo:
+        image: mongo:4
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          coverage: xdebug
+          ini-values: xdebug.mode=coverage
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          composer-options: --prefer-dist
+
+      - name: Set up MySQL
+        run: sudo /etc/init.d/mysql start
+
+      - name: Test with coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
+        shell: bash
+
+      - name: Publish coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
 
   composer-validate:
     uses: zenstruck/.github/.github/workflows/php-composer-validate.yml@main
