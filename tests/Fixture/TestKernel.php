@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ServiceArrayFactory;
@@ -69,7 +70,7 @@ final class TestKernel extends Kernel
             ],
         ]);
 
-        if (\getenv('DATABASE_URL')) {
+        if ($dbUrl = \getenv('DATABASE_URL')) {
             $c->loadFromExtension('doctrine', [
                 'dbal' => ['url' => \getenv('DATABASE_URL')],
                 'orm' => [
@@ -94,9 +95,15 @@ final class TestKernel extends Kernel
                 ],
             ]);
 
+            $migrationDir = \mb_strtoupper((string) \parse_url($dbUrl, \PHP_URL_SCHEME));
+
+            if (!\file_exists(__DIR__."/Migrations/{$migrationDir}")) {
+                (new Filesystem())->mkdir(__DIR__."/Migrations/{$migrationDir}");
+            }
+
             $c->loadFromExtension('doctrine_migrations', [
                 'migrations_paths' => [
-                    'Zenstruck\Foundry\Tests\Fixture\Migrations' => '%kernel.project_dir%/tests/Fixture/Migrations',
+                    "Zenstruck\\Foundry\\Tests\\Fixture\\Migrations\\{$migrationDir}" => "%kernel.project_dir%/tests/Fixture/Migrations/{$migrationDir}",
                 ],
             ]);
         }

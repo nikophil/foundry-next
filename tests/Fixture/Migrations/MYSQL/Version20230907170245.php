@@ -2,16 +2,7 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the zenstruck/foundry package.
- *
- * (c) Kevin Bond <kevinbond@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-namespace Zenstruck\Foundry\Tests\Fixture\Migrations;
+namespace Zenstruck\Foundry\Tests\Fixture\Migrations\MYSQL;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
@@ -19,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230902181941 extends AbstractMigration
+final class Version20230907170245 extends AbstractMigration
 {
     public function getDescription(): string
     {
