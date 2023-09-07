@@ -13,11 +13,15 @@ namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\ORM;
 
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity4;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
 use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
+use function Zenstruck\Foundry\factory;
 use function Zenstruck\Foundry\persistent_factory;
+use function Zenstruck\Foundry\persistent_object;
 use function Zenstruck\Foundry\repo;
 
 /**
@@ -51,6 +55,52 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
         self::ensureKernelShutdown();
 
         $relation = persistent_factory(Entity2::class)::first();
+
+        $this->assertCount(1, $relation->getModels());
+        $this->assertSame('value', $relation->getProp1());
+    }
+
+    /**
+     * @test
+     */
+    public function many_to_one_cascade_persist(): void
+    {
+        repo(Entity4::class)->assert()->empty();
+
+        $object = persistent_object(Entity3::class, [
+            'prop1' => 'value',
+            'relation' => factory(Entity4::class, ['prop1' => 'value']),
+        ]);
+
+        $this->assertInstanceOf(Entity4::class, $object->getRelation());
+        repo(Entity4::class)->assert()->count(1);
+
+        self::ensureKernelShutdown();
+
+        $relation = persistent_factory(Entity4::class)::first();
+
+        $this->assertCount(1, $relation->getModels());
+        $this->assertSame('value', $relation->getProp1());
+    }
+
+    /**
+     * @test
+     */
+    public function many_to_one_cascade_persist_with_persistent_factory(): void
+    {
+        repo(Entity4::class)->assert()->empty();
+
+        $object = persistent_object(Entity3::class, [
+            'prop1' => 'value',
+            'relation' => persistent_factory(Entity4::class, ['prop1' => 'value']),
+        ]);
+
+        $this->assertInstanceOf(Entity4::class, $object->getRelation());
+        repo(Entity4::class)->assert()->count(1);
+
+        self::ensureKernelShutdown();
+
+        $relation = persistent_factory(Entity4::class)::first();
 
         $this->assertCount(1, $relation->getModels());
         $this->assertSame('value', $relation->getProp1());
