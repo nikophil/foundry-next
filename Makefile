@@ -24,7 +24,7 @@ test-schema-dama: ### Run tests with reset: schema, dama: yes
 test-migrate-dama: ### Run tests with reset: migrate, dama: yes
 	DATABASE_RESET_MODE=migrate vendor/bin/phpunit -c phpunit.dama.xml.dist
 
-generate-migrations: ### Generate/replace migrations
+generate-migrations: ### Regenerate migrations
 	rm -rf tests/Fixture/Migrations
 	DATABASE_URL=${MYSQL_URL} bin/console doctrine:database:create --if-not-exists
 	DATABASE_URL=${MYSQL_URL} bin/console doctrine:schema:drop --force --full-database

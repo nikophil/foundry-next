@@ -30,13 +30,13 @@ jobs:
             symfony: '*'
             database: mysql|mongo
     env:
-      DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'postgres') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
+      DATABASE_URL: ${{ contains(matrix.database, 'mysql') && 'mysql://root:root@localhost:3306/foundry' || contains(matrix.database, 'pgsql') && 'postgresql://root:root@localhost:5432/foundry' || '' }}
       MONGO_URL: ${{ contains(matrix.database, 'mongo') && 'mongodb://127.0.0.1:27017/dbName?compressors=disabled&amp;gssapiServiceName=mongodb' || '' }}
       DB_USER: root
       DB_PASSWORD: root
     services:
       postgres:
-        image: ${{ contains(matrix.database, 'postgres') && 'postgres' || '' }}
+        image: ${{ contains(matrix.database, 'pgsql') && 'postgres' || '' }}
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
@@ -74,24 +74,33 @@ jobs:
         if: contains(matrix.database, 'mysql')
         run: sudo /etc/init.d/mysql start
 
+      - name: Validate Migrations
+        if: contains(matrix.database, 'sql')
+        shell: bash
+        run: |
+          bin/console doctrine:database:create --if-not-exists
+          bin/console doctrine:schema:drop --force --full-database
+          bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+          bin/console doctrine:schema:validate
+
       - name: Test
         run: vendor/bin/phpunit
         shell: bash
 
       - name: Test with "migrate"
-        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
+        if: contains(matrix.database, 'sql')
         run: vendor/bin/phpunit
         shell: bash
         env:
           DATABASE_MIGRATE_MODE: migrate
 
       - name: Test with "dama"
-        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
+        if: contains(matrix.database, 'sql')
         run: vendor/bin/phpunit -c phpunit.dama.xml.dist
         shell: bash
 
       - name: Test with "dama" and "migrate"
-        if: contains(matrix.database, 'mysql') || contains(matrix.database, 'postgres')
+        if: contains(matrix.database, 'sql')
         run: vendor/bin/phpunit -c phpunit.dama.xml.dist
         shell: bash
         env:
