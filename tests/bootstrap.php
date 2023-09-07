@@ -16,6 +16,4 @@ require \dirname(__DIR__).'/vendor/autoload.php';
 
 (new Filesystem())->remove(__DIR__.'/../var');
 
-if (\file_exists($env = __DIR__.'/../.env')) {
-    (new Dotenv())->usePutenv()->load($env);
-}
+(new Dotenv())->usePutenv()->loadEnv(__DIR__.'/../.env');
