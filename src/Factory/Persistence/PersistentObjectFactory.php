@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Factory\Persistence;
 
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Factory\ObjectFactory;
 use Zenstruck\Foundry\Factory\ProxyGenerator;
 
@@ -111,4 +112,15 @@ abstract class PersistentObjectFactory extends ObjectFactory
      * @return class-string<T>
      */
     abstract public static function class(): string;
+
+    final protected static function createNested(string $parameter, Factory $factory): mixed
+    {
+        $nested = parent::createNested($parameter, $factory);
+
+        if ($nested instanceof Proxy) {
+            $nested = $nested->_object();
+        }
+
+        return $nested; // @phpstan-ignore-line
+    }
 }

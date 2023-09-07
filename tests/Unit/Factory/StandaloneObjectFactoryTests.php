@@ -282,4 +282,21 @@ trait StandaloneObjectFactoryTests
         $this->assertSame('value2-constructor', $object->getProp2());
         $this->assertNull($object->getProp3());
     }
+
+    /**
+     * @test
+     */
+    public function object_factories_are_converted(): void
+    {
+        $object = object(DummyObject::class, ['object' => StandaloneObjectFactory::new()]);
+
+        $this->assertSame('value1-constructor', $object->object->getProp1());
+    }
+}
+
+class DummyObject
+{
+    public function __construct(public SimpleObject $object)
+    {
+    }
 }

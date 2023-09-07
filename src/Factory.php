@@ -83,11 +83,18 @@ abstract class Factory
             ...\array_map(static fn(array|callable $attr) => \is_callable($attr) ? $attr() : $attr, $attributes)
         );
 
-        \array_walk_recursive($parameters, static function(mixed &$v): void {
-            if ($v instanceof LazyValue) {
-                $v = $v();
+        // convert lazy values
+        $parameters = \array_map(
+            static fn(mixed $v) => $v instanceof LazyValue ? $v() : $v,
+            $parameters,
+        );
+
+        // create factories
+        foreach ($parameters as $key => &$value) {
+            if ($value instanceof self) {
+                $value = static::createNested($key, $value);
             }
-        });
+        }
 
         return $parameters;
     }
@@ -98,6 +105,20 @@ abstract class Factory
     protected function initialize(): static
     {
         return $this;
+    }
+
+    /**
+     * @internal
+     *
+     * @template O
+     *
+     * @param Factory<O> $factory
+     *
+     * @return O
+     */
+    protected static function createNested(string $parameter, self $factory): mixed
+    {
+        return $factory->create();
     }
 
     /**

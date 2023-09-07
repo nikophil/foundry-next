@@ -31,6 +31,8 @@ interface Proxy
 
     public function _delete(): static;
 
+    public function _object(): object;
+
     /**
      * @return RepositoryDecorator<self>
      */

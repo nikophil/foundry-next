@@ -88,6 +88,11 @@ trait IsProxy
         return $this;
     }
 
+    public function _object(): object
+    {
+        return $this->initializeLazyObject();
+    }
+
     public function _repo(): RepositoryDecorator
     {
         return self::_persistenceManager()->repositoryFor(parent::class);

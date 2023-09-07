@@ -19,16 +19,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\MappedSuperclass]
 #[MongoDB\MappedSuperclass]
-abstract class StandardModel
+abstract class Relation
 {
-    #[ORM\Id]
-    #[ORM\Column]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[MongoDB\Id(type: 'int', strategy: 'INCREMENT')]
-    public ?int $id = null;
-
-    protected ?Relation $relation = null;
-
     #[ORM\Column]
     #[MongoDB\Field(type: 'string')]
     private string $prop1;
@@ -41,20 +33,5 @@ abstract class StandardModel
     public function getProp1(): string
     {
         return $this->prop1;
-    }
-
-    public function setProp1(string $prop1): void
-    {
-        $this->prop1 = $prop1;
-    }
-
-    public function getRelation(): ?Relation
-    {
-        return $this->relation;
-    }
-
-    public function setRelation(?Relation $relation): void
-    {
-        $this->relation = $relation;
     }
 }

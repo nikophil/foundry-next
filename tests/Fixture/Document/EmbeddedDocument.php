@@ -9,18 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Entity;
+namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Zenstruck\Foundry\Tests\Fixture\Model\Relation;
-use Zenstruck\Foundry\Tests\Fixture\Model\StandardModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[ORM\Entity]
-class StandardEntity extends StandardModel
+#[MongoDB\EmbeddedDocument]
+class EmbeddedDocument extends Relation
 {
-    #[ORM\ManyToOne(targetEntity: StandardRelationEntity::class, inversedBy: 'models')]
-    protected ?Relation $relation = null;
 }
