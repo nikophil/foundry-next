@@ -8,6 +8,20 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
 
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: zenstruck_foundry
+      POSTGRES_PASSWORD: zenstruck
+      POSTGRES_USER: zenstruck
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: 'pg_isready -d zenstruck_foundry'
+      timeout: 120s
+      retries: 60
+      interval: 2s
+
   mongo:
     image: mongo:4
     ports:
