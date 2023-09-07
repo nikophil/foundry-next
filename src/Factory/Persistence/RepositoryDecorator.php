@@ -73,9 +73,12 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
+     * @param ?int $limit
+     * @param ?int $offset
+     *
      * @return list<T&Proxy>
      */
-    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
         return \array_map(ProxyGenerator::wrap(...), $this->inner->findBy($criteria, $orderBy, $limit, $offset)); // @phpstan-ignore-line
     }
