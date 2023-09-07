@@ -12,29 +12,24 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Zenstruck\Foundry\Factory\ObjectFactory;
-use Zenstruck\Foundry\Tests\Fixture\SimpleObject;
+use Zenstruck\Foundry\Factory\ArrayFactory as BaseArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @extends ObjectFactory<SimpleObject>
  */
-final class ServiceObjectFactory extends ObjectFactory
+final class ArrayFactory extends BaseArrayFactory
 {
     public function __construct(private ?UrlGeneratorInterface $router = null)
     {
     }
 
-    public static function class(): string
-    {
-        return SimpleObject::class;
-    }
-
     protected function defaults(): array
     {
         return [
-            'prop1' => $this->router ? 'router' : 'none',
+            'router' => (bool) $this->router,
+            'default1' => 'default value 1',
+            'default2' => 'default value 2',
+            'fake' => self::faker()->randomElement(['value']),
         ];
     }
 }

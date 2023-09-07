@@ -19,14 +19,6 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @extends Model1Factory<Entity1>
- *
- * @method static Entity1|Proxy createOne(array|callable $attributes = [])
- * @method static Entity1|Proxy first(string $sortBy = 'id')
- * @method static Entity1|Proxy last(string $sortBy = 'id')
- *
- * @phpstan-method static (Entity1&Proxy) createOne(array|callable $attributes = [])
- * @phpstan-method static (Entity1&Proxy) first(string $sortBy = 'id')
- * @phpstan-method static (Entity1&Proxy) last(string $sortBy = 'id')
  */
 final class Entity1Factory extends Model1Factory
 {

@@ -14,8 +14,7 @@ namespace Zenstruck\Foundry\Tests\Integration\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Tests\Fixture\Factories\ServiceArrayFactory;
-use Zenstruck\Foundry\Tests\Fixture\Factories\StandaloneArrayFactory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -27,29 +26,16 @@ final class ArrayFactoryTest extends KernelTestCase
     /**
      * @test
      */
-    public function can_use_service(): void
-    {
-        $this->assertSame(
-            [
-                'router' => true,
-                'fake' => 'value',
-            ],
-            ServiceArrayFactory::createOne()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function can_create_with_defaults(): void
     {
         $this->assertSame(
             [
+                'router' => true,
                 'default1' => 'default value 1',
                 'default2' => 'default value 2',
                 'fake' => 'value',
             ],
-            StandaloneArrayFactory::createOne()
+            ArrayFactory::createOne()
         );
     }
 
@@ -60,12 +46,13 @@ final class ArrayFactoryTest extends KernelTestCase
     {
         $this->assertSame(
             [
+                'router' => true,
                 'default1' => 'default value 1',
                 'default2' => 'override value 2',
                 'fake' => 'value',
                 'foo' => 'baz',
             ],
-            StandaloneArrayFactory::new(['foo' => 'bar'])
+            ArrayFactory::new(['foo' => 'bar'])
                 ->with(fn() => ['foo' => LazyValue::new(fn() => 'baz')])
                 ->create(['default2' => 'override value 2'])
         );

@@ -14,7 +14,7 @@ namespace Zenstruck\Foundry\Tests\Unit\Factory;
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Tests\Fixture\Factories\StandaloneArrayFactory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -30,11 +30,12 @@ final class ArrayFactoryTest extends TestCase
     {
         $this->assertSame(
             [
+                'router' => false,
                 'default1' => 'default value 1',
                 'default2' => 'default value 2',
                 'fake' => 'value',
             ],
-            StandaloneArrayFactory::createOne()
+            ArrayFactory::createOne()
         );
     }
 
@@ -45,12 +46,13 @@ final class ArrayFactoryTest extends TestCase
     {
         $this->assertSame(
             [
+                'router' => false,
                 'default1' => 'default value 1',
                 'default2' => 'override value 2',
                 'fake' => 'value',
                 'foo' => 'baz',
             ],
-            StandaloneArrayFactory::new(['foo' => 'bar'])
+            ArrayFactory::new(['foo' => 'bar'])
                 ->with(fn() => ['foo' => LazyValue::new(fn() => 'baz')])
                 ->create(['default2' => 'override value 2'])
         );

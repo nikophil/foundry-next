@@ -11,19 +11,25 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
-use Zenstruck\Foundry\Factory\ArrayFactory;
+use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\Tests\Fixture\Object2;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @extends ObjectFactory<Object2>
  */
-final class StandaloneArrayFactory extends ArrayFactory
+final class Object2Factory extends ObjectFactory
 {
+    public static function class(): string
+    {
+        return Object2::class;
+    }
+
     protected function defaults(): array
     {
         return [
-            'default1' => 'default value 1',
-            'default2' => 'default value 2',
-            'fake' => self::faker()->randomElement(['value']),
+            'object' => Object1Factory::new(),
         ];
     }
 }
