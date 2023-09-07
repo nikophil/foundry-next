@@ -45,7 +45,8 @@ final class ProxyGenerator
      */
     public static function anonymousFactoryFor(string $class, bool $persistent): string
     {
-        $anonymousClassName = 'FoundryAnonymousFactory_'.\str_replace('\\', '', $class);
+        $anonymousClassName = $persistent ? 'FoundryAnonymousPersistentFactory_' : 'FoundryAnonymousFactory_';
+        $anonymousClassName .= \str_replace('\\', '', $class);
         $anonymousClassName = \preg_replace('/\W/', '', $anonymousClassName); // sanitize for anonymous classes
 
         /** @var class-string<ObjectFactory<T>> $anonymousClassName */
