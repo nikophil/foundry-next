@@ -106,6 +106,51 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
         $this->assertSame('value', $relation->getProp1());
     }
 
+    /**
+     * @test
+     */
+    public function create_many_with_new_relationship_entity(): void
+    {
+        $models = $this->factory()
+            ->createMany(3, fn(int $i) => ['prop1' => "value{$i}", 'relation' => persistent_factory(Entity2::class, ['prop1' => 'value'])])
+        ;
+
+        $this->factory()::repository()->assert()->count(3);
+        repo(Entity2::class)->assert()->count(3);
+
+        self::ensureKernelShutdown();
+
+        $this->assertSame('value1', $models[0]->getProp1());
+        $this->assertSame(1, $models[0]->getRelation()?->id);
+        $this->assertSame('value2', $models[1]->getProp1());
+        $this->assertSame(2, $models[1]->getRelation()?->id);
+        $this->assertSame('value3', $models[2]->getProp1());
+        $this->assertSame(3, $models[2]->getRelation()?->id);
+    }
+
+    /**
+     * @test
+     */
+    public function create_many_with_existing_relationship_entity(): void
+    {
+        $relation = persistent_object(Entity2::class, ['prop1' => 'value']);
+        $models = $this->factory()
+            ->createMany(3, fn(int $i) => ['prop1' => "value{$i}", 'relation' => $relation])
+        ;
+
+        $this->factory()::repository()->assert()->count(3);
+        repo(Entity2::class)->assert()->count(1);
+
+        self::ensureKernelShutdown();
+
+        $this->assertSame('value1', $models[0]->getProp1());
+        $this->assertSame(1, $models[0]->getRelation()?->id);
+        $this->assertSame('value2', $models[1]->getProp1());
+        $this->assertSame(1, $models[1]->getRelation()?->id);
+        $this->assertSame('value3', $models[2]->getProp1());
+        $this->assertSame(1, $models[2]->getRelation()?->id);
+    }
+
     protected function modelClass(): string
     {
         return Entity1::class;

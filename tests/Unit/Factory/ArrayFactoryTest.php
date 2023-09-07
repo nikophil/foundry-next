@@ -57,4 +57,26 @@ final class ArrayFactoryTest extends TestCase
                 ->create(['default2' => 'override value 2'])
         );
     }
+
+    /**
+     * @test
+     */
+    public function can_create_collections(): void
+    {
+        $this->assertCount(2, ArrayFactory::createMany(2));
+        $this->assertSame(
+            [
+                'router' => false,
+                'default1' => 'default value 1',
+                'default2' => 'default value 2',
+                'fake' => 'value',
+            ],
+            ArrayFactory::createMany(1)[0],
+        );
+
+        $range = ArrayFactory::new()->many(2, 4)->create();
+
+        $this->assertGreaterThanOrEqual(2, \count($range));
+        $this->assertLessThanOrEqual(4, \count($range));
+    }
 }

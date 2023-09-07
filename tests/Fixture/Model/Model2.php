@@ -23,8 +23,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[MongoDB\MappedSuperclass]
 abstract class Model2
 {
+    public ?int $id = null;
+
     /** @var Collection<int,Model1> */
     protected Collection $models;
+
     #[ORM\Column]
     #[MongoDB\Field(type: 'string')]
     private string $prop1;

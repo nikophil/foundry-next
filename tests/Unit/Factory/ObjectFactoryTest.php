@@ -297,4 +297,17 @@ final class ObjectFactoryTest extends TestCase
 
         $this->assertSame('value1-constructor', $object->object->getProp1());
     }
+
+    /**
+     * @test
+     */
+    public function can_create_many(): void
+    {
+        $objects = Object1Factory::createMany(3, fn(int $i) => ['prop1' => "value{$i}"]);
+
+        $this->assertCount(3, $objects);
+        $this->assertSame('value1-constructor', $objects[0]->getProp1());
+        $this->assertSame('value2-constructor', $objects[1]->getProp1());
+        $this->assertSame('value3-constructor', $objects[2]->getProp1());
+    }
 }

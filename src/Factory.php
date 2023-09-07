@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
+use Zenstruck\Foundry\Factory\Collection;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -46,11 +47,33 @@ abstract class Factory
     }
 
     /**
+     * @param Parameters|callable(int):Parameters $attributes
+     *
+     * @return T[]
+     */
+    final public static function createMany(int $number, array|callable $attributes = []): array
+    {
+        return static::new()->many($number)->create($attributes);
+    }
+
+    /**
      * @param Attributes $attributes
      *
      * @return T
      */
     abstract public function create(array|callable $attributes = []): mixed;
+
+    /**
+     * @return Collection<T>
+     */
+    final public function many(int $min, ?int $max = null): Collection
+    {
+        if (!$max) {
+            return Collection::set($this, $min);
+        }
+
+        return Collection::range($this, $min, $max);
+    }
 
     /**
      * @param Attributes $attributes
@@ -89,11 +112,9 @@ abstract class Factory
             $parameters,
         );
 
-        // create factories
+        // normalize values
         foreach ($parameters as $key => &$value) {
-            if ($value instanceof self) {
-                $value = static::createNested($key, $value);
-            }
+            $value = static::normalizeParameter($key, $value);
         }
 
         return $parameters;
@@ -109,16 +130,14 @@ abstract class Factory
 
     /**
      * @internal
-     *
-     * @template O
-     *
-     * @param Factory<O> $factory
-     *
-     * @return O
      */
-    protected static function createNested(string $parameter, self $factory): mixed
+    protected static function normalizeParameter(string $name, mixed $value): mixed
     {
-        return $factory->create();
+        if ($value instanceof self) {
+            $value = $value->create();
+        }
+
+        return $value;
     }
 
     /**

@@ -11,7 +11,6 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Factories\Entity;
 
-use Zenstruck\Foundry\Factory\Persistence\Proxy;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
 

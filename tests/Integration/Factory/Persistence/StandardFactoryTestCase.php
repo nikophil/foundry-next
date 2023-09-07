@@ -229,6 +229,20 @@ abstract class StandardFactoryTestCase extends KernelTestCase
     }
 
     /**
+     * @test
+     */
+    public function create_many(): void
+    {
+        $models = $this->factory()->createMany(3, fn(int $i) => ['prop1' => "value{$i}"]);
+
+        $this->factory()::repository()->assert()->count(3);
+
+        $this->assertSame('value1', $models[0]->getProp1());
+        $this->assertSame('value2', $models[1]->getProp1());
+        $this->assertSame('value3', $models[2]->getProp1());
+    }
+
+    /**
      * @return class-string<M>
      */
     abstract protected function modelClass(): string;
