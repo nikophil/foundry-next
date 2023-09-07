@@ -34,11 +34,4 @@ final class StandardEntityFactory extends StandardModelFactory
     {
         return StandardEntity::class;
     }
-
-    protected function defaults(): array
-    {
-        return [
-            'prop1' => 'default1',
-        ];
-    }
 }

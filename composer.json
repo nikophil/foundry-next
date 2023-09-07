@@ -24,6 +24,7 @@
         "dama/doctrine-test-bundle": "^7.2",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
+        "doctrine/mongodb-odm-bundle": "^4.6",
         "doctrine/orm": "^2.16",
         "phpstan/phpstan": "^1.4",
         "phpunit/phpunit": "^9.5.0",

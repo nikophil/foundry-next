@@ -12,19 +12,23 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Model;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\MappedSuperclass]
+#[MongoDB\MappedSuperclass]
 class StandardModel
 {
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[MongoDB\Id]
     public ?int $id = null;
 
     #[ORM\Column]
+    #[MongoDB\Field(type: 'string')]
     private string $prop1;
 
     public function __construct(string $prop1)
