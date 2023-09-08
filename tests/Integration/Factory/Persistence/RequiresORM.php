@@ -19,7 +19,7 @@ trait RequiresORM
     public static function setUpBeforeClass(): void
     {
         if (!\getenv('DATABASE_URL')) {
-            self::markTestSkipped('No database available.');
+            self::markTestSkipped('SQL database not available.');
         }
     }
 }

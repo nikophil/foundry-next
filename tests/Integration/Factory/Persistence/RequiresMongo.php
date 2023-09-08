@@ -18,8 +18,8 @@ trait RequiresMongo
 {
     public static function setUpBeforeClass(): void
     {
-        if (!\getenv('DATABASE_URL')) {
-            self::markTestSkipped('No database available.');
+        if (!\getenv('MONGO_URL')) {
+            self::markTestSkipped('MongoDB not available.');
         }
     }
 }
