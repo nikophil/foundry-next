@@ -26,6 +26,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 abstract class PersistenceManager
 {
+    public static bool $ormOnly = false;
+
     /**
      * @param array<string,mixed> $config
      */

@@ -19,6 +19,9 @@ namespace Zenstruck\Foundry;
 final class StoryRegistry
 {
     /** @var array<string,Story> */
+    private static array $globalInstances = [];
+
+    /** @var array<string,Story> */
     private static array $instances = [];
 
     /**
@@ -38,6 +41,10 @@ final class StoryRegistry
      */
     public function load(string $class): Story
     {
+        if (\array_key_exists($class, self::$globalInstances)) {
+            return self::$globalInstances[$class]; // @phpstan-ignore-line
+        }
+
         if (\array_key_exists($class, self::$instances)) {
             return self::$instances[$class]; // @phpstan-ignore-line
         }
@@ -53,6 +60,9 @@ final class StoryRegistry
         foreach ($this->globalStories as $story) {
             $this->load($story);
         }
+
+        self::$globalInstances = self::$instances;
+        self::$instances = [];
     }
 
     public static function reset(): void

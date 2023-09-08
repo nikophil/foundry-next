@@ -51,6 +51,11 @@ trait ResetDatabase
             }
         }
 
+        if ($isDAMADoctrineTestBundleEnabled && PersistenceManager::$ormOnly) {
+            // add global stories so they are available after transaction rollback
+            $configuration->stories->loadGlobalStories();
+        }
+
         if ($isDAMADoctrineTestBundleEnabled) {
             // re-enable static connections
             StaticDriver::setKeepStaticConnections(true);
@@ -68,6 +73,11 @@ trait ResetDatabase
     {
         if (!\is_subclass_of(static::class, KernelTestCase::class)) {
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
+        }
+
+        if (PersistenceManager::$ormOnly && PersistenceManager::isDAMADoctrineTestBundleEnabled()) {
+            // can fully skip booting the kernel
+            return;
         }
 
         $kernel = static::bootKernel();
