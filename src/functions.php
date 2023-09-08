@@ -11,9 +11,15 @@
 
 namespace Zenstruck\Foundry;
 
+use Faker;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Persistence\RepositoryDecorator;
+
+function faker(): Faker\Generator
+{
+    return Configuration::instance()->faker;
+}
 
 /**
  * Create an anonymous factory for the given class.
