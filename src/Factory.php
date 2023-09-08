@@ -12,7 +12,6 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
-use Zenstruck\Foundry\Factory\Collection;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -64,15 +63,15 @@ abstract class Factory
     abstract public function create(array|callable $attributes = []): mixed;
 
     /**
-     * @return Collection<T>
+     * @return FactoryCollection<T>
      */
-    final public function many(int $min, ?int $max = null): Collection
+    final public function many(int $min, ?int $max = null): FactoryCollection
     {
         if (!$max) {
-            return Collection::set($this, $min);
+            return FactoryCollection::set($this, $min);
         }
 
-        return Collection::range($this, $min, $max);
+        return FactoryCollection::range($this, $min, $max);
     }
 
     /**

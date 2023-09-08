@@ -11,7 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
-use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Tests\Fixture\Object2;
 
 /**

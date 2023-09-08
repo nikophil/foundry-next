@@ -14,8 +14,8 @@ namespace Zenstruck\Foundry\Test;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Factory\Persistence\PersistenceManager;
-use Zenstruck\Foundry\Factory\Persistence\PersistenceManagerRegistry;
+use Zenstruck\Foundry\Persistence\PersistenceManager;
+use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

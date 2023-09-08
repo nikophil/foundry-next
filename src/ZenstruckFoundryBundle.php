@@ -15,8 +15,8 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Zenstruck\Foundry\Factory\Persistence\ORM\ORMPersistenceManager;
-use Zenstruck\Foundry\Factory\Persistence\PersistenceManager;
+use Zenstruck\Foundry\ORM\ORMPersistenceManager;
+use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

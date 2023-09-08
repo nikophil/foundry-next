@@ -13,10 +13,10 @@ namespace Zenstruck\Foundry\Test;
 
 use Faker;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Factory\FactoryRegistry;
-use Zenstruck\Foundry\Factory\Object\Instantiator;
-use Zenstruck\Foundry\Factory\Object\Mapper;
-use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\FactoryRegistry;
+use Zenstruck\Foundry\Object\Instantiator;
+use Zenstruck\Foundry\Object\Mapper;
+use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\StoryRegistry;
 
 /**

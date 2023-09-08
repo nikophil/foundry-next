@@ -4,9 +4,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Faker;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Factory\FactoryRegistry;
-use Zenstruck\Foundry\Factory\Object\Instantiator;
-use Zenstruck\Foundry\Factory\Object\Mapper;
+use Zenstruck\Foundry\FactoryRegistry;
+use Zenstruck\Foundry\Object\Instantiator;
+use Zenstruck\Foundry\Object\Mapper;
 use Zenstruck\Foundry\StoryRegistry;
 
 return static function (ContainerConfigurator $container): void {

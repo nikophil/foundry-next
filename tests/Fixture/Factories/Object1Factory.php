@@ -12,7 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Tests\Fixture\Object1;
 
 /**

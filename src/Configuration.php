@@ -12,10 +12,8 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
-use Zenstruck\Foundry\Factory\FactoryRegistry;
-use Zenstruck\Foundry\Factory\Object\Mapper;
-use Zenstruck\Foundry\Factory\ObjectFactory;
-use Zenstruck\Foundry\Factory\Persistence\PersistenceManagerRegistry;
+use Zenstruck\Foundry\Object\Mapper;
+use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

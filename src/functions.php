@@ -11,11 +11,9 @@
 
 namespace Zenstruck\Foundry;
 
-use Zenstruck\Foundry\Factory\ObjectFactory;
-use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
-use Zenstruck\Foundry\Factory\Persistence\Proxy;
-use Zenstruck\Foundry\Factory\Persistence\RepositoryDecorator;
-use Zenstruck\Foundry\Factory\ProxyGenerator;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Persistence\Proxy;
+use Zenstruck\Foundry\Persistence\RepositoryDecorator;
 
 /**
  * Create an anonymous factory for the given class.

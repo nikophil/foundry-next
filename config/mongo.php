@@ -2,7 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Zenstruck\Foundry\Factory\Persistence\Mongo\MongoPersistenceManager;
+use Zenstruck\Foundry\Mongo\MongoPersistenceManager;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
