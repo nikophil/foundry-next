@@ -14,7 +14,7 @@ namespace Zenstruck\Foundry\Test;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Factory\Persistence\ORM\ORMPersistenceManager;
+use Zenstruck\Foundry\Factory\Persistence\PersistenceManager;
 use Zenstruck\Foundry\Factory\Persistence\PersistenceManagerRegistry;
 
 /**
@@ -36,7 +36,7 @@ trait ResetDatabase
             return;
         }
 
-        if ($isDAMADoctrineTestBundleEnabled = (\class_exists(ORMPersistenceManager::class) && ORMPersistenceManager::isDAMADoctrineTestBundleEnabled())) {
+        if ($isDAMADoctrineTestBundleEnabled = PersistenceManager::isDAMADoctrineTestBundleEnabled()) {
             // disable static connections for this operation
             // :warning: the kernel should not be booted before calling this!
             StaticDriver::setKeepStaticConnections(false);

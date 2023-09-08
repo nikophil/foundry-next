@@ -11,7 +11,6 @@
 
 namespace Zenstruck\Foundry\Factory\Persistence\ORM;
 
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,11 +29,6 @@ final class ORMPersistenceManager extends PersistenceManager
 {
     public const RESET_MODE_SCHEMA = 'schema';
     public const RESET_MODE_MIGRATE = 'migrate';
-
-    public static function isDAMADoctrineTestBundleEnabled(): bool
-    {
-        return \class_exists(StaticDriver::class) && StaticDriver::isKeepStaticConnections();
-    }
 
     public function hasChanges(object $object): bool
     {

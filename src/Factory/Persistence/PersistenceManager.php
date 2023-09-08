@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Factory\Persistence;
 
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -30,6 +31,11 @@ abstract class PersistenceManager
      */
     public function __construct(protected readonly ManagerRegistry $registry, protected readonly array $config)
     {
+    }
+
+    final public static function isDAMADoctrineTestBundleEnabled(): bool
+    {
+        return \class_exists(StaticDriver::class) && StaticDriver::isKeepStaticConnections();
     }
 
     public function autoPersist(): bool
