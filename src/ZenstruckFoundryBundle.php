@@ -99,6 +99,10 @@ final class ZenstruckFoundryBundle extends AbstractBundle
             ->addTag('foundry.factory')
         ;
 
+        $container->registerForAutoconfiguration(Story::class)
+            ->addTag('foundry.story')
+        ;
+
         $configurator->import('../config/services.php');
 
         $bundles = $container->getParameter('kernel.bundles');

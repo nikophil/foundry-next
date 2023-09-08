@@ -44,6 +44,7 @@ final class Configuration
         public readonly Faker\Generator $faker,
         callable $instantiator,
         public readonly Mapper $mapper,
+        public readonly StoryRegistry $stories,
         private readonly ?PersistenceManagerRegistry $persistence = null,
     ) {
         $this->instantiator = $instantiator;
@@ -80,6 +81,7 @@ final class Configuration
 
     public static function shutdown(): void
     {
+        StoryRegistry::reset();
         self::$instance = null;
     }
 }

@@ -17,6 +17,7 @@ use Zenstruck\Foundry\Factory\FactoryRegistry;
 use Zenstruck\Foundry\Factory\Object\Instantiator;
 use Zenstruck\Foundry\Factory\Object\Mapper;
 use Zenstruck\Foundry\Factory\ObjectFactory;
+use Zenstruck\Foundry\StoryRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -56,6 +57,7 @@ final class UnitTestConfig
             $faker,
             self::$instantiator ?? Instantiator::withConstructor(),
             self::$mapper ?? new Mapper(),
+            new StoryRegistry([]),
         );
     }
 }
