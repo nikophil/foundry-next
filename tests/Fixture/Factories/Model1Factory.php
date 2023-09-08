@@ -17,8 +17,7 @@ use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @template T of Model1
- * @extends PersistentObjectFactory<T>
+ * @extends PersistentObjectFactory<Model1>
  */
 abstract class Model1Factory extends PersistentObjectFactory
 {

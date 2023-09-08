@@ -16,8 +16,6 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @extends Model1Factory<Entity1>
  */
 final class Entity1Factory extends Model1Factory
 {

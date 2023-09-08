@@ -11,27 +11,20 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\Mongo;
 
-use Zenstruck\Foundry\Tests\Fixture\Document\Document1;
 use Zenstruck\Foundry\Tests\Fixture\Document\Document2;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Document\Document1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\RequiresMongo;
 use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
 use function Zenstruck\Foundry\factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @extends StandardFactoryTestCase<Document1, Document1Factory>
  */
 final class StandardDocumentFactoryTest extends StandardFactoryTestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        if (!\getenv('MONGO_URL')) {
-            self::markTestSkipped('Mongo is not available.');
-        }
-    }
+    use RequiresMongo;
 
     /**
      * @test
@@ -50,11 +43,6 @@ final class StandardDocumentFactoryTest extends StandardFactoryTestCase
 
         $this->assertInstanceOf(Document2::class, $object->getRelation());
         $this->assertSame('value', $object->getRelation()->getProp1());
-    }
-
-    protected function modelClass(): string
-    {
-        return Document1::class;
     }
 
     protected function factory(): Model1Factory

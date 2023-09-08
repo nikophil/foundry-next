@@ -11,13 +11,13 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\ORM;
 
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity1;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity4;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity2Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\RequiresORM;
 use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
 use function Zenstruck\Foundry\factory;
@@ -27,17 +27,10 @@ use function Zenstruck\Foundry\repo;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @extends StandardFactoryTestCase<Entity1, Entity1Factory>
  */
 final class StandardEntityFactoryTest extends StandardFactoryTestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        if (!\getenv('DATABASE_URL')) {
-            self::markTestSkipped('No database available.');
-        }
-    }
+    use RequiresORM;
 
     /**
      * @test
@@ -146,11 +139,6 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
         $this->assertSame('value2', $models[1]->getProp1());
         $this->assertSame('value3', $models[2]->getProp1());
         $this->assertCount(1, \array_unique([$models[0]->getRelation()?->id, $models[1]->getRelation()?->id, $models[2]->getRelation()?->id]));
-    }
-
-    protected function modelClass(): string
-    {
-        return Entity1::class;
     }
 
     protected function factory(): Model1Factory

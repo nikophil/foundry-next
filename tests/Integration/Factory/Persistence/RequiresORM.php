@@ -9,18 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Factories\Document;
-
-use Zenstruck\Foundry\Tests\Fixture\Document\Document1;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class Document1Factory extends Model1Factory
+trait RequiresORM
 {
-    public static function class(): string
+    public static function setUpBeforeClass(): void
     {
-        return Document1::class;
+        if (!\getenv('DATABASE_URL')) {
+            self::markTestSkipped('No database available.');
+        }
     }
 }

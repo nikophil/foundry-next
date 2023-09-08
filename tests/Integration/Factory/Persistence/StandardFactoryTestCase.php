@@ -23,9 +23,6 @@ use function Zenstruck\Foundry\repo;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @template M of Model1
- * @template F of Model1Factory<M>
  */
 abstract class StandardFactoryTestCase extends KernelTestCase
 {
@@ -243,12 +240,12 @@ abstract class StandardFactoryTestCase extends KernelTestCase
     }
 
     /**
-     * @return class-string<M>
+     * @return class-string<Model1>
      */
-    abstract protected function modelClass(): string;
+    protected function modelClass(): string
+    {
+        return $this->factory()::class();
+    }
 
-    /**
-     * @return F
-     */
     abstract protected function factory(): Model1Factory;
 }
