@@ -18,7 +18,10 @@ return static function (ContainerConfigurator $container): void {
             ->args([tagged_iterator('foundry.factory')])
 
         ->set('.zenstruck_foundry.story_registry', StoryRegistry::class)
-            ->args([tagged_iterator('foundry.story')])
+            ->args([
+                tagged_iterator('foundry.story'),
+                abstract_arg('global_stories'),
+            ])
 
         ->set('.zenstruck_foundry.instantiator', Instantiator::class)
             ->factory([Instantiator::class, 'withConstructor'])

@@ -22,9 +22,10 @@ final class StoryRegistry
     private static array $instances = [];
 
     /**
-     * @param Story[] $stories
+     * @param Story[]                   $stories
+     * @param list<class-string<Story>> $globalStories
      */
-    public function __construct(private iterable $stories)
+    public function __construct(private iterable $stories, private array $globalStories = [])
     {
     }
 
@@ -45,6 +46,13 @@ final class StoryRegistry
         $story->build();
 
         return self::$instances[$class] = $story;
+    }
+
+    public function loadGlobalStories(): void
+    {
+        foreach ($this->globalStories as $story) {
+            $this->load($story);
+        }
     }
 
     public static function reset(): void

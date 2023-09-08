@@ -24,6 +24,7 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
 use Zenstruck\Foundry\ZenstruckFoundryBundle;
 
 /**
@@ -63,6 +64,9 @@ final class TestKernel extends Kernel
         ]);
 
         $c->loadFromExtension('zenstruck_foundry', [
+            'global_stories' => [
+                GlobalStory::class,
+            ],
             'orm' => [
                 'reset' => [
                     'mode' => \getenv('DATABASE_RESET_MODE') ?: 'schema',

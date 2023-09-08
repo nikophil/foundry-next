@@ -46,7 +46,7 @@ trait ResetDatabase
         $configuration = Configuration::instance();
 
         if ($configuration->isPersistenceEnabled()) {
-            foreach (Configuration::instance()->persistence()->managers() as $manager) {
+            foreach ($configuration->persistence()->managers() as $manager) {
                 $manager->resetDatabase($kernel);
             }
         }
@@ -71,10 +71,13 @@ trait ResetDatabase
         }
 
         $kernel = static::bootKernel();
+        $configuration = Configuration::instance();
 
-        foreach (Configuration::instance()->persistence()->managers() as $manager) {
+        foreach ($configuration->persistence()->managers() as $manager) {
             $manager->resetSchema($kernel);
         }
+
+        $configuration->stories->loadGlobalStories();
 
         static::ensureKernelShutdown();
     }

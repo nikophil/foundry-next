@@ -33,6 +33,10 @@ final class ZenstruckFoundryBundle extends AbstractBundle
     {
         $definition->rootNode() // @phpstan-ignore-line
             ->children()
+                ->arrayNode('global_stories')
+                    ->info('Global stories to be loaded before each test.')
+                    ->scalarPrototype()->end()
+                ->end()
                 ->arrayNode('orm')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -104,6 +108,10 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         ;
 
         $configurator->import('../config/services.php');
+
+        $container->getDefinition('.zenstruck_foundry.story_registry')
+            ->replaceArgument(1, $config['global_stories'])
+        ;
 
         $bundles = $container->getParameter('kernel.bundles');
 

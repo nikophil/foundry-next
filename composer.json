@@ -31,7 +31,8 @@
         "symfony/console": "^6.3",
         "symfony/dotenv": "^6.3",
         "symfony/phpunit-bridge": "^6.3",
-        "symfony/var-dumper": "^6.3"
+        "symfony/var-dumper": "^6.3",
+        "symfony/yaml": "^6.3"
     },
     "config": {
         "preferred-install": "dist",

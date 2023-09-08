@@ -16,11 +16,16 @@ use Zenstruck\Foundry\Factory\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Story;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Tests\Fixture\Document\Document3;
+use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Document\Document1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
 use Zenstruck\Foundry\Tests\Fixture\Stories\DocumentStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\EntityStory;
+use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
+
+use function Zenstruck\Foundry\repo;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -58,6 +63,44 @@ final class StoryTest extends KernelTestCase
 
         if (\getenv('MONGO_URL')) {
             yield [DocumentStory::class, Document1Factory::class];
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function global_stories_are_loaded(): void
+    {
+        if (!\getenv('DATABASE_URL') && !\getenv('MONGO_URL')) {
+            $this->markTestSkipped('No persistence enabled.');
+        }
+
+        if (\getenv('DATABASE_URL')) {
+            repo(Entity3::class)->assert()->count(1);
+        }
+
+        if (\getenv('MONGO_URL')) {
+            repo(Document3::class)->assert()->count(1);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function global_stories_cannot_be_loaded_again(): void
+    {
+        if (!\getenv('DATABASE_URL') && !\getenv('MONGO_URL')) {
+            $this->markTestSkipped('No persistence enabled.');
+        }
+
+        GlobalStory::load();
+
+        if (\getenv('DATABASE_URL')) {
+            repo(Entity3::class)->assert()->count(1);
+        }
+
+        if (\getenv('MONGO_URL')) {
+            repo(Document3::class)->assert()->count(1);
         }
     }
 }
