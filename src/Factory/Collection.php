@@ -55,7 +55,7 @@ final class Collection
     /**
      * @param Parameters|callable(int):Parameters $attributes
      *
-     * @return T[]
+     * @return list<T>
      */
     public function create(array|callable $attributes = []): array
     {
@@ -71,7 +71,7 @@ final class Collection
     }
 
     /**
-     * @return Factory<T>[]
+     * @return list<Factory<T>>
      */
     public function all(): array
     {

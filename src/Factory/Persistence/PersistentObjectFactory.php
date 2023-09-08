@@ -57,6 +57,14 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @return list<T&Proxy>
+     */
+    final public static function all(): array
+    {
+        return static::repository()->findAll();
+    }
+
+    /**
      * @return RepositoryDecorator<T>
      */
     final public static function repository(): RepositoryDecorator

@@ -49,7 +49,7 @@ abstract class Factory
     /**
      * @param Parameters|callable(int):Parameters $attributes
      *
-     * @return T[]
+     * @return list<T>
      */
     final public static function createMany(int $number, array|callable $attributes = []): array
     {
