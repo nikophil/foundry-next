@@ -1,5 +1,5 @@
-MYSQL_URL="mysql://root:1234@localhost:3307/foundry_test"
-POSTGRES_URL="postgresql://zenstruck:zenstruck@localhost:5433/zenstruck_foundry?serverVersion=15"
+MYSQL_URL="mysql://root:1234@127.0.0.1:3307/foundry_test"
+POSTGRES_URL="postgresql://zenstruck:zenstruck@127.0.0.1:5433/zenstruck_foundry?serverVersion=15"
 
 .PHONY: help
 help:
