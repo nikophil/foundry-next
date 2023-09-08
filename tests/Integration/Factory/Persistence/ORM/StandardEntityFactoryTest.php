@@ -16,6 +16,7 @@ use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity4;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity2Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
 use Zenstruck\Foundry\Tests\Integration\Factory\Persistence\StandardFactoryTestCase;
 
@@ -112,7 +113,7 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
     public function create_many_with_new_relationship_entity(): void
     {
         $models = $this->factory()
-            ->createMany(3, fn(int $i) => ['prop1' => "value{$i}", 'relation' => persistent_factory(Entity2::class, ['prop1' => 'value'])])
+            ->createMany(3, fn(int $i) => ['prop1' => "value{$i}", 'relation' => Entity2Factory::new()])
         ;
 
         $this->factory()::repository()->assert()->count(3);
@@ -133,7 +134,7 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
      */
     public function create_many_with_existing_relationship_entity(): void
     {
-        $relation = persistent_object(Entity2::class, ['prop1' => 'value']);
+        $relation = Entity2Factory::createOne();
         $models = $this->factory()
             ->createMany(3, fn(int $i) => ['prop1' => "value{$i}", 'relation' => $relation])
         ;
