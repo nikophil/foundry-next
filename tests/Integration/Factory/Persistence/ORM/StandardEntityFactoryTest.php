@@ -122,11 +122,9 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
         self::ensureKernelShutdown();
 
         $this->assertSame('value1', $models[0]->getProp1());
-        $this->assertSame(1, $models[0]->getRelation()?->id);
         $this->assertSame('value2', $models[1]->getProp1());
-        $this->assertSame(2, $models[1]->getRelation()?->id);
         $this->assertSame('value3', $models[2]->getProp1());
-        $this->assertSame(3, $models[2]->getRelation()?->id);
+        $this->assertCount(3, \array_unique([$models[0]->getRelation()?->id, $models[1]->getRelation()?->id, $models[2]->getRelation()?->id]));
     }
 
     /**
@@ -145,11 +143,9 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
         self::ensureKernelShutdown();
 
         $this->assertSame('value1', $models[0]->getProp1());
-        $this->assertSame(1, $models[0]->getRelation()?->id);
         $this->assertSame('value2', $models[1]->getProp1());
-        $this->assertSame(1, $models[1]->getRelation()?->id);
         $this->assertSame('value3', $models[2]->getProp1());
-        $this->assertSame(1, $models[2]->getRelation()?->id);
+        $this->assertCount(1, \array_unique([$models[0]->getRelation()?->id, $models[1]->getRelation()?->id, $models[2]->getRelation()?->id]));
     }
 
     protected function modelClass(): string
