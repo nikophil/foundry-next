@@ -73,11 +73,13 @@ trait ResetDatabase
         $kernel = static::bootKernel();
         $configuration = Configuration::instance();
 
-        foreach ($configuration->persistence()->managers() as $manager) {
-            $manager->resetSchema($kernel);
-        }
+        if ($configuration->isPersistenceEnabled()) {
+            foreach ($configuration->persistence()->managers() as $manager) {
+                $manager->resetSchema($kernel);
+            }
 
-        $configuration->stories->loadGlobalStories();
+            $configuration->stories->loadGlobalStories();
+        }
 
         static::ensureKernelShutdown();
     }
