@@ -11,21 +11,16 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
 use Zenstruck\Foundry\Tests\Fixture\Model\Model2;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\Entity]
-class Entity4 extends Model2
+class CascadeEntity1 extends Model1
 {
-    #[ORM\Id]
-    #[ORM\Column]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    public ?int $id = null;
-
-    #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Entity3::class, cascade: ['persist'])]
-    protected Collection $models;
+    #[ORM\ManyToOne(targetEntity: CascadeEntity4::class, cascade: ['persist'], inversedBy: 'models')]
+    protected ?Model2 $relation = null;
 }

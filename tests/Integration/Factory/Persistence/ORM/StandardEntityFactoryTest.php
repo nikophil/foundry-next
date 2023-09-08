@@ -11,9 +11,9 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Factory\Persistence\ORM;
 
+use Zenstruck\Foundry\Tests\Fixture\Entity\CascadeEntity1;
+use Zenstruck\Foundry\Tests\Fixture\Entity\CascadeEntity4;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity4;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity2Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
@@ -59,19 +59,19 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
      */
     public function many_to_one_cascade_persist(): void
     {
-        repo(Entity4::class)->assert()->empty();
+        repo(CascadeEntity4::class)->assert()->empty();
 
-        $object = persistent_object(Entity3::class, [
+        $object = persistent_object(CascadeEntity1::class, [
             'prop1' => 'value',
-            'relation' => factory(Entity4::class, ['prop1' => 'value']),
+            'relation' => factory(CascadeEntity4::class, ['prop1' => 'value']),
         ]);
 
-        $this->assertInstanceOf(Entity4::class, $object->getRelation());
-        repo(Entity4::class)->assert()->count(1);
+        $this->assertInstanceOf(CascadeEntity4::class, $object->getRelation());
+        repo(CascadeEntity4::class)->assert()->count(1);
 
         self::ensureKernelShutdown();
 
-        $relation = persistent_factory(Entity4::class)::first();
+        $relation = persistent_factory(CascadeEntity4::class)::first();
 
         $this->assertCount(1, $relation->getModels());
         $this->assertSame('value', $relation->getProp1());
@@ -82,19 +82,19 @@ final class StandardEntityFactoryTest extends StandardFactoryTestCase
      */
     public function many_to_one_cascade_persist_with_persistent_factory(): void
     {
-        repo(Entity4::class)->assert()->empty();
+        repo(CascadeEntity4::class)->assert()->empty();
 
-        $object = persistent_object(Entity3::class, [
+        $object = persistent_object(CascadeEntity1::class, [
             'prop1' => 'value',
-            'relation' => persistent_factory(Entity4::class, ['prop1' => 'value']),
+            'relation' => persistent_factory(CascadeEntity4::class, ['prop1' => 'value']),
         ]);
 
-        $this->assertInstanceOf(Entity4::class, $object->getRelation());
-        repo(Entity4::class)->assert()->count(1);
+        $this->assertInstanceOf(CascadeEntity4::class, $object->getRelation());
+        repo(CascadeEntity4::class)->assert()->count(1);
 
         self::ensureKernelShutdown();
 
-        $relation = persistent_factory(Entity4::class)::first();
+        $relation = persistent_factory(CascadeEntity4::class)::first();
 
         $this->assertCount(1, $relation->getModels());
         $this->assertSame('value', $relation->getProp1());
