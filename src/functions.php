@@ -88,7 +88,7 @@ function persistent_object(string $class, array|callable $attributes = []): obje
  *
  * @return RepositoryDecorator<T>
  */
-function repo(string $class): RepositoryDecorator
+function repository(string $class): RepositoryDecorator
 {
     return Configuration::instance()->persistence()->repositoryFor($class);
 }

@@ -25,7 +25,7 @@ use Zenstruck\Foundry\Tests\Fixture\Stories\DocumentStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\EntityStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
 
-use function Zenstruck\Foundry\repo;
+use function Zenstruck\Foundry\repository;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -76,11 +76,11 @@ final class StoryTest extends KernelTestCase
         }
 
         if (\getenv('DATABASE_URL')) {
-            repo(GlobalEntity::class)->assert()->count(1);
+            repository(GlobalEntity::class)->assert()->count(1);
         }
 
         if (\getenv('MONGO_URL')) {
-            repo(GlobalDocument::class)->assert()->count(1);
+            repository(GlobalDocument::class)->assert()->count(1);
         }
     }
 
@@ -96,11 +96,11 @@ final class StoryTest extends KernelTestCase
         GlobalStory::load();
 
         if (\getenv('DATABASE_URL')) {
-            repo(GlobalEntity::class)->assert()->count(1);
+            repository(GlobalEntity::class)->assert()->count(1);
         }
 
         if (\getenv('MONGO_URL')) {
-            repo(GlobalDocument::class)->assert()->count(1);
+            repository(GlobalDocument::class)->assert()->count(1);
         }
     }
 }
