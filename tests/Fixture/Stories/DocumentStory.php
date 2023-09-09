@@ -12,7 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Stories;
 
 use Zenstruck\Foundry\Story;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Document\Document1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Document\GenericDocumentFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -21,6 +21,6 @@ final class DocumentStory extends Story
 {
     public function build(): void
     {
-        Document1Factory::createOne();
+        GenericDocumentFactory::createOne();
     }
 }

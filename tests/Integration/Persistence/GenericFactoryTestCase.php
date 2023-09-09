@@ -15,8 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
+use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
+use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 use function Zenstruck\Foundry\persistent_object;
 use function Zenstruck\Foundry\repo;
@@ -24,7 +24,7 @@ use function Zenstruck\Foundry\repo;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-abstract class StandardFactoryTestCase extends KernelTestCase
+abstract class GenericFactoryTestCase extends KernelTestCase
 {
     use Factories, ResetDatabase;
 
@@ -185,7 +185,7 @@ abstract class StandardFactoryTestCase extends KernelTestCase
         $this->assertSame('default1', $object->getProp1());
         $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
 
-        $object->_withoutAutoRefresh(function(Model1&Proxy $object) {
+        $object->_withoutAutoRefresh(function(GenericModel&Proxy $object) {
             $object->setProp1('new');
             $object->setProp1('new 2');
             $object->_save();
@@ -240,12 +240,12 @@ abstract class StandardFactoryTestCase extends KernelTestCase
     }
 
     /**
-     * @return class-string<Model1>
+     * @return class-string<GenericModel>
      */
     protected function modelClass(): string
     {
         return $this->factory()::class();
     }
 
-    abstract protected function factory(): Model1Factory;
+    abstract protected function factory(): GenericModelFactory;
 }

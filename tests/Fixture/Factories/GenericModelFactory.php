@@ -9,25 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Factories\Entity;
+namespace Zenstruck\Foundry\Tests\Fixture\Factories;
 
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity2;
+use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
- * @extends PersistentObjectFactory<Entity2>
+ * @extends PersistentObjectFactory<GenericModel>
  */
-final class Entity2Factory extends PersistentObjectFactory
+abstract class GenericModelFactory extends PersistentObjectFactory
 {
-    public static function class(): string
-    {
-        return Entity2::class;
-    }
-
     protected function defaults(): array
     {
-        return ['prop1' => 'default'];
+        return [
+            'prop1' => 'default1',
+        ];
     }
 }

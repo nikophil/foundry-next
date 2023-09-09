@@ -12,15 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model2;
+use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\Entity]
-class CascadeEntity1 extends Model1
+class GenericEntity extends GenericModel
 {
-    #[ORM\ManyToOne(targetEntity: CascadeEntity4::class, cascade: ['persist'], inversedBy: 'models')]
-    protected ?Model2 $relation = null;
 }

@@ -12,7 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Stories;
 
 use Zenstruck\Foundry\Story;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\GenericEntityFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -21,6 +21,6 @@ final class EntityStory extends Story
 {
     public function build(): void
     {
-        Entity1Factory::createOne();
+        GenericEntityFactory::createOne();
     }
 }

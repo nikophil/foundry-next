@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Entity;
+namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
-use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model3;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Zenstruck\Foundry\Tests\Fixture\Model\GlobalModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[ORM\Entity]
-class Entity3 extends Model3
+#[MongoDB\Document]
+class GlobalDocument extends GlobalModel
 {
 }

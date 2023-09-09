@@ -15,19 +15,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * Used for ORM/Mongo tests.
+ *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\MappedSuperclass]
 #[MongoDB\MappedSuperclass]
-abstract class Model1
+abstract class GenericModel
 {
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[MongoDB\Id(type: 'int', strategy: 'INCREMENT')]
     public ?int $id = null;
-
-    protected ?Model2 $relation = null;
 
     #[ORM\Column]
     #[MongoDB\Field(type: 'string')]
@@ -46,15 +46,5 @@ abstract class Model1
     public function setProp1(string $prop1): void
     {
         $this->prop1 = $prop1;
-    }
-
-    public function getRelation(): ?Model2
-    {
-        return $this->relation;
-    }
-
-    public function setRelation(?Model2 $relation): void
-    {
-        $this->relation = $relation;
     }
 }

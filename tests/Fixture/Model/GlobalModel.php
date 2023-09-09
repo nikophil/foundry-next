@@ -15,13 +15,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Used for global state story.
+ * Used for global story tests.
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\MappedSuperclass]
 #[MongoDB\MappedSuperclass]
-abstract class Model3
+abstract class GlobalModel
 {
     #[ORM\Id]
     #[ORM\Column]

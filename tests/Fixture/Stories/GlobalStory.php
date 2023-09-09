@@ -12,8 +12,8 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Stories;
 
 use Zenstruck\Foundry\Story;
-use Zenstruck\Foundry\Tests\Fixture\Document\Document3;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
+use Zenstruck\Foundry\Tests\Fixture\Document\GlobalDocument;
+use Zenstruck\Foundry\Tests\Fixture\Entity\GlobalEntity;
 
 use function Zenstruck\Foundry\persistent_object;
 
@@ -25,11 +25,11 @@ final class GlobalStory extends Story
     public function build(): void
     {
         if (\getenv('DATABASE_URL')) {
-            persistent_object(Entity3::class);
+            persistent_object(GlobalEntity::class);
         }
 
         if (\getenv('MONGO_URL')) {
-            persistent_object(Document3::class);
+            persistent_object(GlobalDocument::class);
         }
     }
 }

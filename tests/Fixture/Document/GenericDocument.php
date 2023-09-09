@@ -12,12 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model3;
+use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[MongoDB\Document]
-class Document3 extends Model3
+class GenericDocument extends GenericModel
 {
 }

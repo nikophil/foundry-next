@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Factories\Document;
+namespace Zenstruck\Foundry\Tests\Fixture\Factories\Entity;
 
-use Zenstruck\Foundry\Tests\Fixture\Document\Document1;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Model1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Entity\GenericEntity;
+use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class Document1Factory extends Model1Factory
+final class GenericEntityFactory extends GenericModelFactory
 {
     public static function class(): string
     {
-        return Document1::class;
+        return GenericEntity::class;
     }
 }

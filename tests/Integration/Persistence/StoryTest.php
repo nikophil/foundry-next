@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Integration;
+namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Story;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
-use Zenstruck\Foundry\Tests\Fixture\Document\Document3;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Entity3;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Document\Document1Factory;
-use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Entity1Factory;
-use Zenstruck\Foundry\Tests\Fixture\Model\Model1;
+use Zenstruck\Foundry\Tests\Fixture\Document\GlobalDocument;
+use Zenstruck\Foundry\Tests\Fixture\Entity\GlobalEntity;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Document\GenericDocumentFactory;
+use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\GenericEntityFactory;
+use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 use Zenstruck\Foundry\Tests\Fixture\Stories\DocumentStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\EntityStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
@@ -35,8 +35,8 @@ final class StoryTest extends KernelTestCase
     use Factories, ResetDatabase;
 
     /**
-     * @param class-string<Story>                           $story
-     * @param class-string<PersistentObjectFactory<Model1>> $factory
+     * @param class-string<Story>                                 $story
+     * @param class-string<PersistentObjectFactory<GenericModel>> $factory
      *
      * @test
      * @dataProvider storiesProvider
@@ -53,16 +53,16 @@ final class StoryTest extends KernelTestCase
     }
 
     /**
-     * @return iterable<array{class-string<Story>, class-string<PersistentObjectFactory<Model1>>}>
+     * @return iterable<array{class-string<Story>, class-string<PersistentObjectFactory<GenericModel>>}>
      */
     public static function storiesProvider(): iterable
     {
         if (\getenv('DATABASE_URL')) {
-            yield [EntityStory::class, Entity1Factory::class];
+            yield [EntityStory::class, GenericEntityFactory::class];
         }
 
         if (\getenv('MONGO_URL')) {
-            yield [DocumentStory::class, Document1Factory::class];
+            yield [DocumentStory::class, GenericDocumentFactory::class];
         }
     }
 
@@ -76,11 +76,11 @@ final class StoryTest extends KernelTestCase
         }
 
         if (\getenv('DATABASE_URL')) {
-            repo(Entity3::class)->assert()->count(1);
+            repo(GlobalEntity::class)->assert()->count(1);
         }
 
         if (\getenv('MONGO_URL')) {
-            repo(Document3::class)->assert()->count(1);
+            repo(GlobalDocument::class)->assert()->count(1);
         }
     }
 
@@ -96,11 +96,11 @@ final class StoryTest extends KernelTestCase
         GlobalStory::load();
 
         if (\getenv('DATABASE_URL')) {
-            repo(Entity3::class)->assert()->count(1);
+            repo(GlobalEntity::class)->assert()->count(1);
         }
 
         if (\getenv('MONGO_URL')) {
-            repo(Document3::class)->assert()->count(1);
+            repo(GlobalDocument::class)->assert()->count(1);
         }
     }
 }
