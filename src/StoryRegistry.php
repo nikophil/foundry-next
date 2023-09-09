@@ -57,6 +57,8 @@ final class StoryRegistry
 
     public function loadGlobalStories(): void
     {
+        self::$globalInstances = [];
+
         foreach ($this->globalStories as $story) {
             $this->load($story);
         }
