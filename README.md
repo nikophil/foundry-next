@@ -16,14 +16,3 @@ docker compose up -d
 # run test suite with all available permutations
 make test
 ```
-
-### Updating Test Entity Migrations
-
-If you've made changes to or added test entities you'll need to update the migrations:
-
-```bash
-# start docker
-docker compose up -d
-
-make generate-migrations
-```

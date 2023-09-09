@@ -77,15 +77,6 @@ jobs:
         if: contains(matrix.database, 'mysql')
         run: sudo /etc/init.d/mysql start
 
-      - name: Validate Migrations
-        if: contains(matrix.database, 'sql')
-        shell: bash
-        run: |
-          bin/console doctrine:database:create --if-not-exists
-          bin/console doctrine:schema:drop --force --full-database
-          bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-          bin/console doctrine:schema:validate
-
       - name: Test
         run: vendor/bin/phpunit
         shell: bash

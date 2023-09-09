@@ -15,13 +15,14 @@ use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Zenstruck\Foundry\ORM\ORMPersistenceManager;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
@@ -69,7 +70,7 @@ final class TestKernel extends Kernel
             ],
             'orm' => [
                 'reset' => [
-                    'mode' => \getenv('DATABASE_RESET_MODE') ?: 'schema',
+                    'mode' => \getenv('DATABASE_RESET_MODE') ?: ORMPersistenceManager::RESET_MODE_SCHEMA,
                 ],
             ],
         ]);
@@ -99,15 +100,9 @@ final class TestKernel extends Kernel
                 ],
             ]);
 
-            $migrationDir = \mb_strtoupper((string) \parse_url($dbUrl, \PHP_URL_SCHEME));
-
-            if (!\file_exists(__DIR__."/Migrations/{$migrationDir}")) {
-                (new Filesystem())->mkdir(__DIR__."/Migrations/{$migrationDir}");
-            }
-
             $c->loadFromExtension('doctrine_migrations', [
                 'migrations_paths' => [
-                    "Zenstruck\\Foundry\\Tests\\Fixture\\Migrations\\{$migrationDir}" => "%kernel.project_dir%/tests/Fixture/Migrations/{$migrationDir}",
+                    'Zenstruck\\Foundry\\Tests\\Fixture\\Migrations' => '%kernel.project_dir%/tests/Fixture/Migrations',
                 ],
             ]);
         }
@@ -142,6 +137,7 @@ final class TestKernel extends Kernel
             ]);
         }
 
+        $c->register('logger', NullLogger::class);
         $c->register(ArrayFactory::class)->setAutowired(true)->setAutoconfigured(true);
         $c->register(Object1Factory::class)->setAutowired(true)->setAutoconfigured(true);
     }
