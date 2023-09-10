@@ -103,4 +103,20 @@ final class StoryTest extends KernelTestCase
             repository(GlobalDocument::class)->assert()->count(1);
         }
     }
+
+    /**
+     * @test
+     */
+    public function story_states(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function story_pools(): void
+    {
+        $this->markTestIncomplete();
+    }
 }

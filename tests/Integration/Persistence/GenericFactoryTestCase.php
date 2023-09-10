@@ -240,6 +240,94 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     }
 
     /**
+     * @test
+     */
+    public function sequences(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function as_data_provider(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function find_or_create(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function random(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function random_or_create(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function random_set(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function random_range(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function factory_count(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function truncate(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function factory_all(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function repository_assertions(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
      * @return class-string<GenericModel>
      */
     protected function modelClass(): string
