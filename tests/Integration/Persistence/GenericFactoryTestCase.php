@@ -385,7 +385,28 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function random_range(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()->create(['prop1' => 'a']);
+        $this->factory()->create(['prop1' => 'b']);
+        $this->factory()->create(['prop1' => 'b']);
+        $this->factory()->create(['prop1' => 'b']);
+
+        $range = $this->factory()::randomRange(1, 3);
+
+        $this->assertGreaterThanOrEqual(1, \count($this));
+        $this->assertLessThanOrEqual(3, \count($this));
+
+        foreach ($range as $object) {
+            $this->assertContains($object->getProp1(), ['a', 'b']);
+        }
+
+        $range = $this->factory()::randomRange(1, 3, ['prop1' => 'b']);
+
+        $this->assertGreaterThanOrEqual(1, \count($this));
+        $this->assertLessThanOrEqual(3, \count($this));
+
+        foreach ($range as $object) {
+            $this->assertSame('b', $object->getProp1());
+        }
     }
 
     /**
@@ -393,7 +414,11 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function random_range_requires_at_least_the_max_available(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()::createMany(3);
+
+        $this->expectException(NotEnoughObjects::class);
+
+        $this->factory()::randomRange(1, 5);
     }
 
     /**

@@ -87,6 +87,18 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @param positive-int $min
+     * @param positive-int $max
+     * @param Parameters   $criteria
+     *
+     * @return list<T&Proxy>
+     */
+    public static function randomRange(int $min, int $max, array $criteria = []): array
+    {
+        return static::repository()->randomRange($min, $max, $criteria);
+    }
+
+    /**
      * @param Parameters $criteria
      *
      * @return list<T&Proxy>
