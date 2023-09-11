@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Persistence;
 
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\ProxyGenerator;
 
@@ -20,6 +21,8 @@ use Zenstruck\Foundry\ProxyGenerator;
  *
  * @template T of object
  * @extends ObjectFactory<T&Proxy>
+ *
+ * @phpstan-import-type Parameters from Factory
  */
 abstract class PersistentObjectFactory extends ObjectFactory
 {
@@ -70,6 +73,14 @@ abstract class PersistentObjectFactory extends ObjectFactory
     final public static function repository(): RepositoryDecorator
     {
         return Configuration::instance()->persistence()->repositoryFor(static::class());
+    }
+
+    /**
+     * @param Parameters $criteria
+     */
+    final public static function count(array $criteria = []): int
+    {
+        return static::repository()->count($criteria);
     }
 
     final public static function truncate(): void

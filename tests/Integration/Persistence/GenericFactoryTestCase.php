@@ -300,7 +300,12 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function factory_count(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()::createOne(['prop1' => 'a']);
+        $this->factory()::createOne(['prop1' => 'b']);
+        $this->factory()::createOne(['prop1' => 'b']);
+
+        $this->assertSame(3, $this->factory()::count());
+        $this->assertSame(2, $this->factory()::count(['prop1' => 'b']));
     }
 
     /**
