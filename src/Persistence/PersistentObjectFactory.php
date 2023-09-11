@@ -68,6 +68,16 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @param Parameters $criteria
+     *
+     * @return T&Proxy
+     */
+    public static function random(array $criteria = []): object
+    {
+        return static::repository()->random($criteria);
+    }
+
+    /**
      * @return T&Proxy
      *
      * @throws \RuntimeException If no objects exist

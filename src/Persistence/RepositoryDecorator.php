@@ -134,6 +134,59 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
+     * @param Parameters $criteria
+     *
+     * @return T&Proxy
+     */
+    public function random(array $criteria = []): object
+    {
+        return $this->randomSet(1, $criteria)[0];
+    }
+
+    /**
+     * @param positive-int $number
+     * @param Parameters   $criteria
+     *
+     * @return list<T&Proxy>
+     */
+    public function randomSet(int $number, array $criteria = []): array
+    {
+        if ($number < 1) {
+            throw new \InvalidArgumentException(\sprintf('$number must be positive (%d given).', $number));
+        }
+
+        return $this->randomRange($number, $number, $criteria);
+    }
+
+    /**
+     * @param positive-int $min
+     * @param positive-int $max
+     * @param Parameters   $criteria
+     *
+     * @return list<T&Proxy>
+     */
+    public function randomRange(int $min, int $max, array $criteria = []): array
+    {
+        if ($min < 1) {
+            throw new \InvalidArgumentException(\sprintf('$min must be positive (%d given).', $min));
+        }
+
+        if ($max < $min) {
+            throw new \InvalidArgumentException(\sprintf('$max (%d) cannot be less than $min (%d).', $max, $min));
+        }
+
+        $all = \array_values($this->findBy($criteria));
+
+        \shuffle($all);
+
+        if (\count($all) < $max) {
+            throw new \RuntimeException(\sprintf('At least %d "%s" object(s) must have been persisted (%d persisted).', $max, $this->getClassName(), \count($all)));
+        }
+
+        return \array_slice($all, 0, \random_int($min, $max)); // @phpstan-ignore-line
+    }
+
+    /**
      * @param ?T $object
      *
      * @return (T&Proxy)|null
