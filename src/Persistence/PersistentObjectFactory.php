@@ -12,8 +12,10 @@
 namespace Zenstruck\Foundry\Persistence;
 
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\ObjectFactory;
+use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\ProxyGenerator;
 
 /**
@@ -50,11 +52,13 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     public static function findOrCreate(array $criteria): object
     {
-        if ($object = static::repository()->findOneBy($criteria)) {
-            return $object;
+        try {
+            $object = static::repository()->findOneBy($criteria);
+        } catch (PersistenceNotAvailable) {
+            $object = null;
         }
 
-        return static::createOne($criteria);
+        return $object ?? static::createOne($criteria);
     }
 
     /**
@@ -66,7 +70,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         try {
             return static::repository()->random($criteria);
-        } catch (\RuntimeException) {
+        } catch (NotEnoughObjects|PersistenceNotAvailable) {
             return static::createOne($criteria);
         }
     }

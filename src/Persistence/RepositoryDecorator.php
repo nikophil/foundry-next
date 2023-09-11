@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Factory;
+use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\ProxyGenerator;
 
 /**
@@ -180,7 +181,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         \shuffle($all);
 
         if (\count($all) < $max) {
-            throw new \RuntimeException(\sprintf('At least %d "%s" object(s) must have been persisted (%d persisted).', $max, $this->getClassName(), \count($all)));
+            throw new NotEnoughObjects(\sprintf('At least %d "%s" object(s) must have been persisted (%d persisted).', $max, $this->getClassName(), \count($all)));
         }
 
         return \array_slice($all, 0, \random_int($min, $max)); // @phpstan-ignore-line

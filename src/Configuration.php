@@ -12,6 +12,8 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
+use Zenstruck\Foundry\Exception\FoundryNotBooted;
+use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Object\Mapper;
 use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
 
@@ -50,7 +52,7 @@ final class Configuration
 
     public function persistence(): PersistenceManagerRegistry
     {
-        return $this->persistence ?? throw new \LogicException('No persistence managers configured. Note: persistence cannot be used in unit tests.');
+        return $this->persistence ?? throw new PersistenceNotAvailable('No persistence managers configured. Note: persistence cannot be used in unit tests.');
     }
 
     public function isPersistenceEnabled(): bool
@@ -61,7 +63,7 @@ final class Configuration
     public static function instance(): self
     {
         if (!self::$instance) {
-            throw new \LogicException('Foundry is not yet booted. Ensure ZenstruckFoundryBundle is enabled. If in a test, ensure your TestCase has the Factories trait.');
+            throw new FoundryNotBooted('Foundry is not yet booted. Ensure ZenstruckFoundryBundle is enabled. If in a test, ensure your TestCase has the Factories trait.');
         }
 
         return \is_callable(self::$instance) ? (self::$instance)() : self::$instance;

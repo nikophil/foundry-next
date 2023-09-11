@@ -41,4 +41,24 @@ final class PersistentObjectFactoryTest extends TestCase
         $this->assertInstanceOf(Proxy::class, $entity2);
         $this->assertSame('value', $entity2->getProp1());
     }
+
+    /**
+     * @test
+     */
+    public function find_or_create(): void
+    {
+        $entity = GenericEntityFactory::findOrCreate(['prop1' => 'foo']);
+
+        $this->assertSame('foo', $entity->getProp1());
+    }
+
+    /**
+     * @test
+     */
+    public function random_or_create(): void
+    {
+        $entity = GenericEntityFactory::randomOrCreate(['prop1' => 'foo']);
+
+        $this->assertSame('foo', $entity->getProp1());
+    }
 }
