@@ -310,4 +310,20 @@ final class ObjectFactoryTest extends TestCase
         $this->assertSame('value2-constructor', $objects[1]->getProp1());
         $this->assertSame('value3-constructor', $objects[2]->getProp1());
     }
+
+    /**
+     * @test
+     */
+    public function sequences(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function as_data_provider(): void
+    {
+        $this->markTestIncomplete();
+    }
 }

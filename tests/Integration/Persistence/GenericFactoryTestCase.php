@@ -243,22 +243,6 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
-    public function sequences(): void
-    {
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @test
-     */
-    public function as_data_provider(): void
-    {
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @test
-     */
     public function find(): void
     {
         $object = $this->factory()->create(['prop1' => 'foo']);
