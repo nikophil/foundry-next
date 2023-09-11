@@ -284,7 +284,15 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function find_or_create(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()->create(['prop1' => 'a']);
+
+        $this->assertSame('a', $this->factory()::findOrCreate(['prop1' => 'a'])->getProp1());
+
+        $this->factory()::repository()->assert()->count(1);
+
+        $this->assertSame('b', $this->factory()::findOrCreate(['prop1' => 'b'])->getProp1());
+
+        $this->factory()::repository()->assert()->count(2);
     }
 
     /**

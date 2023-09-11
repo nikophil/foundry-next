@@ -46,6 +46,20 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @param Parameters $criteria
      *
+     * @return T&Proxy
+     */
+    public static function findOrCreate(array $criteria): object
+    {
+        if ($object = static::repository()->findOneBy($criteria)) {
+            return $object;
+        }
+
+        return static::createOne($criteria);
+    }
+
+    /**
+     * @param Parameters $criteria
+     *
      * @return list<T&Proxy>
      */
     public static function findBy(array $criteria): array
