@@ -68,6 +68,10 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function find($id): ?object
     {
+        if (\is_array($id) && !\array_is_list($id)) {
+            return $this->findOneBy($id);
+        }
+
         return self::wrap($this->inner->find($id));
     }
 

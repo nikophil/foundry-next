@@ -34,15 +34,21 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @return T&Proxy
      *
+     * @throws \RuntimeException If no object found
+     */
+    public static function find(mixed $criteriaOrId): object
+    {
+        return static::repository()->find($criteriaOrId) ?? throw new \RuntimeException(\sprintf('No "%s" object found for "%s".', static::class(), \get_debug_type($criteriaOrId)));
+    }
+
+    /**
+     * @return T&Proxy
+     *
      * @throws \RuntimeException If no objects exist
      */
     final public static function first(string $sortBy = 'id'): object
     {
-        if (null === $proxy = static::repository()->first($sortBy)) {
-            throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
-        }
-
-        return $proxy;
+        return static::repository()->first($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
     }
 
     /**
@@ -52,11 +58,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function last(string $sortBy = 'id'): Proxy
     {
-        if (null === $proxy = static::repository()->last($sortBy)) {
-            throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
-        }
-
-        return $proxy;
+        return static::repository()->last($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
     }
 
     /**

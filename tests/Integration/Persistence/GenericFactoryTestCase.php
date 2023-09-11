@@ -258,6 +258,25 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
+    public function find(): void
+    {
+        $object = $this->factory()->create(['prop1' => 'foo']);
+
+        $this->assertSame($object->id, $this->factory()::find($object->id)->id);
+        $this->assertSame($object->id, $this->factory()::find(['prop1' => 'foo'])->id);
+    }
+
+    /**
+     * @test
+     */
+    public function find_by(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
     public function find_or_create(): void
     {
         $this->markTestIncomplete();
@@ -326,7 +345,9 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function factory_all(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()::createMany(3);
+
+        $this->assertCount(3, $this->factory()::all());
     }
 
     /**
