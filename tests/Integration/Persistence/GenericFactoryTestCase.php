@@ -488,6 +488,24 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     }
 
     /**
+     * @test
+     */
+    public function repository_is_lazy(): void
+    {
+        $this->factory()::createOne();
+
+        $repository = $this->factory()::repository();
+
+        $object = $repository->random();
+        $object->setProp1('new value');
+        $object->_save();
+
+        self::ensureKernelShutdown();
+
+        $repository->assert()->exists(['prop1' => 'new value']);
+    }
+
+    /**
      * @return class-string<GenericModel>
      */
     protected function modelClass(): string

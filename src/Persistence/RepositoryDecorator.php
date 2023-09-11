@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\ProxyGenerator;
@@ -30,17 +31,13 @@ use Zenstruck\Foundry\ProxyGenerator;
  */
 final class RepositoryDecorator implements ObjectRepository, \Countable
 {
-    /** @var ObjectRepository<T> */
-    private ObjectRepository $inner;
-
     /**
      * @internal
      *
      * @param class-string<T> $class
      */
-    public function __construct(private ObjectManager $om, string $class)
+    public function __construct(private string $class)
     {
-        $this->inner = $om->getRepository($class);
     }
 
     public function assert(): RepositoryAssertions
@@ -73,7 +70,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return self::wrap($this->inner->find($id));
+        return self::wrap($this->inner()->find($id));
     }
 
     /**
@@ -81,7 +78,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findAll(): array
     {
-        return \array_map(ProxyGenerator::wrap(...), $this->inner->findAll()); // @phpstan-ignore-line
+        return \array_map(ProxyGenerator::wrap(...), $this->inner()->findAll()); // @phpstan-ignore-line
     }
 
     /**
@@ -92,7 +89,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return \array_map(ProxyGenerator::wrap(...), $this->inner->findBy($criteria, $orderBy, $limit, $offset)); // @phpstan-ignore-line
+        return \array_map(ProxyGenerator::wrap(...), $this->inner()->findBy($criteria, $orderBy, $limit, $offset)); // @phpstan-ignore-line
     }
 
     /**
@@ -100,12 +97,12 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return self::wrap($this->inner->findOneBy($criteria));
+        return self::wrap($this->inner()->findOneBy($criteria));
     }
 
     public function getClassName(): string
     {
-        return $this->inner->getClassName();
+        return $this->class;
     }
 
     /**
@@ -113,9 +110,11 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function count(array $criteria = []): int
     {
-        if ($this->inner instanceof EntityRepository) {
+        $inner = $this->inner();
+
+        if ($inner instanceof EntityRepository) {
             // use query to avoid loading all entities
-            return $this->inner->count($criteria);
+            return $inner->count($criteria);
         }
 
         return \count($this->findBy($criteria));
@@ -123,14 +122,16 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
     public function truncate(): void
     {
-        if ($this->om instanceof EntityManagerInterface) {
-            $this->om->createQuery("DELETE {$this->getClassName()} e")->execute();
+        $om = $this->om();
+
+        if ($om instanceof EntityManagerInterface) {
+            $om->createQuery("DELETE {$this->getClassName()} e")->execute();
 
             return;
         }
 
-        if ($this->om instanceof DocumentManager) {
-            $this->om->getDocumentCollection($this->getClassName())->deleteMany([]);
+        if ($om instanceof DocumentManager) {
+            $om->getDocumentCollection($this->getClassName())->deleteMany([]);
         }
     }
 
@@ -195,5 +196,18 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     private static function wrap(?object $object): ?object
     {
         return $object ? ProxyGenerator::wrap($object) : null;
+    }
+
+    /**
+     * @return ObjectRepository<T>
+     */
+    private function inner(): ObjectRepository
+    {
+        return $this->om()->getRepository($this->class);
+    }
+
+    private function om(): ObjectManager
+    {
+        return Configuration::instance()->persistence()->objectManagerFor($this->class);
     }
 }

@@ -75,7 +75,7 @@ abstract class PersistenceManager
      */
     public function repositoryFor(string $class): RepositoryDecorator
     {
-        return new RepositoryDecorator($this->objectManagerFor($class), $class);
+        return new RepositoryDecorator($class);
     }
 
     abstract public function hasChanges(object $object): bool;
