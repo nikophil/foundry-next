@@ -313,7 +313,16 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function random_or_create(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()->create(['prop1' => 'a']);
+
+        $this->assertSame('a', $this->factory()::randomOrCreate()->getProp1());
+        $this->assertSame('a', $this->factory()::randomOrCreate(['prop1' => 'a'])->getProp1());
+
+        $this->factory()::repository()->assert()->count(1);
+
+        $this->assertSame('b', $this->factory()::randomOrCreate(['prop1' => 'b'])->getProp1());
+
+        $this->factory()::repository()->assert()->count(2);
     }
 
     /**
