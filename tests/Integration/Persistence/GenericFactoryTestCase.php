@@ -308,7 +308,12 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function truncate(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()::createMany(3);
+        $this->factory()::repository()->assert()->count(3);
+
+        $this->factory()::truncate();
+
+        $this->factory()::repository()->assert()->empty();
     }
 
     /**

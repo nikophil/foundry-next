@@ -72,6 +72,11 @@ abstract class PersistentObjectFactory extends ObjectFactory
         return Configuration::instance()->persistence()->repositoryFor(static::class());
     }
 
+    final public static function truncate(): void
+    {
+        static::repository()->truncate();
+    }
+
     final public function create(callable|array $attributes = []): object
     {
         $object = parent::create($attributes);
