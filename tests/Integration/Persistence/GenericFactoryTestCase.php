@@ -462,7 +462,29 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function repository_assertions(): void
     {
-        $this->markTestIncomplete();
+        $assert = $this->factory()::repository()->assert();
+
+        $assert->empty();
+        $assert->empty(['prop1' => 'a']);
+
+        $this->factory()::createOne(['prop1' => 'a']);
+        $this->factory()::createOne(['prop1' => 'b']);
+        $this->factory()::createOne(['prop1' => 'b']);
+
+        $assert->notEmpty();
+        $assert->notEmpty(['prop1' => 'a']);
+        $assert->count(3);
+        $assert->count(2, ['prop1' => 'b']);
+        $assert->countGreaterThan(1);
+        $assert->countGreaterThan(1, ['prop1' => 'b']);
+        $assert->countGreaterThanOrEqual(3);
+        $assert->countGreaterThanOrEqual(2, ['prop1' => 'b']);
+        $assert->countLessThan(4);
+        $assert->countLessThan(3, ['prop1' => 'b']);
+        $assert->countLessThanOrEqual(3);
+        $assert->countLessThanOrEqual(2, ['prop1' => 'b']);
+        $assert->exists(['prop1' => 'a']);
+        $assert->notExists(['prop1' => 'c']);
     }
 
     /**
