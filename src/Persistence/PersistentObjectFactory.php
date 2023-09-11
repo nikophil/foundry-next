@@ -32,6 +32,8 @@ abstract class PersistentObjectFactory extends ObjectFactory
     private array $afterPersist = [];
 
     /**
+     * @param mixed|Parameters $criteriaOrId
+     *
      * @return T&Proxy
      *
      * @throws \RuntimeException If no object found
@@ -39,6 +41,16 @@ abstract class PersistentObjectFactory extends ObjectFactory
     public static function find(mixed $criteriaOrId): object
     {
         return static::repository()->find($criteriaOrId) ?? throw new \RuntimeException(\sprintf('No "%s" object found for "%s".', static::class(), \get_debug_type($criteriaOrId)));
+    }
+
+    /**
+     * @param Parameters $criteria
+     *
+     * @return list<T&Proxy>
+     */
+    public static function findBy(array $criteria): array
+    {
+        return static::repository()->findBy($criteria);
     }
 
     /**

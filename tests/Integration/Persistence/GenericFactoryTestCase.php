@@ -271,7 +271,12 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function find_by(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()->create(['prop1' => 'a']);
+        $this->factory()->create(['prop1' => 'b']);
+        $this->factory()->create(['prop1' => 'b']);
+
+        $this->assertCount(1, $this->factory()::findBy(['prop1' => 'a']));
+        $this->assertCount(2, $this->factory()::findBy(['prop1' => 'b']));
     }
 
     /**
