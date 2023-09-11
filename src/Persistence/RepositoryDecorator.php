@@ -145,18 +145,18 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
-     * @param positive-int $number
+     * @param positive-int $count
      * @param Parameters   $criteria
      *
      * @return list<T&Proxy>
      */
-    public function randomSet(int $number, array $criteria = []): array
+    public function randomSet(int $count, array $criteria = []): array
     {
-        if ($number < 1) {
-            throw new \InvalidArgumentException(\sprintf('$number must be positive (%d given).', $number));
+        if ($count < 1) {
+            throw new \InvalidArgumentException(\sprintf('$number must be positive (%d given).', $count));
         }
 
-        return $this->randomRange($number, $number, $criteria);
+        return $this->randomRange($count, $count, $criteria);
     }
 
     /**

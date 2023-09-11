@@ -76,6 +76,17 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @param positive-int $count
+     * @param Parameters   $criteria
+     *
+     * @return list<T&Proxy>
+     */
+    public static function randomSet(int $count, array $criteria = []): array
+    {
+        return static::repository()->randomSet($count, $criteria);
+    }
+
+    /**
      * @param Parameters $criteria
      *
      * @return list<T&Proxy>

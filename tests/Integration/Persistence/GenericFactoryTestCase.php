@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -269,6 +270,16 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
+    public function find_must_return_object(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $this->factory()::find(1);
+    }
+
+    /**
+     * @test
+     */
     public function find_by(): void
     {
         $this->factory()->create(['prop1' => 'a']);
@@ -311,6 +322,16 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
+    public function random_must_return_an_object(): void
+    {
+        $this->expectException(NotEnoughObjects::class);
+
+        $this->factory()::random();
+    }
+
+    /**
+     * @test
+     */
     public function random_or_create(): void
     {
         $this->factory()->create(['prop1' => 'a']);
@@ -330,13 +351,47 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function random_set(): void
     {
-        $this->markTestIncomplete();
+        $this->factory()->create(['prop1' => 'a']);
+        $this->factory()->create(['prop1' => 'b']);
+        $this->factory()->create(['prop1' => 'b']);
+
+        $set = $this->factory()::randomSet(2);
+
+        $this->assertCount(2, $set);
+        $this->assertContains($set[0]->getProp1(), ['a', 'b']);
+        $this->assertContains($set[1]->getProp1(), ['a', 'b']);
+
+        $set = $this->factory()::randomSet(2, ['prop1' => 'b']);
+
+        $this->assertCount(2, $set);
+        $this->assertSame('b', $set[0]->getProp1());
+        $this->assertSame('b', $set[1]->getProp1());
+    }
+
+    /**
+     * @test
+     */
+    public function random_set_requires_at_least_the_number_available(): void
+    {
+        $this->factory()::createMany(3);
+
+        $this->expectException(NotEnoughObjects::class);
+
+        $this->factory()::randomSet(4);
     }
 
     /**
      * @test
      */
     public function random_range(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function random_range_requires_at_least_the_max_available(): void
     {
         $this->markTestIncomplete();
     }
