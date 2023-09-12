@@ -49,9 +49,45 @@ function persistent_factory(string $class, array|callable $attributes = []): Per
  * @param class-string<T>                                    $class
  * @param array<string,mixed>|callable():array<string,mixed> $attributes
  *
- * @return T&Proxy
+ * @return T
  */
-function persist_object(string $class, array|callable $attributes = []): object
+function persist(string $class, array|callable $attributes = []): object
 {
-    return persistent_factory($class, $attributes)->create();
+    return persistent_factory($class, $attributes)->andPersist()->create();
+}
+
+/**
+ * @template T of object
+ *
+ * @param T $object
+ *
+ * @return T
+ */
+function save(object $object): object
+{
+    return Configuration::instance()->persistence()->managerFor($object::class)->save($object);
+}
+
+/**
+ * @template T of object
+ *
+ * @param T $object
+ *
+ * @return T
+ */
+function refresh(object &$object): object
+{
+    return Configuration::instance()->persistence()->managerFor($object::class)->refresh($object);
+}
+
+/**
+ * @template T of object
+ *
+ * @param T $object
+ *
+ * @return T
+ */
+function delete(object $object): object
+{
+    return Configuration::instance()->persistence()->managerFor($object::class)->delete($object);
 }

@@ -45,17 +45,74 @@ abstract class PersistenceManager
         return $this->config['auto_persist'];
     }
 
-    public function autoRefresh(): bool
-    {
-        return $this->config['auto_persist'];
-    }
-
     /**
      * @param class-string $class
      */
     public function supports(string $class): bool
     {
         return (bool) $this->registry->getManagerForClass($class);
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function save(object $object): object
+    {
+        $om = $this->objectManagerFor($object::class);
+        $om->persist($object);
+        $om->flush();
+
+        return $object;
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function refresh(object &$object): object
+    {
+        if ($this->hasChanges($object)) {
+            throw new \RuntimeException(\sprintf('Cannot auto refresh "%s" as there are unsaved changes. Be sure to call ->_save() or disable auto refreshing (see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#auto-refresh for details).', $object::class));
+        }
+
+        $om = $this->objectManagerFor($object::class);
+
+        if ($om->contains($object)) {
+            $om->refresh($object);
+
+            return $object;
+        }
+
+        $id = $om->getClassMetadata($object::class)->getIdentifierValues($object);
+
+        if (!$id || !$object = $om->find($object::class, $id)) {
+            throw new \RuntimeException('object no longer exists...');
+        }
+
+        return $object;
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function delete(object $object): object
+    {
+        $om = $this->objectManagerFor($object::class);
+        $om->remove($object);
+        $om->flush();
+
+        return $object;
     }
 
     /**

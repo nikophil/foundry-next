@@ -24,7 +24,7 @@ use Faker;
  */
 abstract class Factory
 {
-    /** @var list<Attributes> */
+    /** @var Attributes[] */
     private array $attributes;
 
     /**
@@ -48,7 +48,7 @@ abstract class Factory
     /**
      * @param Parameters|callable(int):Parameters $attributes
      *
-     * @return list<T>
+     * @return T[]
      */
     final public static function createMany(int $number, array|callable $attributes = []): array
     {

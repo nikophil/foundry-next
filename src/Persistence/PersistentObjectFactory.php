@@ -16,13 +16,12 @@ use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
-use Zenstruck\Foundry\ProxyGenerator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T of object
- * @extends ObjectFactory<T&Proxy>
+ * @extends ObjectFactory<T>
  *
  * @phpstan-import-type Parameters from Factory
  */
@@ -30,13 +29,13 @@ abstract class PersistentObjectFactory extends ObjectFactory
 {
     private bool $persist;
 
-    /** @var list<callable(T&Proxy):void> */
+    /** @var list<callable(T):void> */
     private array $afterPersist = [];
 
     /**
      * @param mixed|Parameters $criteriaOrId
      *
-     * @return T&Proxy
+     * @return T
      *
      * @throws \RuntimeException If no object found
      */
@@ -48,7 +47,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @param Parameters $criteria
      *
-     * @return T&Proxy
+     * @return T
      */
     public static function findOrCreate(array $criteria): object
     {
@@ -64,7 +63,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @param Parameters $criteria
      *
-     * @return T&Proxy
+     * @return T
      */
     public static function randomOrCreate(array $criteria = []): object
     {
@@ -79,7 +78,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      * @param positive-int $count
      * @param Parameters   $criteria
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public static function randomSet(int $count, array $criteria = []): array
     {
@@ -91,7 +90,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      * @param positive-int $max
      * @param Parameters   $criteria
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public static function randomRange(int $min, int $max, array $criteria = []): array
     {
@@ -101,7 +100,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @param Parameters $criteria
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public static function findBy(array $criteria): array
     {
@@ -111,7 +110,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @param Parameters $criteria
      *
-     * @return T&Proxy
+     * @return T
      */
     public static function random(array $criteria = []): object
     {
@@ -119,7 +118,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
-     * @return T&Proxy
+     * @return T
      *
      * @throws \RuntimeException If no objects exist
      */
@@ -129,17 +128,17 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
-     * @return T&Proxy
+     * @return T
      *
      * @throws \RuntimeException If no objects exist
      */
-    final public static function last(string $sortBy = 'id'): Proxy
+    final public static function last(string $sortBy = 'id'): object
     {
         return static::repository()->last($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
     }
 
     /**
-     * @return list<T&Proxy>
+     * @return T[]
      */
     final public static function all(): array
     {
@@ -171,24 +170,31 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         $object = parent::create($attributes);
         $configuration = Configuration::instance();
-        $proxy = ProxyGenerator::wrap($object);
         $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->managerFor(static::class())->autoPersist();
 
         if (!$persist) {
-            return $proxy->_disableAutoRefresh();
+            return $object;
         }
 
         if (!$configuration->isPersistenceEnabled()) {
             throw new \LogicException('Persistence cannot be used in unit tests.');
         }
 
-        $proxy->_save();
+        $configuration->persistence()->managerFor(static::class())->save($object);
 
         foreach ($this->afterPersist as $callback) {
-            $callback($proxy);
+            $callback($object);
         }
 
-        return $proxy;
+        return $object;
+    }
+
+    final public function andPersist(): static
+    {
+        $clone = clone $this;
+        $clone->persist = true;
+
+        return $clone;
     }
 
     final public function withoutPersisting(): static
@@ -200,7 +206,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
-     * @param callable(T&Proxy):void $callback
+     * @param callable(T):void $callback
      */
     final public function afterPersist(callable $callback): static
     {
@@ -214,15 +220,4 @@ abstract class PersistentObjectFactory extends ObjectFactory
      * @return class-string<T>
      */
     abstract public static function class(): string;
-
-    final protected static function normalizeParameter(string $name, mixed $value): mixed
-    {
-        $value = parent::normalizeParameter($name, $value);
-
-        if ($value instanceof Proxy) {
-            $value = $value->_object();
-        }
-
-        return $value;
-    }
 }

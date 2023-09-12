@@ -13,14 +13,16 @@ namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
-use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
-use function Zenstruck\Foundry\Persistence\persist_object;
+use function Zenstruck\Foundry\Persistence\delete;
+use function Zenstruck\Foundry\Persistence\persist;
+use function Zenstruck\Foundry\Persistence\refresh;
 use function Zenstruck\Foundry\Persistence\repository;
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -40,7 +42,6 @@ abstract class GenericFactoryTestCase extends KernelTestCase
 
         $this->assertNotNull($object->id);
         $this->assertSame('default1', $object->getProp1());
-        $this->assertSame('default1', $object->_refresh()->getProp1());
 
         $this->factory()->repository()->assert()
             ->count(1)
@@ -52,7 +53,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         $this->assertSame($object->id, $this->factory()->last()->id);
 
         $object->setProp1('new value');
-        $object->_save();
+        save($object);
 
         $this->assertSame('new value', $object->getProp1());
         $this->factory()->repository()->assert()->exists(['prop1' => 'new value']);
@@ -72,7 +73,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
 
         $this->factory()->repository()->assert()->empty();
 
-        $object->_save();
+        save($object);
 
         $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
     }
@@ -80,7 +81,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
-    public function auto_refreshes(): void
+    public function can_refresh(): void
     {
         $object = $this->factory()->create();
 
@@ -93,11 +94,12 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         // modify and save title "externally"
         $ext = $this->factory()->first();
         $ext->setProp1('external');
-        $ext->_save();
+        save($ext);
 
         self::ensureKernelShutdown();
 
-        // "calling method" triggers auto-refresh
+        refresh($object);
+
         $this->assertSame('external', $object->getProp1());
         $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
     }
@@ -105,7 +107,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     /**
      * @test
      */
-    public function cannot_auto_refresh_if_changes_detected(): void
+    public function cannot_refresh_if_there_are_unsaved_changes(): void
     {
         $object = $this->factory()->create();
 
@@ -116,84 +118,14 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         $object->setProp1('new');
 
         try {
-            $object->setProp1('new 1');
+            refresh($object);
         } catch (\RuntimeException) {
             $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
-            $object->_save();
-            $this->assertSame('new', $object->getProp1());
-            $this->factory()->repository()->assert()->exists(['prop1' => 'new']);
 
             return;
         }
 
         $this->fail('Exception not thrown');
-    }
-
-    /**
-     * @test
-     */
-    public function can_disable_auto_refresh(): void
-    {
-        $object = $this->factory()->create();
-
-        // initial data
-        $this->assertSame('default1', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
-
-        $object->_disableAutoRefresh();
-        $object->setProp1('new');
-        $object->setProp1('new 2');
-        $object->_enableAutoRefresh();
-        $object->_save();
-
-        $this->assertSame('new 2', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
-    }
-
-    /**
-     * @test
-     */
-    public function can_manually_refresh(): void
-    {
-        $object = $this->factory()->create()->_disableAutoRefresh();
-
-        // initial data
-        $this->assertSame('default1', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
-
-        self::ensureKernelShutdown();
-
-        // modify and save title "externally"
-        $ext = $this->factory()->first();
-        $ext->setProp1('external');
-        $ext->_save();
-
-        self::ensureKernelShutdown();
-
-        // "calling method" triggers auto-refresh
-        $this->assertSame('external', $object->_refresh()->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
-    }
-
-    /**
-     * @test
-     */
-    public function can_disable_auto_refresh_with_callback(): void
-    {
-        $object = $this->factory()->create();
-
-        // initial data
-        $this->assertSame('default1', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
-
-        $object->_withoutAutoRefresh(function(GenericModel&Proxy $object) {
-            $object->setProp1('new');
-            $object->setProp1('new 2');
-            $object->_save();
-        });
-
-        $this->assertSame('new 2', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
     }
 
     /**
@@ -205,7 +137,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
 
         $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
 
-        $object->_delete();
+        delete($object);
 
         $this->factory()->repository()->assert()->empty();
     }
@@ -217,11 +149,10 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     {
         repository($this->modelClass())->assert()->empty();
 
-        $object = persist_object($this->modelClass(), ['prop1' => 'value']);
+        $object = persist($this->modelClass(), ['prop1' => 'value']);
 
         $this->assertNotNull($object->id);
         $this->assertSame('value', $object->getProp1());
-        $this->assertSame('value', $object->_refresh()->getProp1());
 
         repository($this->modelClass())->assert()->count(1);
     }
@@ -482,7 +413,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
 
         $object = $repository->random();
         $object->setProp1('new value');
-        $object->_save();
+        save($object);
 
         self::ensureKernelShutdown();
 

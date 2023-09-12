@@ -12,7 +12,6 @@
 namespace Zenstruck\Foundry\Tests\Unit\Persistence;
 
 use PHPUnit\Framework\TestCase;
-use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Tests\Fixture\Entity\GenericEntity;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\GenericEntityFactory;
@@ -32,13 +31,11 @@ final class PersistentObjectFactoryTest extends TestCase
         $entity1 = GenericEntityFactory::createOne();
 
         $this->assertInstanceOf(GenericEntity::class, $entity1);
-        $this->assertInstanceOf(Proxy::class, $entity1);
         $this->assertSame('default1', $entity1->getProp1());
 
         $entity2 = GenericEntityFactory::createOne(['prop1' => 'value']);
 
         $this->assertInstanceOf(GenericEntity::class, $entity2);
-        $this->assertInstanceOf(Proxy::class, $entity2);
         $this->assertSame('value', $entity2->getProp1());
     }
 

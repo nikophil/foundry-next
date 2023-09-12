@@ -53,7 +53,7 @@ final class FactoryCollection
     /**
      * @param Parameters|callable(int):Parameters $attributes
      *
-     * @return list<T>
+     * @return T[]
      */
     public function create(array|callable $attributes = []): array
     {

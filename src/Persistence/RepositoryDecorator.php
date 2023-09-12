@@ -19,7 +19,6 @@ use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
-use Zenstruck\Foundry\ProxyGenerator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -46,7 +45,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
-     * @return (T&Proxy)|null
+     * @return T|null
      */
     public function first(string $sortBy = 'id'): ?object
     {
@@ -54,7 +53,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
-     * @return (T&Proxy)|null
+     * @return T|null
      */
     public function last(string $sortedField = 'id'): ?object
     {
@@ -62,7 +61,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
-     * @return (T&Proxy)|null
+     * @return T|null
      */
     public function find($id): ?object
     {
@@ -70,34 +69,34 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return self::wrap($this->inner()->find($id));
+        return $this->inner()->find($id);
     }
 
     /**
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public function findAll(): array
     {
-        return \array_map(ProxyGenerator::wrap(...), $this->inner()->findAll()); // @phpstan-ignore-line
+        return $this->inner()->findAll();
     }
 
     /**
      * @param ?int $limit
      * @param ?int $offset
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return \array_map(ProxyGenerator::wrap(...), $this->inner()->findBy($criteria, $orderBy, $limit, $offset)); // @phpstan-ignore-line
+        return $this->inner()->findBy($criteria, $orderBy, $limit, $offset);
     }
 
     /**
-     * @return (T&Proxy)|null
+     * @return T|null
      */
     public function findOneBy(array $criteria): ?object
     {
-        return self::wrap($this->inner()->findOneBy($criteria));
+        return $this->inner()->findOneBy($criteria);
     }
 
     public function getClassName(): string
@@ -138,7 +137,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     /**
      * @param Parameters $criteria
      *
-     * @return T&Proxy
+     * @return T
      */
     public function random(array $criteria = []): object
     {
@@ -149,7 +148,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      * @param positive-int $count
      * @param Parameters   $criteria
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public function randomSet(int $count, array $criteria = []): array
     {
@@ -165,7 +164,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      * @param positive-int $max
      * @param Parameters   $criteria
      *
-     * @return list<T&Proxy>
+     * @return T[]
      */
     public function randomRange(int $min, int $max, array $criteria = []): array
     {
@@ -186,16 +185,6 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         }
 
         return \array_slice($all, 0, \random_int($min, $max)); // @phpstan-ignore-line
-    }
-
-    /**
-     * @param ?T $object
-     *
-     * @return (T&Proxy)|null
-     */
-    private static function wrap(?object $object): ?object
-    {
-        return $object ? ProxyGenerator::wrap($object) : null;
     }
 
     /**
