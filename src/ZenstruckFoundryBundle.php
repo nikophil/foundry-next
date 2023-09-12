@@ -15,7 +15,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Zenstruck\Foundry\ORM\ORMPersistenceManager;
+use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -59,8 +59,8 @@ final class ZenstruckFoundryBundle extends AbstractBundle
                                 ->end()
                                 ->enumNode('mode')
                                     ->info('Reset mode to use with ResetDatabase trait')
-                                    ->defaultValue(ORMPersistenceManager::RESET_MODE_SCHEMA)
-                                    ->values([ORMPersistenceManager::RESET_MODE_SCHEMA, ORMPersistenceManager::RESET_MODE_MIGRATE])
+                                    ->defaultValue(ORMPersistenceStrategy::RESET_MODE_SCHEMA)
+                                    ->values([ORMPersistenceStrategy::RESET_MODE_SCHEMA, ORMPersistenceStrategy::RESET_MODE_MIGRATE])
                                 ->end()
                             ->end()
                         ->end()
@@ -114,7 +114,7 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         if (isset($bundles['DoctrineBundle'])) {
             $configurator->import('../config/orm.php');
 
-            $container->getDefinition('.zenstruck_foundry.persistence_manager.orm')
+            $container->getDefinition('.zenstruck_foundry.persistence_strategy.orm')
                 ->replaceArgument(1, $config['orm'])
             ;
         }
@@ -122,7 +122,7 @@ final class ZenstruckFoundryBundle extends AbstractBundle
         if (isset($bundles['DoctrineMongoDBBundle'])) {
             $configurator->import('../config/mongo.php');
 
-            $container->getDefinition('.zenstruck_foundry.persistence_manager.mongo')
+            $container->getDefinition('.zenstruck_foundry.persistence_strategy.mongo')
                 ->replaceArgument(1, $config['mongo'])
             ;
         }

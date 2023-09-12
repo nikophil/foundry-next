@@ -17,7 +17,6 @@
         "fakerphp/faker": "^1.23",
         "symfony/framework-bundle": "^6.3",
         "symfony/property-access": "^6.3",
-        "symfony/var-exporter": "^6.3",
         "zenstruck/assert": "^1.4"
     },
     "require-dev": {

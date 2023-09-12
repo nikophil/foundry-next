@@ -15,7 +15,7 @@ use Faker;
 use Zenstruck\Foundry\Exception\FoundryNotBooted;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Object\Mapper;
-use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
+use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -45,12 +45,12 @@ final class Configuration
         callable $instantiator,
         public readonly Mapper $mapper,
         public readonly StoryRegistry $stories,
-        private readonly ?PersistenceManagerRegistry $persistence = null,
+        private readonly ?PersistenceManager $persistence = null,
     ) {
         $this->instantiator = $instantiator;
     }
 
-    public function persistence(): PersistenceManagerRegistry
+    public function persistence(): PersistenceManager
     {
         return $this->persistence ?? throw new PersistenceNotAvailable('No persistence managers configured. Note: persistence cannot be used in unit tests.');
     }

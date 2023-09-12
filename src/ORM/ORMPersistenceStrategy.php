@@ -17,7 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
-use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
+use Zenstruck\Foundry\Persistence\PersistenceStrategy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -26,7 +26,7 @@ use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
  *
  * @method EntityManagerInterface objectManagerFor(string $class)
  */
-final class ORMPersistenceManager extends PersistenceManager
+final class ORMPersistenceStrategy extends PersistenceStrategy
 {
     public const RESET_MODE_SCHEMA = 'schema';
     public const RESET_MODE_MIGRATE = 'migrate';
@@ -86,7 +86,7 @@ final class ORMPersistenceManager extends PersistenceManager
 
     public function resetSchema(KernelInterface $kernel): void
     {
-        if (PersistenceManagerRegistry::isDAMADoctrineTestBundleEnabled()) {
+        if (PersistenceManager::isDAMADoctrineTestBundleEnabled()) {
             // not required as the DAMADoctrineTestBundle wraps each test in a transaction
             return;
         }

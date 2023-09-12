@@ -13,7 +13,7 @@ namespace Zenstruck\Foundry\Mongo;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Zenstruck\Foundry\Persistence\PersistenceManager;
+use Zenstruck\Foundry\Persistence\PersistenceStrategy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -22,7 +22,7 @@ use Zenstruck\Foundry\Persistence\PersistenceManager;
  *
  * @method DocumentManager objectManagerFor(string $class)
  */
-final class MongoPersistenceManager extends PersistenceManager
+final class MongoPersistenceStrategy extends PersistenceStrategy
 {
     public function hasChanges(object $object): bool
     {

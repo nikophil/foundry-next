@@ -11,76 +11,210 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
  */
-abstract class PersistenceManager
+final class PersistenceManager
 {
+    private static bool $hasDatabaseBeenReset = false;
+    private static bool $ormOnly = false;
+
     /**
-     * @param array<string,mixed> $config
+     * @param PersistenceStrategy[] $strategies
      */
-    public function __construct(protected readonly ManagerRegistry $registry, protected readonly array $config)
+    public function __construct(private iterable $strategies)
     {
     }
 
-    public function autoPersist(): bool
+    public static function isDAMADoctrineTestBundleEnabled(): bool
     {
-        return $this->config['auto_persist'];
+        return \class_exists(StaticDriver::class) && StaticDriver::isKeepStaticConnections();
     }
 
     /**
-     * @param class-string $class
+     * @param callable():KernelInterface $createKernel
+     * @param callable():void            $shutdownKernel
      */
-    public function supports(string $class): bool
+    public static function resetDatabase(callable $createKernel, callable $shutdownKernel): void
     {
-        return (bool) $this->registry->getManagerForClass($class);
-    }
-
-    /**
-     * @param class-string $class
-     */
-    public function objectManagerFor(string $class): ObjectManager
-    {
-        return $this->registry->getManagerForClass($class) ?? throw new \LogicException(\sprintf('No manager found for "%s".', $class));
-    }
-
-    abstract public function hasChanges(object $object): bool;
-
-    abstract public function resetDatabase(KernelInterface $kernel): void;
-
-    abstract public function resetSchema(KernelInterface $kernel): void;
-
-    abstract public function truncate(string $class): void;
-
-    /**
-     * @param array<string,scalar> $parameters
-     */
-    final protected static function runCommand(Application $application, string $command, array $parameters = [], bool $canFail = false): void
-    {
-        $exit = $application->run(
-            new ArrayInput(\array_merge(['command' => $command], $parameters)),
-            $output = new BufferedOutput()
-        );
-
-        if (0 !== $exit && !$canFail) {
-            throw new \RuntimeException(\sprintf('Error running "%s": %s', $command, $output->fetch()));
+        if (self::$hasDatabaseBeenReset) {
+            return;
         }
+
+        if ($isDAMADoctrineTestBundleEnabled = self::isDAMADoctrineTestBundleEnabled()) {
+            // disable static connections for this operation
+            // :warning: the kernel should not be booted before calling this!
+            StaticDriver::setKeepStaticConnections(false);
+        }
+
+        $kernel = $createKernel();
+        $configuration = Configuration::instance();
+        $strategyClasses = [];
+
+        foreach ($configuration->persistence()->strategies as $strategy) {
+            $strategy->resetDatabase($kernel);
+            $strategyClasses[] = $strategy::class;
+        }
+
+        if ([ORMPersistenceStrategy::class] === $strategyClasses) {
+            // enable skipping booting the kernel for resetSchema()
+            self::$ormOnly = true;
+        }
+
+        if ($isDAMADoctrineTestBundleEnabled && self::$ormOnly) {
+            // add global stories so they are available after transaction rollback
+            $configuration->stories->loadGlobalStories();
+        }
+
+        if ($isDAMADoctrineTestBundleEnabled) {
+            // re-enable static connections
+            StaticDriver::setKeepStaticConnections(true);
+        }
+
+        $shutdownKernel();
+
+        self::$hasDatabaseBeenReset = true;
     }
 
-    final protected static function application(KernelInterface $kernel): Application
+    /**
+     * @param callable():KernelInterface $createKernel
+     * @param callable():void            $shutdownKernel
+     */
+    public static function resetSchema(callable $createKernel, callable $shutdownKernel): void
     {
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
+        if (self::canSkipSchemaReset()) {
+            // can fully skip booting the kernel
+            return;
+        }
 
-        return $application;
+        $kernel = $createKernel();
+        $configuration = Configuration::instance();
+
+        foreach ($configuration->persistence()->strategies as $strategy) {
+            $strategy->resetSchema($kernel);
+        }
+
+        $configuration->stories->loadGlobalStories();
+
+        $shutdownKernel();
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function save(object $object): object
+    {
+        $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
+        $om->persist($object);
+        $om->flush();
+
+        return $object;
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function refresh(object &$object): object
+    {
+        $strategy = $this->strategyFor($object::class);
+
+        if ($strategy->hasChanges($object)) {
+            throw new \RuntimeException(\sprintf('Cannot auto refresh "%s" as there are unsaved changes. Be sure to call ->_save() or disable auto refreshing (see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#auto-refresh for details).', $object::class));
+        }
+
+        $om = $strategy->objectManagerFor($object::class);
+
+        if ($om->contains($object)) {
+            $om->refresh($object);
+
+            return $object;
+        }
+
+        $id = $om->getClassMetadata($object::class)->getIdentifierValues($object);
+
+        if (!$id || !$object = $om->find($object::class, $id)) {
+            throw new \RuntimeException('object no longer exists...');
+        }
+
+        return $object;
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param T $object
+     *
+     * @return T
+     */
+    public function delete(object $object): object
+    {
+        $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
+        $om->remove($object);
+        $om->flush();
+
+        return $object;
+    }
+
+    /**
+     * @param class-string $class
+     */
+    public function truncate(string $class): void
+    {
+        $this->strategyFor($class)->truncate($class);
+    }
+
+    /**
+     * @param class-string $class
+     */
+    public function autoPersist(string $class): bool
+    {
+        return $this->strategyFor($class)->autoPersist();
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $class
+     *
+     * @return ObjectRepository<T>
+     */
+    public function repositoryFor(string $class): ObjectRepository
+    {
+        return $this->strategyFor($class)->objectManagerFor($class)->getRepository($class);
+    }
+
+    private static function canSkipSchemaReset(): bool
+    {
+        return self::$ormOnly && self::isDAMADoctrineTestBundleEnabled();
+    }
+
+    /**
+     * @param class-string $class
+     */
+    private function strategyFor(string $class): PersistenceStrategy
+    {
+        foreach ($this->strategies as $strategy) {
+            if ($strategy->supports($class)) {
+                return $strategy;
+            }
+        }
+
+        throw new \LogicException(\sprintf('No persistence strategy found for "%s".', $class));
     }
 }

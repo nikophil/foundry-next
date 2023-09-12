@@ -35,7 +35,7 @@ return static function (ContainerConfigurator $container): void {
                 service('.zenstruck_foundry.instantiator'),
                 service('.zenstruck_foundry.mapper'),
                 service('.zenstruck_foundry.story_registry'),
-                service('.zenstruck_foundry.persistence_registry')->nullOnInvalid(),
+                service('.zenstruck_foundry.persistence_manager')->nullOnInvalid(),
             ])
             ->public()
     ;

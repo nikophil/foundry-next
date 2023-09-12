@@ -12,7 +12,7 @@
 namespace Zenstruck\Foundry\Test;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
+use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -29,7 +29,7 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        PersistenceManagerRegistry::resetDatabase(
+        PersistenceManager::resetDatabase(
             static fn() => static::bootKernel(),
             static fn() => static::ensureKernelShutdown(),
         );
@@ -45,7 +45,7 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        PersistenceManagerRegistry::resetSchema(
+        PersistenceManager::resetSchema(
             static fn() => static::bootKernel(),
             static fn() => static::ensureKernelShutdown(),
         );

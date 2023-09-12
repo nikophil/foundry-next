@@ -22,7 +22,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Zenstruck\Foundry\ORM\ORMPersistenceManager;
+use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
@@ -70,7 +70,7 @@ final class TestKernel extends Kernel
             ],
             'orm' => [
                 'reset' => [
-                    'mode' => \getenv('DATABASE_RESET_MODE') ?: ORMPersistenceManager::RESET_MODE_SCHEMA,
+                    'mode' => \getenv('DATABASE_RESET_MODE') ?: ORMPersistenceStrategy::RESET_MODE_SCHEMA,
                 ],
             ],
         ]);
