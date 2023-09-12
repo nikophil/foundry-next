@@ -33,7 +33,7 @@ function faker(): Faker\Generator
  */
 function factory(string $class, array|callable $attributes = []): ObjectFactory
 {
-    return (ProxyGenerator::anonymousFactoryFor($class, persistent: false))::new($attributes);
+    return (AnonymousFactoryGenerator::create($class, persistent: false))::new($attributes);
 }
 
 /**
@@ -63,7 +63,7 @@ function object(string $class, array|callable $attributes = []): object
  */
 function persistent_factory(string $class, array|callable $attributes = []): PersistentObjectFactory
 {
-    return (ProxyGenerator::anonymousFactoryFor($class, persistent: true))::new($attributes);
+    return (AnonymousFactoryGenerator::create($class, persistent: true))::new($attributes);
 }
 
 /**
