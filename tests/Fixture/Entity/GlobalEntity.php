@@ -12,12 +12,12 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\GlobalModel;
+use Zenstruck\Foundry\Tests\Fixture\Model\Base;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[ORM\Entity]
-class GlobalEntity extends GlobalModel
+class GlobalEntity extends Base
 {
 }
