@@ -19,8 +19,8 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
-use function Zenstruck\Foundry\persistent_object;
-use function Zenstruck\Foundry\repository;
+use function Zenstruck\Foundry\Persistence\persist_object;
+use function Zenstruck\Foundry\Persistence\repository;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -217,7 +217,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     {
         repository($this->modelClass())->assert()->empty();
 
-        $object = persistent_object($this->modelClass(), ['prop1' => 'value']);
+        $object = persist_object($this->modelClass(), ['prop1' => 'value']);
 
         $this->assertNotNull($object->id);
         $this->assertSame('value', $object->getProp1());

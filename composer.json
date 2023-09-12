@@ -40,7 +40,7 @@
     },
     "autoload": {
         "psr-4": { "Zenstruck\\Foundry\\": ["src/"] },
-        "files": ["src/functions.php"]
+        "files": ["src/functions.php", "src/Persistence/functions.php"]
     },
     "autoload-dev": {
         "psr-4": { "Zenstruck\\Foundry\\Tests\\": ["tests/"] }

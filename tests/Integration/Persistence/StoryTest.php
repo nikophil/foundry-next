@@ -25,7 +25,7 @@ use Zenstruck\Foundry\Tests\Fixture\Stories\DocumentStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\EntityStory;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
 
-use function Zenstruck\Foundry\repository;
+use function Zenstruck\Foundry\Persistence\repository;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
