@@ -150,7 +150,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function repository(): RepositoryDecorator
     {
-        return Configuration::instance()->persistence()->repositoryFor(static::class());
+        return new RepositoryDecorator(static::class());
     }
 
     /**
@@ -170,7 +170,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         $object = parent::create($attributes);
         $configuration = Configuration::instance();
-        $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->managerFor(static::class())->autoPersist();
+        $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->autoPersist(static::class());
 
         if (!$persist) {
             return $object;
@@ -180,7 +180,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
             throw new \LogicException('Persistence cannot be used in unit tests.');
         }
 
-        $configuration->persistence()->managerFor(static::class())->save($object);
+        $configuration->persistence()->save($object);
 
         foreach ($this->afterPersist as $callback) {
             $callback($object);

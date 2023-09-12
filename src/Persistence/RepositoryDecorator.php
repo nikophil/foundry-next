@@ -11,10 +11,7 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Factory;
@@ -121,17 +118,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
     public function truncate(): void
     {
-        $om = $this->om();
-
-        if ($om instanceof EntityManagerInterface) {
-            $om->createQuery("DELETE {$this->getClassName()} e")->execute();
-
-            return;
-        }
-
-        if ($om instanceof DocumentManager) {
-            $om->getDocumentCollection($this->getClassName())->deleteMany([]);
-        }
+        Configuration::instance()->persistence()->truncate($this->class);
     }
 
     /**
@@ -192,11 +179,6 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     private function inner(): ObjectRepository
     {
-        return $this->om()->getRepository($this->class);
-    }
-
-    private function om(): ObjectManager
-    {
-        return Configuration::instance()->persistence()->objectManagerFor($this->class);
+        return Configuration::instance()->persistence()->repositoryFor($this->class);
     }
 }

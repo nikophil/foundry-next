@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
+use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -42,6 +43,11 @@ final class ORMPersistenceManager extends PersistenceManager
         $em->getUnitOfWork()->computeChangeSet($em->getClassMetadata($object::class), $object);
 
         return (bool) $em->getUnitOfWork()->getEntityChangeSet($object);
+    }
+
+    public function truncate(string $class): void
+    {
+        $this->objectManagerFor($class)->createQuery("DELETE {$class} e")->execute();
     }
 
     public function resetDatabase(KernelInterface $kernel): void
@@ -80,7 +86,7 @@ final class ORMPersistenceManager extends PersistenceManager
 
     public function resetSchema(KernelInterface $kernel): void
     {
-        if (self::isDAMADoctrineTestBundleEnabled()) {
+        if (PersistenceManagerRegistry::isDAMADoctrineTestBundleEnabled()) {
             // not required as the DAMADoctrineTestBundle wraps each test in a transaction
             return;
         }

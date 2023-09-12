@@ -23,7 +23,7 @@ use Zenstruck\Foundry\Configuration;
  */
 function repository(string $class): RepositoryDecorator
 {
-    return Configuration::instance()->persistence()->repositoryFor($class);
+    return new RepositoryDecorator($class);
 }
 
 /**
@@ -65,7 +65,7 @@ function persist(string $class, array|callable $attributes = []): object
  */
 function save(object $object): object
 {
-    return Configuration::instance()->persistence()->managerFor($object::class)->save($object);
+    return Configuration::instance()->persistence()->save($object);
 }
 
 /**
@@ -77,7 +77,7 @@ function save(object $object): object
  */
 function refresh(object &$object): object
 {
-    return Configuration::instance()->persistence()->managerFor($object::class)->refresh($object);
+    return Configuration::instance()->persistence()->refresh($object);
 }
 
 /**
@@ -89,5 +89,5 @@ function refresh(object &$object): object
  */
 function delete(object $object): object
 {
-    return Configuration::instance()->persistence()->managerFor($object::class)->delete($object);
+    return Configuration::instance()->persistence()->delete($object);
 }

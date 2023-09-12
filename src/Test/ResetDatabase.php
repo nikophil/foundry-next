@@ -11,10 +11,7 @@
 
 namespace Zenstruck\Foundry\Test;
 
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Persistence\PersistenceManager;
 use Zenstruck\Foundry\Persistence\PersistenceManagerRegistry;
 
 /**
@@ -32,37 +29,10 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        if (PersistenceManagerRegistry::$hasDatabaseBeenReset) {
-            return;
-        }
-
-        if ($isDAMADoctrineTestBundleEnabled = PersistenceManager::isDAMADoctrineTestBundleEnabled()) {
-            // disable static connections for this operation
-            // :warning: the kernel should not be booted before calling this!
-            StaticDriver::setKeepStaticConnections(false);
-        }
-
-        $kernel = static::bootKernel();
-        $configuration = Configuration::instance();
-
-        if ($configuration->isPersistenceEnabled()) {
-            foreach ($configuration->persistence()->managers() as $manager) {
-                $manager->resetDatabase($kernel);
-            }
-        }
-
-        if ($isDAMADoctrineTestBundleEnabled && PersistenceManager::$ormOnly) {
-            // add global stories so they are available after transaction rollback
-            $configuration->stories->loadGlobalStories();
-        }
-
-        if ($isDAMADoctrineTestBundleEnabled) {
-            // re-enable static connections
-            StaticDriver::setKeepStaticConnections(true);
-        }
-
-        static::ensureKernelShutdown();
-        PersistenceManagerRegistry::$hasDatabaseBeenReset = true;
+        PersistenceManagerRegistry::resetDatabase(
+            static fn() => static::bootKernel(),
+            static fn() => static::ensureKernelShutdown(),
+        );
     }
 
     /**
@@ -75,22 +45,9 @@ trait ResetDatabase
             throw new \RuntimeException(\sprintf('The "%s" trait can only be used on TestCases that extend "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        if (PersistenceManager::$ormOnly && PersistenceManager::isDAMADoctrineTestBundleEnabled()) {
-            // can fully skip booting the kernel
-            return;
-        }
-
-        $kernel = static::bootKernel();
-        $configuration = Configuration::instance();
-
-        if ($configuration->isPersistenceEnabled()) {
-            foreach ($configuration->persistence()->managers() as $manager) {
-                $manager->resetSchema($kernel);
-            }
-
-            $configuration->stories->loadGlobalStories();
-        }
-
-        static::ensureKernelShutdown();
+        PersistenceManagerRegistry::resetSchema(
+            static fn() => static::bootKernel(),
+            static fn() => static::ensureKernelShutdown(),
+        );
     }
 }

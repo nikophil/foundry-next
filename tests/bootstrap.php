@@ -25,7 +25,7 @@ $fs->remove(__DIR__.'/../var');
 
 (new Dotenv())->usePutenv()->loadEnv(__DIR__.'/../.env');
 
-if (\getenv('DATABASE_URL') && ORMPersistenceManager::RESET_MODE_MIGRATE === \getenv('RESET_DATABASE_MODE')) {
+if (\getenv('DATABASE_URL') && ORMPersistenceManager::RESET_MODE_MIGRATE === \getenv('DATABASE_RESET_MODE')) {
     $fs->remove(__DIR__.'/Fixture/Migrations');
     $fs->mkdir(__DIR__.'/Fixture/Migrations');
 

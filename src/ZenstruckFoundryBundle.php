@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Zenstruck\Foundry\ORM\ORMPersistenceManager;
-use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -110,10 +109,6 @@ final class ZenstruckFoundryBundle extends AbstractBundle
 
         if (isset($bundles['DoctrineBundle']) || isset($bundles['DoctrineMongoDBBundle'])) {
             $configurator->import('../config/persistence.php');
-        }
-
-        if (isset($bundles['DoctrineBundle']) && !isset($bundles['DoctrineMongoDBBundle'])) {
-            PersistenceManager::$ormOnly = true;
         }
 
         if (isset($bundles['DoctrineBundle'])) {

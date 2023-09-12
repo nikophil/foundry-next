@@ -38,6 +38,11 @@ final class MongoPersistenceManager extends PersistenceManager
         return (bool) $dm->getUnitOfWork()->getDocumentChangeSet($object);
     }
 
+    public function truncate(string $class): void
+    {
+        $this->objectManagerFor($class)->getDocumentCollection($class)->deleteMany([]);
+    }
+
     public function resetDatabase(KernelInterface $kernel): void
     {
         // noop
