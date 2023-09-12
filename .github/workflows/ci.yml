@@ -86,7 +86,7 @@ jobs:
         run: vendor/bin/phpunit
         shell: bash
         env:
-          DATABASE_MIGRATE_MODE: migrate
+          DATABASE_RESET_MODE: migrate
 
       - name: Test with "dama"
         if: contains(matrix.database, 'sql')
@@ -98,7 +98,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.dama.xml.dist
         shell: bash
         env:
-          DATABASE_MIGRATE_MODE: migrate
+          DATABASE_RESET_MODE: migrate
 
   code-coverage:
     name: Code Coverage
