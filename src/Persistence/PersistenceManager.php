@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Persistence;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Configuration;
@@ -28,6 +29,8 @@ final class PersistenceManager
 {
     private static bool $hasDatabaseBeenReset = false;
     private static bool $ormOnly = false;
+
+    private bool $flush = true;
 
     /**
      * @param PersistenceStrategy[] $strategies
@@ -142,9 +145,34 @@ final class PersistenceManager
     {
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->persist($object);
-        $om->flush();
+        $this->flush($om);
 
         return $object;
+    }
+
+    /**
+     * @param callable():void $callback
+     */
+    public function flushAfter(callable $callback): void
+    {
+        $this->flush = false;
+
+        $callback();
+
+        $this->flush = true;
+
+        foreach ($this->strategies as $strategy) {
+            foreach ($strategy->objectManagers() as $om) {
+                $this->flush($om);
+            }
+        }
+    }
+
+    public function flush(ObjectManager $om): void
+    {
+        if ($this->flush) {
+            $om->flush();
+        }
     }
 
     /**
@@ -190,7 +218,7 @@ final class PersistenceManager
     {
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->remove($object);
-        $om->flush();
+        $this->flush($om);
 
         return $object;
     }

@@ -91,3 +91,11 @@ function delete(object $object): object
 {
     return Configuration::instance()->persistence()->delete($object);
 }
+
+/**
+ * @param callable():void $callback
+ */
+function flush_after(callable $callback): void
+{
+    Configuration::instance()->persistence()->flushAfter($callback);
+}

@@ -19,6 +19,7 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 use function Zenstruck\Foundry\Persistence\delete;
+use function Zenstruck\Foundry\Persistence\flush_after;
 use function Zenstruck\Foundry\Persistence\persist;
 use function Zenstruck\Foundry\Persistence\refresh;
 use function Zenstruck\Foundry\Persistence\repository;
@@ -418,6 +419,22 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         self::ensureKernelShutdown();
 
         $repository->assert()->exists(['prop1' => 'new value']);
+    }
+
+    /**
+     * @test
+     */
+    public function flush_after(): void
+    {
+        $this->factory()::repository()->assert()->empty();
+
+        flush_after(function() {
+            $this->factory()::createOne();
+
+            $this->factory()::repository()->assert()->empty();
+        });
+
+        $this->factory()::repository()->assert()->count(1);
     }
 
     /**

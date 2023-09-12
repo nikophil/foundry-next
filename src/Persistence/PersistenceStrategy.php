@@ -53,6 +53,14 @@ abstract class PersistenceStrategy
         return $this->registry->getManagerForClass($class) ?? throw new \LogicException(\sprintf('No manager found for "%s".', $class));
     }
 
+    /**
+     * @return ObjectManager[]
+     */
+    public function objectManagers(): array
+    {
+        return $this->registry->getManagers();
+    }
+
     abstract public function hasChanges(object $object): bool;
 
     abstract public function resetDatabase(KernelInterface $kernel): void;
