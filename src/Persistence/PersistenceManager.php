@@ -15,7 +15,9 @@ use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
+use Zenstruck\Foundry\Tests\Fixture\TestKernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -59,7 +61,18 @@ final class PersistenceManager
         $configuration = Configuration::instance();
         $strategyClasses = [];
 
-        foreach ($configuration->persistence()->strategies as $strategy) {
+        try {
+            $strategies = $configuration->persistence()->strategies;
+        } catch (PersistenceNotAvailable $e) {
+            if (!\class_exists(TestKernel::class)) {
+                throw $e;
+            }
+
+            // allow this to fail if running foundry test suite
+            return;
+        }
+
+        foreach ($strategies as $strategy) {
             $strategy->resetDatabase($kernel);
             $strategyClasses[] = $strategy::class;
         }
@@ -98,7 +111,18 @@ final class PersistenceManager
         $kernel = $createKernel();
         $configuration = Configuration::instance();
 
-        foreach ($configuration->persistence()->strategies as $strategy) {
+        try {
+            $strategies = $configuration->persistence()->strategies;
+        } catch (PersistenceNotAvailable $e) {
+            if (!\class_exists(TestKernel::class)) {
+                throw $e;
+            }
+
+            // allow this to fail if running foundry test suite
+            return;
+        }
+
+        foreach ($strategies as $strategy) {
             $strategy->resetSchema($kernel);
         }
 
