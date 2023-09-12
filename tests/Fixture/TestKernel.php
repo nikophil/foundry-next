@@ -75,9 +75,9 @@ final class TestKernel extends Kernel
             ],
         ]);
 
-        if ($dbUrl = \getenv('DATABASE_URL')) {
+        if (\getenv('DATABASE_URL')) {
             $c->loadFromExtension('doctrine', [
-                'dbal' => ['url' => \getenv('DATABASE_URL')],
+                'dbal' => ['url' => '%env(resolve:DATABASE_URL)%'],
                 'orm' => [
                     'auto_generate_proxy_classes' => true,
                     'auto_mapping' => true,

@@ -44,6 +44,25 @@
     "autoload-dev": {
         "psr-4": { "Zenstruck\\Foundry\\Tests\\": ["tests/"] }
     },
+    "scripts": {
+        "test": [
+            "@test-schema-no-dama",
+            "@test-migrate-no-dama",
+            "@test-schema-dama",
+            "@test-migrate-dama"
+        ],
+        "test-schema-no-dama": "DATABASE_RESET_MODE=schema vendor/bin/phpunit",
+        "test-migrate-no-dama": "DATABASE_RESET_MODE=migrate vendor/bin/phpunit",
+        "test-schema-dama": "DATABASE_RESET_MODE=schema vendor/bin/phpunit -c phpunit.dama.xml.dist",
+        "test-migrate-dama": "DATABASE_RESET_MODE=migrate vendor/bin/phpunit -c phpunit.dama.xml.dist"
+    },
+    "scripts-descriptions": {
+        "test": "Run all test permutations",
+        "test-schema-no-dama": "Test with schema reset (no dama/doctrine-test-bundle)",
+        "test-migrate-no-dama": "Test with migrations reset (no dama/doctrine-test-bundle)",
+        "test-schema-dama": "Test with schema reset and dama/doctrine-test-bundle",
+        "test-migrate-dama": "Test with migrations reset and dama/doctrine-test-bundle"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
