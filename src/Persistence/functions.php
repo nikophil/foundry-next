@@ -31,8 +31,8 @@ function repository(string $class): RepositoryDecorator
  *
  * @template T of object
  *
- * @param class-string<T>                                    $class
- * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
  *
  * @return PersistentObjectFactory<T>
  */
@@ -46,8 +46,8 @@ function persistent_factory(string $class, array|callable $attributes = []): Per
  *
  * @template T of object
  *
- * @param class-string<T>                                    $class
- * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
  *
  * @return T
  */

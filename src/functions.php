@@ -23,8 +23,8 @@ function faker(): Faker\Generator
  *
  * @template T of object
  *
- * @param class-string<T>                                    $class
- * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
  *
  * @return ObjectFactory<T>
  */
@@ -38,8 +38,8 @@ function factory(string $class, array|callable $attributes = []): ObjectFactory
  *
  * @template T of object
  *
- * @param class-string<T>                                    $class
- * @param array<string,mixed>|callable():array<string,mixed> $attributes
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
  *
  * @return T
  */

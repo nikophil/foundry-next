@@ -20,7 +20,7 @@ use Faker;
  *
  * @template T
  * @phpstan-type Parameters = array<string,mixed>
- * @phpstan-type Attributes = Parameters|callable():Parameters
+ * @phpstan-type Attributes = Parameters|callable(int):Parameters
  */
 abstract class Factory
 {
@@ -99,10 +99,17 @@ abstract class Factory
      */
     final protected function normalizeAttributes(array|callable $attributes = []): array
     {
+        $index = 1;
+
+        if (\is_array($attributes)) {
+            $index = $attributes['__index'] ?? $index;
+            unset($attributes['__index']);
+        }
+
         $attributes = [$this->defaults(), ...$this->attributes, $attributes];
 
         $parameters = \array_merge(
-            ...\array_map(static fn(array|callable $attr) => \is_callable($attr) ? $attr() : $attr, $attributes)
+            ...\array_map(static fn(array|callable $attr) => \is_callable($attr) ? $attr($index) : $attr, $attributes)
         );
 
         // convert lazy values

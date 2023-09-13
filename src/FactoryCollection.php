@@ -16,7 +16,7 @@ namespace Zenstruck\Foundry;
  *
  * @template T
  *
- * @phpstan-import-type Parameters from Factory
+ * @phpstan-import-type Attributes from Factory
  */
 final class FactoryCollection
 {
@@ -51,7 +51,7 @@ final class FactoryCollection
     }
 
     /**
-     * @param Parameters|callable(int):Parameters $attributes
+     * @param Attributes $attributes
      *
      * @return T[]
      */
@@ -61,7 +61,7 @@ final class FactoryCollection
 
         foreach ($this->all() as $i => $factory) {
             $objects[] = $factory->create(
-                \is_callable($attributes) ? $attributes($i + 1) : $attributes
+                \array_merge(\is_callable($attributes) ? $attributes($i + 1) : $attributes, ['__index' => $i + 1])
             );
         }
 
