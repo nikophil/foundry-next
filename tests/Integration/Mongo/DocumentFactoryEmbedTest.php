@@ -14,6 +14,12 @@ namespace Zenstruck\Foundry\Tests\Integration\Mongo;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
+use Zenstruck\Foundry\Tests\Fixture\Document\Document;
+use Zenstruck\Foundry\Tests\Fixture\Document\Embeddable;
+use function Zenstruck\Foundry\factory;
+use function Zenstruck\Foundry\Persistence\persist;
+use function Zenstruck\Foundry\Persistence\persistent_factory;
+use function Zenstruck\Foundry\Persistence\repository;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -27,7 +33,16 @@ final class DocumentFactoryEmbedTest extends KernelTestCase
      */
     public function embed_one(): void
     {
-        $this->markTestIncomplete();
+        $document = persist(Document::class, ['embeddable' => factory(Embeddable::class, ['prop1' => 'value1'])]);
+
+        $this->assertSame('value1', $document->getEmbeddable()?->getProp1());
+        repository(Document::class)->assert()->count(1);
+
+        self::ensureKernelShutdown();
+
+        $document = persistent_factory(Document::class)::first();
+
+        $this->assertSame('value1', $document->getEmbeddable()?->getProp1());
     }
 
     /**
@@ -35,6 +50,15 @@ final class DocumentFactoryEmbedTest extends KernelTestCase
      */
     public function embed_many(): void
     {
-        $this->markTestIncomplete();
+        $document = persist(Document::class, ['embeddables' => factory(Embeddable::class, ['prop1' => 'value1'])->many(2)]);
+
+        $this->assertCount(2, $document->getEmbeddables());
+        repository(Document::class)->assert()->count(1);
+
+        self::ensureKernelShutdown();
+
+        $document = persistent_factory(Document::class)::first();
+
+        $this->assertCount(2, $document->getEmbeddables());
     }
 }

@@ -136,6 +136,10 @@ abstract class Factory
             $value = $value->create();
         }
 
+        if ($value instanceof FactoryCollection) {
+            $value = $value->create();
+        }
+
         return $value;
     }
 
