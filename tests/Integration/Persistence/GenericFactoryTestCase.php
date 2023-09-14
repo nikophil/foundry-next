@@ -13,9 +13,9 @@ namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
-use Zenstruck\Foundry\Tests\Fixture\Factories\GenericModelFactory;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 use function Zenstruck\Foundry\Persistence\delete;
@@ -445,5 +445,8 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         return $this->factory()::class();
     }
 
-    abstract protected function factory(): GenericModelFactory;
+    /**
+     * @return PersistentObjectFactory<GenericModel>
+     */
+    abstract protected function factory(): PersistentObjectFactory;
 }

@@ -37,6 +37,11 @@ abstract class PersistenceStrategy
         return $this->config['auto_persist'];
     }
 
+    public function autoRefreshProxies(): bool
+    {
+        return $this->config['auto_refresh_proxies'];
+    }
+
     /**
      * @param class-string $class
      */

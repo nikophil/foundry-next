@@ -42,6 +42,9 @@ abstract class ObjectFactory extends Factory
      */
     abstract public static function class(): string;
 
+    /**
+     * @final
+     */
     public function create(callable|array $attributes = []): object
     {
         $parameters = $this->normalizeAttributes($attributes);
@@ -130,9 +133,11 @@ abstract class ObjectFactory extends Factory
     }
 
     /**
+     * @final
+     *
      * @param callable(T,Parameters):void $callback
      */
-    final public function afterInstantiate(callable $callback): static
+    public function afterInstantiate(callable $callback): static
     {
         $clone = clone $this;
         $clone->afterInstantiate[] = $callback;

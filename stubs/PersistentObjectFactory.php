@@ -4,7 +4,7 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 use function PHPStan\Testing\assertType;
 
-final class User
+class User
 {
     public string $name;
 }

@@ -39,7 +39,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @throws \RuntimeException If no object found
      */
-    public static function find(mixed $criteriaOrId): object
+    final public static function find(mixed $criteriaOrId): object
     {
         return static::repository()->find($criteriaOrId) ?? throw new \RuntimeException(\sprintf('No "%s" object found for "%s".', static::class(), \get_debug_type($criteriaOrId)));
     }
@@ -49,7 +49,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T
      */
-    public static function findOrCreate(array $criteria): object
+    final public static function findOrCreate(array $criteria): object
     {
         try {
             $object = static::repository()->findOneBy($criteria);
@@ -65,7 +65,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T
      */
-    public static function randomOrCreate(array $criteria = []): object
+    final public static function randomOrCreate(array $criteria = []): object
     {
         try {
             return static::repository()->random($criteria);
@@ -80,7 +80,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T[]
      */
-    public static function randomSet(int $count, array $criteria = []): array
+    final public static function randomSet(int $count, array $criteria = []): array
     {
         return static::repository()->randomSet($count, $criteria);
     }
@@ -92,7 +92,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T[]
      */
-    public static function randomRange(int $min, int $max, array $criteria = []): array
+    final public static function randomRange(int $min, int $max, array $criteria = []): array
     {
         return static::repository()->randomRange($min, $max, $criteria);
     }
@@ -102,7 +102,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T[]
      */
-    public static function findBy(array $criteria): array
+    final public static function findBy(array $criteria): array
     {
         return static::repository()->findBy($criteria);
     }
@@ -112,7 +112,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      *
      * @return T
      */
-    public static function random(array $criteria = []): object
+    final public static function random(array $criteria = []): object
     {
         return static::repository()->random($criteria);
     }
@@ -169,8 +169,17 @@ abstract class PersistentObjectFactory extends ObjectFactory
     final public function create(callable|array $attributes = []): object
     {
         $object = parent::create($attributes);
+
+        if ($this instanceof PersistentProxyObjectFactory) {
+            $object = ProxyGenerator::create($object);
+        }
+
         $configuration = Configuration::instance();
         $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->autoPersist(static::class());
+
+        if ($object instanceof Proxy) {
+            $object->_disableAutoRefresh();
+        }
 
         if (!$persist) {
             return $object;
@@ -184,6 +193,10 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         foreach ($this->afterPersist as $callback) {
             $callback($object);
+        }
+
+        if ($object instanceof Proxy) {
+            $object->_resetAutoRefresh(); // @phpstan-ignore-line
         }
 
         return $object;
