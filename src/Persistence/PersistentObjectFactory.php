@@ -215,9 +215,4 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         return $clone;
     }
-
-    /**
-     * @return class-string<T>
-     */
-    abstract public static function class(): string;
 }
