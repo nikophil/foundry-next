@@ -23,7 +23,7 @@ final class UserFactory extends PersistentObjectFactory
         return User::class;
     }
 
-    protected function defaults(): array
+    protected function defaults(): array|callable
     {
         return [];
     }

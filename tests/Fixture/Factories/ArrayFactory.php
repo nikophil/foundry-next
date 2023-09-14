@@ -23,7 +23,7 @@ final class ArrayFactory extends BaseArrayFactory
     {
     }
 
-    protected function defaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'router' => (bool) $this->router,

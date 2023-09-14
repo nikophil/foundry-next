@@ -151,7 +151,7 @@ abstract class Factory
     }
 
     /**
-     * @return Parameters
+     * @return Attributes
      */
-    abstract protected function defaults(): array;
+    abstract protected function defaults(): array|callable;
 }
