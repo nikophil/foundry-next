@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Symfony\Component\VarExporter\Internal\LazyObjectState;
 use Zenstruck\Foundry\Configuration;
 
 /**
@@ -18,7 +19,8 @@ use Zenstruck\Foundry\Configuration;
  *
  * @internal
  *
- * @method object initializeLazyObject()
+ * @property LazyObjectState $lazyObjectState
+ * @method   object          initializeLazyObject()
  */
 trait IsProxy
 {
@@ -59,16 +61,19 @@ trait IsProxy
 
     public function _refresh(): static
     {
-        $object = $this->_real();
+        $this->initializeLazyObject();
+        $object = $this->lazyObjectState->realInstance;
 
         Configuration::instance()->persistence()->refresh($object);
+
+        $this->lazyObjectState->realInstance = $object;
 
         return $this;
     }
 
     public function _delete(): static
     {
-        Configuration::instance()->persistence()->save($this->_real());
+        Configuration::instance()->persistence()->delete($this->_real());
 
         return $this;
     }
@@ -80,7 +85,7 @@ trait IsProxy
 
     public function _repo(): RepositoryDecorator
     {
-        return new RepositoryDecorator(parent::class);
+        return new RepositoryDecorator(parent::class, true);
     }
 
     public function _resetAutoRefresh(): void
@@ -90,7 +95,7 @@ trait IsProxy
 
     private function _autoRefresh(): void
     {
-        if (null === $this->_autoRefresh && !Configuration::instance()->isPersistenceEnabled()) {
+        if (false === $this->_autoRefresh) {
             // unit test
             return;
         }

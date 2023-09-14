@@ -99,8 +99,9 @@ abstract class GenericFactoryTestCase extends KernelTestCase
 
         self::ensureKernelShutdown();
 
-        refresh($object);
+        $refreshed = refresh($object);
 
+        $this->assertSame($refreshed, $object);
         $this->assertSame('external', $object->getProp1());
         $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
     }

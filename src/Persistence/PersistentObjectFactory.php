@@ -150,7 +150,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function repository(): RepositoryDecorator
     {
-        return new RepositoryDecorator(static::class());
+        return new RepositoryDecorator(static::class(), \is_a(static::class, PersistentProxyObjectFactory::class, true));
     }
 
     /**

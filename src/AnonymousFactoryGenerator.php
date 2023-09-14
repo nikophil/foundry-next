@@ -11,8 +11,6 @@
 
 namespace Zenstruck\Foundry;
 
-use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
-
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -22,21 +20,21 @@ final class AnonymousFactoryGenerator
 {
     /**
      * @template T of object
+     * @template F of Factory<T>
      *
      * @param class-string<T> $class
+     * @param class-string<F> $factoryClass
      *
-     * @return ($persistent is true ? class-string<PersistentObjectFactory<T>> : class-string<ObjectFactory<T>>)
+     * @return class-string<F>
      */
-    public static function create(string $class, bool $persistent): string
+    public static function create(string $class, string $factoryClass): string
     {
-        $anonymousClassName = $persistent ? 'FoundryAnonymousPersistentFactory_' : 'FoundryAnonymousFactory_';
+        $anonymousClassName = \sprintf('FoundryAnonymous%s_', (new \ReflectionClass($factoryClass))->getShortName());
         $anonymousClassName .= \str_replace('\\', '', $class);
         $anonymousClassName = \preg_replace('/\W/', '', $anonymousClassName); // sanitize for anonymous classes
 
-        /** @var class-string<ObjectFactory<T>> $anonymousClassName */
+        /** @var class-string<F> $anonymousClassName */
         if (!\class_exists($anonymousClassName)) {
-            $factoryClass = $persistent ? PersistentObjectFactory::class : ObjectFactory::class;
-
             $anonymousClassCode = <<<CODE
                 /**
                  * @internal

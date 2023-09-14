@@ -32,7 +32,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      *
      * @param class-string<T> $class
      */
-    public function __construct(private string $class)
+    public function __construct(private string $class, private bool $proxy)
     {
     }
 
@@ -66,7 +66,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return $this->inner()->find($id);
+        return $this->wrap($this->inner()->find($id));
     }
 
     /**
@@ -74,7 +74,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findAll(): array
     {
-        return $this->inner()->findAll();
+        return $this->wrap($this->inner()->findAll());
     }
 
     /**
@@ -85,7 +85,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->inner()->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->wrap($this->inner()->findBy($criteria, $orderBy, $limit, $offset));
     }
 
     /**
@@ -93,7 +93,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->inner()->findOneBy($criteria);
+        return $this->wrap($this->inner()->findOneBy($criteria));
     }
 
     public function getClassName(): string
@@ -180,5 +180,23 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     private function inner(): ObjectRepository
     {
         return Configuration::instance()->persistence()->repositoryFor($this->class);
+    }
+
+    /**
+     * @param object[]|object|null $object
+     *
+     * @return ($object is null ? null : ($object is array ? T[] : T))
+     */
+    private function wrap(object|array|null $object): object|array|null
+    {
+        if (\is_array($object)) {
+            return \array_map($this->wrap(...), $object); // @phpstan-ignore-line
+        }
+
+        if (!$object) {
+            return null;
+        }
+
+        return $this->proxy ? ProxyGenerator::create($object) : $object; // @phpstan-ignore-line
     }
 }

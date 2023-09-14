@@ -23,7 +23,19 @@ use Zenstruck\Foundry\Configuration;
  */
 function repository(string $class): RepositoryDecorator
 {
-    return new RepositoryDecorator($class);
+    return new RepositoryDecorator($class, false);
+}
+
+/**
+ * @template T of object
+ *
+ * @param class-string<T> $class
+ *
+ * @return RepositoryDecorator<T&Proxy<T>>
+ */
+function proxy_repository(string $class): RepositoryDecorator
+{
+    return new RepositoryDecorator($class, true); // @phpstan-ignore-line
 }
 
 /**
@@ -38,7 +50,7 @@ function repository(string $class): RepositoryDecorator
  */
 function persistent_factory(string $class, array|callable $attributes = []): PersistentObjectFactory
 {
-    return (AnonymousFactoryGenerator::create($class, persistent: true))::new($attributes);
+    return AnonymousFactoryGenerator::create($class, PersistentObjectFactory::class)::new($attributes);
 }
 
 /**
@@ -54,6 +66,36 @@ function persistent_factory(string $class, array|callable $attributes = []): Per
 function persist(string $class, array|callable $attributes = []): object
 {
     return persistent_factory($class, $attributes)->andPersist()->create();
+}
+
+/**
+ * Create an anonymous "persistent proxy" factory for the given class.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
+ *
+ * @return PersistentProxyObjectFactory<T>
+ */
+function proxy_factory(string $class, array|callable $attributes = []): PersistentProxyObjectFactory
+{
+    return AnonymousFactoryGenerator::create($class, PersistentProxyObjectFactory::class)::new($attributes);
+}
+
+/**
+ * Create a "persistent proxy" object with an anonymous factory.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
+ *
+ * @return T&Proxy<T>
+ */
+function proxy_persist(string $class, array|callable $attributes = []): object
+{
+    return proxy_factory($class, $attributes)->andPersist()->create();
 }
 
 /**

@@ -30,7 +30,7 @@ function faker(): Faker\Generator
  */
 function factory(string $class, array|callable $attributes = []): ObjectFactory
 {
-    return (AnonymousFactoryGenerator::create($class, persistent: false))::new($attributes);
+    return AnonymousFactoryGenerator::create($class, ObjectFactory::class)::new($attributes);
 }
 
 /**
