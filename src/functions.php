@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
+use Zenstruck\Foundry\Object\Mapper;
 
 function faker(): Faker\Generator
 {
@@ -46,4 +47,20 @@ function factory(string $class, array|callable $attributes = []): ObjectFactory
 function object(string $class, array|callable $attributes = []): object
 {
     return factory($class, $attributes)->create();
+}
+
+/**
+ * "Force set" (using reflection) an object property.
+ */
+function set(object $object, string $property, mixed $value): void
+{
+    Mapper::set($object, $property, $value);
+}
+
+/**
+ * "Force get" (using reflection) an object property.
+ */
+function get(object $object, string $property): mixed
+{
+    return Mapper::get($object, $property);
 }

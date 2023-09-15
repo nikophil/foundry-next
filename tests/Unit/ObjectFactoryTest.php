@@ -20,7 +20,9 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\Object2Factory;
 use Zenstruck\Foundry\Tests\Fixture\Object1;
 
 use function Zenstruck\Foundry\factory;
+use function Zenstruck\Foundry\get;
 use function Zenstruck\Foundry\object;
+use function Zenstruck\Foundry\set;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -316,6 +318,20 @@ final class ObjectFactoryTest extends TestCase
         $this->assertSame('value1-constructor', $objects[0]->getProp1());
         $this->assertSame('value2-constructor', $objects[1]->getProp1());
         $this->assertSame('value3-constructor', $objects[2]->getProp1());
+    }
+
+    /**
+     * @test
+     */
+    public function set_and_get_functions(): void
+    {
+        $object = new Object1('value');
+
+        $this->assertSame('value-constructor', get($object, 'prop1'));
+
+        set($object, 'prop1', 'new-value');
+
+        $this->assertSame('new-value', get($object, 'prop1'));
     }
 
     /**

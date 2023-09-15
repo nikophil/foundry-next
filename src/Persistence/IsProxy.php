@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Persistence;
 
 use Symfony\Component\VarExporter\Internal\LazyObjectState;
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Object\Mapper;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -74,6 +75,18 @@ trait IsProxy
     public function _delete(): static
     {
         Configuration::instance()->persistence()->delete($this->_real());
+
+        return $this;
+    }
+
+    public function _get(string $property): mixed
+    {
+        return Mapper::get($this->_real(), $property);
+    }
+
+    public function _set(string $property, mixed $value): static
+    {
+        Mapper::set($this->_real(), $property, $value);
 
         return $this;
     }

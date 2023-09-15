@@ -143,9 +143,20 @@ final class Mapper
         return $clone;
     }
 
-    private static function set(object $object, string $property, mixed $value): void
+    /**
+     * @internal
+     */
+    public static function set(object $object, string $property, mixed $value): void
     {
         self::accessibleProperty($object, $property)->setValue($object, $value);
+    }
+
+    /**
+     * @internal
+     */
+    public static function get(object $object, string $property): mixed
+    {
+        return self::accessibleProperty($object, $property)->getValue($object);
     }
 
     private static function accessibleProperty(object $object, string $name): \ReflectionProperty

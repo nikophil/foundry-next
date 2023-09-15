@@ -258,5 +258,19 @@ abstract class GenericProxyFactoryTestCase extends GenericFactoryTestCase
         $this->assertSame('custom', proxy_repository($class)->first()?->_refresh()->getProp1());
     }
 
+    /**
+     * @test
+     */
+    public function can_force_set_and_get(): void
+    {
+        $object = $this->factory()::createOne();
+
+        $this->assertSame('default1', $object->_get('prop1'));
+
+        $object->_set('prop1', 'new value')->_save();
+
+        $object->_repo()->assert()->exists(['prop1' => 'new value']);
+    }
+
     abstract protected function factory(): GenericModelProxyFactory; // @phpstan-ignore-line
 }

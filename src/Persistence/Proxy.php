@@ -33,6 +33,10 @@ interface Proxy
 
     public function _delete(): static;
 
+    public function _get(string $property): mixed;
+
+    public function _set(string $property, mixed $value): static;
+
     /**
      * @return T
      */
