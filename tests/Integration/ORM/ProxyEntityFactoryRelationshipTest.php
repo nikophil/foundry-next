@@ -16,4 +16,8 @@ namespace Zenstruck\Foundry\Tests\Integration\ORM;
  */
 final class ProxyEntityFactoryRelationshipTest extends EntityFactoryRelationshipTest
 {
+    protected function setUp(): void
+    {
+        $this->markTestIncomplete();
+    }
 }

@@ -97,6 +97,20 @@ final class ORMPersistenceStrategy extends PersistenceStrategy
         $this->createSchema($application);
     }
 
+    public function inverseRelationshipFieldFor(string $owner, string $inverse): ?string
+    {
+        $metadata = $this->objectManagerFor($owner)->getClassMetadata($owner);
+
+        foreach ($metadata->getAssociationNames() as $association) {
+            // ensure 1-n and associated class matches
+            if ($metadata->isSingleValuedAssociation($association) && $metadata->getAssociationTargetClass($association) === $inverse) {
+                return $association;
+            }
+        }
+
+        return null;
+    }
+
     private function createSchema(Application $application): void
     {
         if (self::RESET_MODE_MIGRATE === $this->config['reset']['mode']) {

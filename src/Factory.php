@@ -99,14 +99,17 @@ abstract class Factory
      */
     final protected function normalizeAttributes(array|callable $attributes = []): array
     {
+        $attributes = [$this->defaults(), ...$this->attributes, $attributes];
         $index = 1;
 
-        if (\is_array($attributes)) {
-            $index = $attributes['__index'] ?? $index;
-            unset($attributes['__index']);
+        // find if an index was set by factory collection
+        foreach ($attributes as $i => $attr) {
+            if (\is_array($attr) && isset($attr['__index'])) {
+                $index = $attr['__index'];
+                unset($attributes[$i]);
+                break;
+            }
         }
-
-        $attributes = [$this->defaults(), ...$this->attributes, $attributes];
 
         $parameters = \array_merge(
             ...\array_map(static fn(array|callable $attr) => \is_callable($attr) ? $attr($index) : $attr, $attributes)
@@ -120,7 +123,7 @@ abstract class Factory
 
         // normalize values
         foreach ($parameters as $key => &$value) {
-            $value = static::normalizeParameter($key, $value);
+            $value = $this->normalizeParameter($key, $value);
         }
 
         return $parameters;
@@ -137,17 +140,29 @@ abstract class Factory
     /**
      * @internal
      */
-    protected static function normalizeParameter(string $name, mixed $value): mixed
+    protected function normalizeParameter(string $name, mixed $value): mixed
     {
         if ($value instanceof self) {
             $value = $value->create();
         }
 
         if ($value instanceof FactoryCollection) {
-            $value = $value->create();
+            $value = $this->normalizeCollection($name, $value);
         }
 
         return $value;
+    }
+
+    /**
+     * @internal
+     *
+     * @param FactoryCollection<mixed> $collection
+     *
+     * @return self<mixed>[]
+     */
+    protected function normalizeCollection(string $name, FactoryCollection $collection): array
+    {
+        return \array_map(fn(Factory $f) => $this->normalizeParameter($name, $f), $collection->all());
     }
 
     /**

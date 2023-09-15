@@ -23,7 +23,7 @@ final class FactoryCollection
     /**
      * @param Factory<T> $factory
      */
-    private function __construct(private Factory $factory, private int $min, private int $max)
+    private function __construct(public readonly Factory $factory, private int $min, private int $max)
     {
         if ($min > $max) {
             throw new \InvalidArgumentException('Min must be less than max.');
@@ -57,15 +57,7 @@ final class FactoryCollection
      */
     public function create(array|callable $attributes = []): array
     {
-        $objects = [];
-
-        foreach ($this->all() as $i => $factory) {
-            $objects[] = $factory->create(
-                \array_merge(\is_callable($attributes) ? $attributes($i + 1) : $attributes, ['__index' => $i + 1])
-            );
-        }
-
-        return $objects;
+        return \array_map(static fn(Factory $f) => $f->create($attributes), $this->all());
     }
 
     /**
@@ -73,9 +65,12 @@ final class FactoryCollection
      */
     public function all(): array
     {
-        return \array_map(
-            fn(): Factory => clone $this->factory,
-            \array_fill(0, \random_int($this->min, $this->max), null)
-        );
+        $factories = [];
+
+        foreach (\array_keys(\array_fill(0, \random_int($this->min, $this->max), null)) as $i) {
+            $factories[] = $this->factory->with(['__index' => $i + 1]);
+        }
+
+        return $factories;
     }
 }

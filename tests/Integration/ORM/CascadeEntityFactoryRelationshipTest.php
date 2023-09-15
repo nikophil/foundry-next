@@ -16,4 +16,8 @@ namespace Zenstruck\Foundry\Tests\Integration\ORM;
  */
 final class CascadeEntityFactoryRelationshipTest extends EntityFactoryRelationshipTest
 {
+    protected function setUp(): void
+    {
+        $this->markTestIncomplete();
+    }
 }

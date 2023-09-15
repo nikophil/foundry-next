@@ -66,6 +66,15 @@ abstract class PersistenceStrategy
         return $this->registry->getManagers();
     }
 
+    /**
+     * @param class-string $owner
+     * @param class-string $inverse
+     */
+    public function inverseRelationshipFieldFor(string $owner, string $inverse): ?string
+    {
+        return null;
+    }
+
     abstract public function hasChanges(object $object): bool;
 
     abstract public function resetDatabase(KernelInterface $kernel): void;

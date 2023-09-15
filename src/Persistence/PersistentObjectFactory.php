@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\Persistence;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
+use Zenstruck\Foundry\FactoryCollection;
 use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 
@@ -31,6 +32,9 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
     /** @var list<callable(T):void> */
     private array $afterPersist = [];
+
+    /** @var list<callable(T):void> */
+    private array $tempAfterPersist = [];
 
     /**
      * @param mixed|Parameters $criteriaOrId
@@ -174,22 +178,27 @@ abstract class PersistentObjectFactory extends ObjectFactory
             $object = ProxyGenerator::create($object);
         }
 
-        $configuration = Configuration::instance();
-        $persist = $this->persist ?? $configuration->isPersistenceEnabled() && $configuration->persistence()->autoPersist(static::class());
-
         if ($object instanceof Proxy) {
             $object->_disableAutoRefresh();
         }
 
-        if (!$persist) {
+        if (!$this->isPersisting()) {
             return $object;
         }
+
+        $configuration = Configuration::instance();
 
         if (!$configuration->isPersistenceEnabled()) {
             throw new \LogicException('Persistence cannot be used in unit tests.');
         }
 
         $configuration->persistence()->save($object);
+
+        foreach ($this->tempAfterPersist as $callback) {
+            $callback($object);
+        }
+
+        $this->tempAfterPersist = [];
 
         foreach ($this->afterPersist as $callback) {
             $callback($object);
@@ -227,5 +236,39 @@ abstract class PersistentObjectFactory extends ObjectFactory
         $clone->afterPersist[] = $callback;
 
         return $clone;
+    }
+
+    protected function normalizeParameter(string $name, mixed $value): mixed
+    {
+        if ($value instanceof self && isset($this->persist)) {
+            $value->persist = $this->persist;
+        }
+
+        return parent::normalizeParameter($name, $value);
+    }
+
+    protected function normalizeCollection(string $name, FactoryCollection $collection): array
+    {
+        if (!$this->isPersisting() || !$collection->factory instanceof self) {
+            return parent::normalizeCollection($name, $collection);
+        }
+
+        if ($field = Configuration::instance()->persistence()->inverseRelationshipFieldFor($collection->factory::class(), static::class())) {
+            $this->tempAfterPersist[] = static function(object $object) use ($collection, $field) { // todo - breaks immutability
+                $collection->create([$field => $object]);
+            };
+
+            // creation delegated to afterPersist hook - return empty array here
+            return [];
+        }
+
+        return parent::normalizeCollection($name, $collection);
+    }
+
+    private function isPersisting(): bool
+    {
+        $config = Configuration::instance();
+
+        return $this->persist ?? $config->isPersistenceEnabled() && $config->persistence()->autoPersist(static::class());
     }
 }

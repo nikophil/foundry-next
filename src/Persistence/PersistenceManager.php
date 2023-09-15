@@ -271,6 +271,15 @@ final class PersistenceManager
         return $this->strategyFor($class)->objectManagerFor($class)->getRepository($class);
     }
 
+    /**
+     * @param class-string $class
+     * @param class-string $inverse
+     */
+    public function inverseRelationshipFieldFor(string $class, string $inverse): ?string
+    {
+        return $this->strategyFor($class)->inverseRelationshipFieldFor($class, $inverse);
+    }
+
     private static function canSkipSchemaReset(): bool
     {
         return self::$ormOnly && self::isDAMADoctrineTestBundleEnabled();
