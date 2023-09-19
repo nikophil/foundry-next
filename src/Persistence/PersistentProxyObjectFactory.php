@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Persistence;
 
 use Zenstruck\Foundry\Factory;
+use Zenstruck\Foundry\FactoryCollection;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -34,5 +35,15 @@ abstract class PersistentProxyObjectFactory extends PersistentObjectFactory
     final public function afterInstantiate(callable $callback): static
     {
         return parent::afterInstantiate($callback);
+    }
+
+    protected function normalizeParameter(string $name, mixed $value): mixed
+    {
+        return ProxyGenerator::unwrap(parent::normalizeParameter($name, $value));
+    }
+
+    protected function normalizeCollection(string $name, FactoryCollection $collection): array
+    {
+        return ProxyGenerator::unwrap(parent::normalizeCollection($name, $collection));
     }
 }

@@ -80,7 +80,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->assertCount(3, $category->getContacts());
 
         foreach ($category->getContacts() as $contact) {
-            $this->assertSame($category, $contact->getCategory());
+            $this->assertSame($category->getName(), $contact->getCategory()?->getName());
         }
     }
 
