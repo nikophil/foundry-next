@@ -67,10 +67,10 @@ abstract class PersistenceStrategy
     }
 
     /**
-     * @param class-string $owner
-     * @param class-string $inverse
+     * @param class-string $parent
+     * @param class-string $child
      */
-    public function inverseRelationshipFieldFor(string $owner, string $inverse): ?string
+    public function relationshipMetadata(string $parent, string $child): ?RelationshipMetadata
     {
         return null;
     }

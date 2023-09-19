@@ -272,12 +272,12 @@ final class PersistenceManager
     }
 
     /**
-     * @param class-string $class
-     * @param class-string $inverse
+     * @param class-string $parent
+     * @param class-string $child
      */
-    public function inverseRelationshipFieldFor(string $class, string $inverse): ?string
+    public function relationshipMetadata(string $parent, string $child): ?RelationshipMetadata
     {
-        return $this->strategyFor($class)->inverseRelationshipFieldFor($class, $inverse);
+        return $this->strategyFor($parent)->relationshipMetadata($parent, $child);
     }
 
     private static function canSkipSchemaReset(): bool

@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
 use Zenstruck\Foundry\Persistence\PersistenceStrategy;
+use Zenstruck\Foundry\Persistence\RelationshipMetadata;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -97,14 +98,16 @@ final class ORMPersistenceStrategy extends PersistenceStrategy
         $this->createSchema($application);
     }
 
-    public function inverseRelationshipFieldFor(string $owner, string $inverse): ?string
+    public function relationshipMetadata(string $parent, string $child): ?RelationshipMetadata
     {
-        $metadata = $this->objectManagerFor($owner)->getClassMetadata($owner);
+        $metadata = $this->objectManagerFor($parent)->getClassMetadata($parent);
 
-        foreach ($metadata->getAssociationNames() as $association) {
-            // ensure 1-n and associated class matches
-            if ($metadata->isSingleValuedAssociation($association) && $metadata->getAssociationTargetClass($association) === $inverse) {
-                return $association;
+        foreach ($metadata->getAssociationMappings() as $name => $association) {
+            if ($association['targetEntity'] === $child) {
+                return new RelationshipMetadata(
+                    isCascadePersist: $association['isCascadePersist'],
+                    inverseField: $metadata->isSingleValuedAssociation($name) ? $name : null,
+                );
             }
         }
 

@@ -96,6 +96,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->contactFactory()::repository()->assert()->count(3);
         $this->categoryFactory()::repository()->assert()->count(1);
         $this->assertNotNull($category->id);
+        $this->assertCount(3, $category->getContacts());
 
         foreach ($category->getContacts() as $contact) {
             $this->assertSame($category->id, $contact->getCategory()?->id);
