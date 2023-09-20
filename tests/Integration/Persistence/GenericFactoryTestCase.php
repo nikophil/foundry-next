@@ -37,14 +37,14 @@ abstract class GenericFactoryTestCase extends KernelTestCase
      */
     public function can_create_and_update(): void
     {
-        $this->factory()->repository()->assert()->empty();
+        $this->factory()::assert()->empty();
 
         $object = $this->factory()->create();
 
         $this->assertNotNull($object->id);
         $this->assertSame('default1', $object->getProp1());
 
-        $this->factory()->repository()->assert()
+        $this->factory()::assert()
             ->count(1)
             ->exists(['prop1' => 'default1'])
             ->notExists(['prop1' => 'invalid'])
@@ -57,7 +57,7 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         save($object);
 
         $this->assertSame('new value', $object->getProp1());
-        $this->factory()->repository()->assert()->exists(['prop1' => 'new value']);
+        $this->factory()::assert()->exists(['prop1' => 'new value']);
     }
 
     /**

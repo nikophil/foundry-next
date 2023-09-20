@@ -157,6 +157,11 @@ abstract class PersistentObjectFactory extends ObjectFactory
         return new RepositoryDecorator(static::class(), \is_a(static::class, PersistentProxyObjectFactory::class, true));
     }
 
+    final public static function assert(): RepositoryAssertions
+    {
+        return static::repository()->assert();
+    }
+
     /**
      * @param Parameters $criteria
      */
