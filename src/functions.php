@@ -64,3 +64,13 @@ function get(object $object, string $property): mixed
 {
     return Mapper::get($object, $property);
 }
+
+function lazy(callable $factory): LazyValue
+{
+    return LazyValue::new($factory);
+}
+
+function memoize(callable $factory): LazyValue
+{
+    return LazyValue::memoize($factory);
+}
