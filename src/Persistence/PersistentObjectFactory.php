@@ -238,10 +238,10 @@ abstract class PersistentObjectFactory extends ObjectFactory
         return $clone;
     }
 
-    protected function normalizeParameter(string $name, mixed $value): mixed
+    protected function normalizeParameter(mixed $value): mixed
     {
         if (!Configuration::instance()->isPersistenceEnabled()) {
-            return parent::normalizeParameter($name, $value);
+            return ProxyGenerator::unwrap(parent::normalizeParameter($value));
         }
 
         if ($value instanceof self && isset($this->persist)) {
@@ -252,13 +252,13 @@ abstract class PersistentObjectFactory extends ObjectFactory
             $value->persist = false;
         }
 
-        return parent::normalizeParameter($name, $value);
+        return ProxyGenerator::unwrap(parent::normalizeParameter($value));
     }
 
-    protected function normalizeCollection(string $name, FactoryCollection $collection): array
+    protected function normalizeCollection(FactoryCollection $collection): array
     {
         if (!$this->isPersisting() || !$collection->factory instanceof self) {
-            return parent::normalizeCollection($name, $collection);
+            return parent::normalizeCollection($collection);
         }
 
         $pm = Configuration::instance()->persistence();
@@ -273,7 +273,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
             return [];
         }
 
-        return parent::normalizeCollection($name, $collection);
+        return parent::normalizeCollection($collection);
     }
 
     private function isPersisting(): bool

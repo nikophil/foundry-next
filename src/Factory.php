@@ -132,8 +132,8 @@ abstract class Factory
         );
 
         // normalize values
-        foreach ($parameters as $key => &$value) {
-            $value = $this->normalizeParameter($key, $value);
+        foreach ($parameters as &$value) {
+            $value = $this->normalizeParameter($value);
         }
 
         return $parameters;
@@ -150,14 +150,14 @@ abstract class Factory
     /**
      * @internal
      */
-    protected function normalizeParameter(string $name, mixed $value): mixed
+    protected function normalizeParameter(mixed $value): mixed
     {
         if ($value instanceof self) {
             $value = $value->create();
         }
 
         if ($value instanceof FactoryCollection) {
-            $value = $this->normalizeCollection($name, $value);
+            $value = $this->normalizeCollection($value);
         }
 
         return $value;
@@ -170,9 +170,9 @@ abstract class Factory
      *
      * @return self<mixed>[]
      */
-    protected function normalizeCollection(string $name, FactoryCollection $collection): array
+    protected function normalizeCollection(FactoryCollection $collection): array
     {
-        return \array_map(fn(Factory $f) => $this->normalizeParameter($name, $f), $collection->all());
+        return \array_map(fn(Factory $f) => $this->normalizeParameter($f), $collection->all());
     }
 
     /**
