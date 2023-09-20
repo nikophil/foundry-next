@@ -49,10 +49,10 @@ final class StoryRegistry
             return self::$instances[$class]; // @phpstan-ignore-line
         }
 
-        $story = $this->getOrCreateStory($class);
-        $story->build();
+        self::$instances[$class] = $this->getOrCreateStory($class);
+        self::$instances[$class]->build();
 
-        return self::$instances[$class] = $story;
+        return self::$instances[$class];
     }
 
     public function loadGlobalStories(): void
