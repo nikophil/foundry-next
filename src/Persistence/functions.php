@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\AnonymousFactoryGenerator;
 use Zenstruck\Foundry\Configuration;
 
@@ -19,11 +20,11 @@ use Zenstruck\Foundry\Configuration;
  *
  * @param class-string<T> $class
  *
- * @return RepositoryDecorator<T>
+ * @return RepositoryDecorator<T,ObjectRepository<T>>
  */
 function repository(string $class): RepositoryDecorator
 {
-    return new RepositoryDecorator($class);
+    return new RepositoryDecorator($class); // @phpstan-ignore-line
 }
 
 /**

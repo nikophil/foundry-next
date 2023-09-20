@@ -1,8 +1,11 @@
 <?php
 
+use Doctrine\ORM\EntityRepository;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Persistence\RepositoryDecorator;
 
 use function PHPStan\Testing\assertType;
+use function Zenstruck\Foundry\Persistence\proxy;
 
 class User
 {
@@ -10,11 +13,26 @@ class User
 }
 
 /**
- * The following method stubs are required for auto-completion in PhpStorm.
+ * @extends EntityRepository<User>
+ */
+class UserRepository extends EntityRepository
+{
+    public function findByName(string $name): User
+    {
+        return new User();
+    }
+}
+
+/**
+ * The following method stubs are required for auto-completion in PhpStorm
+ * AND phpstan support.
  *
  * @extends PersistentObjectFactory<User>
  *
  * @method User create(array|callable $attributes = [])
+ * @method static RepositoryDecorator|UserRepository repository()
+ *
+ * @phpstan-method static RepositoryDecorator<User,UserRepository> repository()
  */
 final class UserFactory extends PersistentObjectFactory
 {
@@ -46,5 +64,9 @@ assertType('string', UserFactory::findOrCreate([])->name);
 assertType('string', UserFactory::randomOrCreate([])->name);
 assertType('string|null', UserFactory::repository()->find(1)?->name);
 assertType('string', UserFactory::repository()->findAll()[0]->name);
+assertType('string', UserFactory::repository()->findByName('foo')->name);
+assertType('int', UserFactory::repository()->count());
+assertType('string', proxy(UserFactory::createOne())->name);
+assertType('string', proxy(UserFactory::new()->create())->name);
 
 

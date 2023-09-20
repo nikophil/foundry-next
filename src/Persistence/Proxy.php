@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Doctrine\Persistence\ObjectRepository;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -43,7 +45,7 @@ interface Proxy
     public function _real(): object;
 
     /**
-     * @return RepositoryDecorator<T>
+     * @return RepositoryDecorator<T,ObjectRepository<T>>
      */
     public function _repo(): RepositoryDecorator;
 }

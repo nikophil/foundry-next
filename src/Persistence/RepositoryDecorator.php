@@ -21,7 +21,9 @@ use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T of object
- * @implements ObjectRepository<T>
+ * @template I of ObjectRepository
+ * @implements I<T>
+ * @mixin I
  *
  * @phpstan-import-type Parameters from Factory
  */

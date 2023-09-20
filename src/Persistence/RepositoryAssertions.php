@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Assert;
 use Zenstruck\Foundry\Factory;
 
@@ -24,7 +25,7 @@ final class RepositoryAssertions
     /**
      * @internal
      *
-     * @param RepositoryDecorator<object> $repository
+     * @param RepositoryDecorator<object,ObjectRepository<object>> $repository
      */
     public function __construct(private RepositoryDecorator $repository)
     {

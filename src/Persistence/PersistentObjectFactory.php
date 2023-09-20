@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
@@ -150,11 +151,11 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
-     * @return RepositoryDecorator<T>
+     * @return RepositoryDecorator<T,ObjectRepository<T>>
      */
     final public static function repository(): RepositoryDecorator
     {
-        return new RepositoryDecorator(static::class());
+        return new RepositoryDecorator(static::class()); // @phpstan-ignore-line
     }
 
     final public static function assert(): RepositoryAssertions
