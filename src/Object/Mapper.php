@@ -42,9 +42,6 @@ final class Mapper
     /** @var string[] */
     private array $forceProperties = [];
 
-    /**
-     * @internal
-     */
     public function __construct(?PropertyAccessorInterface $accessor = null)
     {
         $this->accessor = $accessor ?? self::$defaultAccessor ??= new PropertyAccessor();
