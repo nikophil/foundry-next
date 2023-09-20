@@ -66,7 +66,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return $this->wrap($this->inner()->find($id));
+        return $this->wrap($this->inner()->find(ProxyGenerator::unwrap($id)));
     }
 
     /**
@@ -85,7 +85,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->wrap($this->inner()->findBy($criteria, $orderBy, $limit, $offset));
+        return $this->wrap($this->inner()->findBy(ProxyGenerator::unwrap($criteria), $orderBy, $limit, $offset));
     }
 
     /**
@@ -93,7 +93,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->wrap($this->inner()->findOneBy($criteria));
+        return $this->wrap($this->inner()->findOneBy(ProxyGenerator::unwrap($criteria)));
     }
 
     public function getClassName(): string
@@ -110,7 +110,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
         if ($inner instanceof EntityRepository) {
             // use query to avoid loading all entities
-            return $inner->count($criteria);
+            return $inner->count(ProxyGenerator::unwrap($criteria));
         }
 
         return \count($this->findBy($criteria));
