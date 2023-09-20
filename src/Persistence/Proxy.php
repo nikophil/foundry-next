@@ -43,7 +43,7 @@ interface Proxy
     public function _real(): object;
 
     /**
-     * @return RepositoryDecorator<static>
+     * @return RepositoryDecorator<T>
      */
     public function _repo(): RepositoryDecorator;
 }

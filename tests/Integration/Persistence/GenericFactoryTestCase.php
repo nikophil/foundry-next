@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
@@ -21,6 +22,7 @@ use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 use function Zenstruck\Foundry\Persistence\delete;
 use function Zenstruck\Foundry\Persistence\flush_after;
 use function Zenstruck\Foundry\Persistence\persist;
+use function Zenstruck\Foundry\Persistence\proxy;
 use function Zenstruck\Foundry\Persistence\refresh;
 use function Zenstruck\Foundry\Persistence\repository;
 use function Zenstruck\Foundry\Persistence\save;
@@ -436,6 +438,203 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         });
 
         $this->factory()::repository()->assert()->count(1);
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_and_delete_via_proxy(): void
+    {
+        $this->factory()->repository()->assert()->empty();
+
+        $object = proxy($this->factory()->create());
+
+        $this->assertNotNull($object->id);
+        $this->assertSame('default1', $object->getProp1());
+        $this->assertSame('default1', $object->_refresh()->getProp1());
+
+        $this->factory()->repository()->assert()
+            ->count(1)
+            ->exists(['prop1' => 'default1'])
+            ->notExists(['prop1' => 'invalid'])
+        ;
+
+        $this->assertSame($object->id, $this->factory()->first()->id);
+        $this->assertSame($object->id, $this->factory()->last()->id);
+
+        $object->setProp1('new value');
+        $object->_save();
+
+        $this->assertSame('new value', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'new value']);
+
+        $object->_delete();
+
+        $this->factory()->repository()->assert()->empty();
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_persisting_by_factory_and_save_proxy(): void
+    {
+        $this->factory()->repository()->assert()->empty();
+
+        $object = proxy($this->factory()->withoutPersisting()->create())->_disableAutoRefresh();
+
+        $this->assertNull($object->id);
+        $this->assertSame('default1', $object->getProp1());
+
+        $this->factory()->repository()->assert()->empty();
+
+        $object->_save();
+
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_and_enable_proxy_auto_refreshing(): void
+    {
+        $object = proxy($this->factory()->create());
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->_disableAutoRefresh();
+        $object->setProp1('new');
+        $object->setProp1('new 2');
+        $object->_enableAutoRefresh();
+        $object->_save();
+
+        $this->assertSame('new 2', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_and_enable_auto_refreshing_with_callback(): void
+    {
+        $object = proxy($this->factory()->create());
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->_withoutAutoRefresh(function(GenericModel&Proxy $object) {
+            $object->setProp1('new');
+            $object->setProp1('new 2');
+            $object->_save();
+        });
+
+        $this->assertSame('new 2', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'new 2']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_manually_refresh_via_proxy(): void
+    {
+        $object = proxy($this->factory()->create())->_disableAutoRefresh();
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        self::ensureKernelShutdown();
+
+        // modify and save title "externally"
+        $ext = $this->factory()->first();
+        $ext->setProp1('external');
+        save($ext);
+
+        self::ensureKernelShutdown();
+
+        // "calling method" triggers auto-refresh
+        $this->assertSame('external', $object->_refresh()->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
+    }
+
+    /**
+     * @test
+     */
+    public function proxy_auto_refreshes(): void
+    {
+        $object = proxy($this->factory()->create());
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        self::ensureKernelShutdown();
+
+        // modify and save title "externally"
+        $ext = $this->factory()->first();
+        $ext->setProp1('external');
+        save($ext);
+
+        self::ensureKernelShutdown();
+
+        // "calling method" triggers auto-refresh
+        $this->assertSame('external', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'external']);
+    }
+
+    /**
+     * @test
+     */
+    public function cannot_auto_refresh_proxy_if_changes(): void
+    {
+        $object = proxy($this->factory()->create());
+
+        // initial data
+        $this->assertSame('default1', $object->getProp1());
+        $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+
+        $object->setProp1('new');
+
+        try {
+            $object->setProp1('new 1');
+        } catch (\RuntimeException) {
+            $this->factory()->repository()->assert()->exists(['prop1' => 'default1']);
+            $object->_save();
+            $this->assertSame('new', $object->getProp1());
+            $this->factory()->repository()->assert()->exists(['prop1' => 'new']);
+
+            return;
+        }
+
+        $this->fail('Exception not thrown');
+    }
+
+    /**
+     * @test
+     */
+    public function can_access_repository_from_proxy(): void
+    {
+        $object = proxy($this->factory()::createOne());
+
+        $object = $object->_repo()->findOneBy(['prop1' => 'default1']);
+
+        $this->assertInstanceOf($this->factory()::class(), $object);
+    }
+
+    /**
+     * @test
+     */
+    public function can_force_set_and_get(): void
+    {
+        $object = proxy($this->factory()::createOne());
+
+        $this->assertSame('default1', $object->_get('prop1'));
+
+        $object->_set('prop1', 'new value')->_save();
+
+        $object->_repo()->assert()->exists(['prop1' => 'new value']);
     }
 
     /**

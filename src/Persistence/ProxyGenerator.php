@@ -38,30 +38,6 @@ final class ProxyGenerator
     }
 
     /**
-     * @template T
-     *
-     * @param T $what
-     *
-     * @return T
-     */
-    public static function unwrap(mixed $what): mixed
-    {
-        if (\is_array($what)) {
-            return \array_map(self::unwrap(...), $what); // @phpstan-ignore-line
-        }
-
-        if (\is_object($what)) {
-            return $what instanceof Proxy ? $what->_real() : $what; // @phpstan-ignore-line
-        }
-
-        if (\is_string($what) && \is_a($what, Proxy::class, true)) {
-            return \get_parent_class($what) ?: throw new \LogicException('Proxy class must have a parent class.'); // @phpstan-ignore-line
-        }
-
-        return $what;
-    }
-
-    /**
      * @template T of object
      *
      * @param T $object

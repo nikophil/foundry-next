@@ -154,7 +154,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function repository(): RepositoryDecorator
     {
-        return new RepositoryDecorator(static::class(), \is_a(static::class, PersistentProxyObjectFactory::class, true));
+        return new RepositoryDecorator(static::class());
     }
 
     final public static function assert(): RepositoryAssertions
@@ -179,14 +179,6 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         $object = parent::create($attributes);
 
-        if ($this instanceof PersistentProxyObjectFactory) {
-            $object = ProxyGenerator::create($object);
-        }
-
-        if ($object instanceof Proxy) {
-            $object->_disableAutoRefresh();
-        }
-
         if (!$this->isPersisting()) {
             return $object;
         }
@@ -207,10 +199,6 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         foreach ($this->afterPersist as $callback) {
             $callback($object);
-        }
-
-        if ($object instanceof Proxy) {
-            $object->_resetAutoRefresh(); // @phpstan-ignore-line
         }
 
         return $object;
@@ -246,7 +234,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     protected function normalizeParameter(mixed $value): mixed
     {
         if (!Configuration::instance()->isPersistenceEnabled()) {
-            return ProxyGenerator::unwrap(parent::normalizeParameter($value));
+            return parent::normalizeParameter($value);
         }
 
         if ($value instanceof self && isset($this->persist)) {
@@ -257,7 +245,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
             $value->persist = false;
         }
 
-        return ProxyGenerator::unwrap(parent::normalizeParameter($value));
+        return parent::normalizeParameter($value);
     }
 
     protected function normalizeCollection(FactoryCollection $collection): array

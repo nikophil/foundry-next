@@ -143,7 +143,6 @@ final class PersistenceManager
      */
     public function save(object $object): object
     {
-        $object = ProxyGenerator::unwrap($object);
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->persist($object);
         $this->flush($om);
@@ -185,7 +184,6 @@ final class PersistenceManager
      */
     public function refresh(object &$object): object
     {
-        $object = ProxyGenerator::unwrap($object);
         $strategy = $this->strategyFor($object::class);
 
         if ($strategy->hasChanges($object)) {
@@ -218,8 +216,6 @@ final class PersistenceManager
      */
     public function delete(object $object): object
     {
-        $object = ProxyGenerator::unwrap($object);
-
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->remove($object);
         $this->flush($om);
@@ -232,8 +228,6 @@ final class PersistenceManager
      */
     public function truncate(string $class): void
     {
-        $class = ProxyGenerator::unwrap($class);
-
         $this->strategyFor($class)->truncate($class);
     }
 
@@ -242,19 +236,7 @@ final class PersistenceManager
      */
     public function autoPersist(string $class): bool
     {
-        $class = ProxyGenerator::unwrap($class);
-
         return $this->strategyFor($class)->autoPersist();
-    }
-
-    /**
-     * @param class-string $class
-     */
-    public function autoRefreshProxies(string $class): bool
-    {
-        $class = ProxyGenerator::unwrap($class);
-
-        return $this->strategyFor($class)->autoRefreshProxies();
     }
 
     /**
@@ -266,8 +248,6 @@ final class PersistenceManager
      */
     public function repositoryFor(string $class): ObjectRepository
     {
-        $class = ProxyGenerator::unwrap($class);
-
         return $this->strategyFor($class)->objectManagerFor($class)->getRepository($class);
     }
 

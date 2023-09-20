@@ -32,7 +32,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      *
      * @param class-string<T> $class
      */
-    public function __construct(private string $class, private bool $proxy)
+    public function __construct(private string $class)
     {
     }
 
@@ -66,7 +66,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return $this->wrap($this->inner()->find(ProxyGenerator::unwrap($id)));
+        return $this->inner()->find($id);
     }
 
     /**
@@ -74,7 +74,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findAll(): array
     {
-        return $this->wrap($this->inner()->findAll());
+        return $this->inner()->findAll();
     }
 
     /**
@@ -85,7 +85,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->wrap($this->inner()->findBy(ProxyGenerator::unwrap($criteria), $orderBy, $limit, $offset));
+        return $this->inner()->findBy($criteria, $orderBy, $limit, $offset);
     }
 
     /**
@@ -93,7 +93,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->wrap($this->inner()->findOneBy(ProxyGenerator::unwrap($criteria)));
+        return $this->inner()->findOneBy($criteria);
     }
 
     public function getClassName(): string
@@ -110,7 +110,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
         if ($inner instanceof EntityRepository) {
             // use query to avoid loading all entities
-            return $inner->count(ProxyGenerator::unwrap($criteria));
+            return $inner->count($criteria);
         }
 
         return \count($this->findBy($criteria));
@@ -180,23 +180,5 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     private function inner(): ObjectRepository
     {
         return Configuration::instance()->persistence()->repositoryFor($this->class);
-    }
-
-    /**
-     * @param object[]|object|null $object
-     *
-     * @return ($object is null ? null : ($object is array ? T[] : T))
-     */
-    private function wrap(object|array|null $object): object|array|null
-    {
-        if (\is_array($object)) {
-            return \array_map($this->wrap(...), $object); // @phpstan-ignore-line
-        }
-
-        if (!$object) {
-            return null;
-        }
-
-        return $this->proxy ? ProxyGenerator::create($object) : $object; // @phpstan-ignore-line
     }
 }

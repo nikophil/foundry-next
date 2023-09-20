@@ -23,19 +23,7 @@ use Zenstruck\Foundry\Configuration;
  */
 function repository(string $class): RepositoryDecorator
 {
-    return new RepositoryDecorator($class, false);
-}
-
-/**
- * @template T of object
- *
- * @param class-string<T> $class
- *
- * @return RepositoryDecorator<T&Proxy<T>>
- */
-function proxy_repository(string $class): RepositoryDecorator
-{
-    return new RepositoryDecorator($class, true); // @phpstan-ignore-line
+    return new RepositoryDecorator($class);
 }
 
 /**
@@ -69,33 +57,17 @@ function persist(string $class, array|callable $attributes = []): object
 }
 
 /**
- * Create an anonymous "persistent proxy" factory for the given class.
+ * Create an auto-refreshable proxy for the object.
  *
  * @template T of object
  *
- * @param class-string<T>                                       $class
- * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
- *
- * @return PersistentProxyObjectFactory<T>
- */
-function proxy_factory(string $class, array|callable $attributes = []): PersistentProxyObjectFactory
-{
-    return AnonymousFactoryGenerator::create($class, PersistentProxyObjectFactory::class)::new($attributes);
-}
-
-/**
- * Create a "persistent proxy" object with an anonymous factory.
- *
- * @template T of object
- *
- * @param class-string<T>                                       $class
- * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
+ * @param T $object
  *
  * @return T&Proxy<T>
  */
-function proxy_persist(string $class, array|callable $attributes = []): object
+function proxy(object $object): object
 {
-    return proxy_factory($class, $attributes)->andPersist()->create();
+    return ProxyGenerator::create($object);
 }
 
 /**
