@@ -30,9 +30,9 @@ final class FactoryRegistry
      *
      * @param class-string<T> $class
      *
-     * @return T
+     * @return T|null
      */
-    public function new(string $class): Factory
+    public function get(string $class): ?Factory
     {
         foreach ($this->factories as $factory) {
             if ($class === $factory::class) {
@@ -40,18 +40,6 @@ final class FactoryRegistry
             }
         }
 
-        if (!\class_exists($class)) {
-            throw new \InvalidArgumentException(\sprintf('Factory "%s" does not exist.', $class));
-        }
-
-        if (!\is_a($class, Factory::class, true)) {
-            throw new \LogicException(\sprintf('"%s" is not a factory.', $class));
-        }
-
-        try {
-            return new $class();
-        } catch (\ArgumentCountError) { // @phpstan-ignore-line
-            throw new \LogicException('Factories with dependencies (services) cannot be created before foundry is booted.');
-        }
+        return null;
     }
 }
