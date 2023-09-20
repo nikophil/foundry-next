@@ -240,6 +240,10 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
     protected function normalizeParameter(string $name, mixed $value): mixed
     {
+        if (!Configuration::instance()->isPersistenceEnabled()) {
+            return parent::normalizeParameter($name, $value);
+        }
+
         if ($value instanceof self && isset($this->persist)) {
             $value->persist = $this->persist;
         }
