@@ -32,8 +32,12 @@ final class ProxyGenerator
      *
      * @return T&Proxy<T>
      */
-    public static function create(object $object): Proxy
+    public static function wrap(object $object): Proxy
     {
+        if ($object instanceof Proxy) {
+            return $object;
+        }
+
         return self::generateClassFor($object)::createLazyProxy(static fn() => $object); // @phpstan-ignore-line
     }
 

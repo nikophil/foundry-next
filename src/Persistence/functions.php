@@ -68,7 +68,7 @@ function persist(string $class, array|callable $attributes = []): object
  */
 function proxy(object $object): object
 {
-    return ProxyGenerator::create($object);
+    return ProxyGenerator::wrap($object);
 }
 
 /**
