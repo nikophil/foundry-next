@@ -68,7 +68,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
             return $this->findOneBy($id);
         }
 
-        return $this->inner()->find($id);
+        return $this->inner()->find(unproxy($id));
     }
 
     /**
@@ -87,7 +87,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->inner()->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->inner()->findBy(unproxy($criteria), $orderBy, $limit, $offset);
     }
 
     /**
@@ -95,7 +95,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->inner()->findOneBy($criteria);
+        return $this->inner()->findOneBy(unproxy($criteria));
     }
 
     public function getClassName(): string
@@ -112,7 +112,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
         if ($inner instanceof EntityRepository) {
             // use query to avoid loading all entities
-            return $inner->count($criteria);
+            return $inner->count(unproxy($criteria));
         }
 
         return \count($this->findBy($criteria));

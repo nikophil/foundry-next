@@ -38,23 +38,27 @@ abstract class PersistentObjectFactory extends ObjectFactory
     private array $tempAfterPersist = [];
 
     /**
+     * @final
+     *
      * @param mixed|Parameters $criteriaOrId
      *
      * @return T
      *
      * @throws \RuntimeException If no object found
      */
-    final public static function find(mixed $criteriaOrId): object
+    public static function find(mixed $criteriaOrId): object
     {
         return static::repository()->find($criteriaOrId) ?? throw new \RuntimeException(\sprintf('No "%s" object found for "%s".', static::class(), \get_debug_type($criteriaOrId)));
     }
 
     /**
+     * @final
+     *
      * @param Parameters $criteria
      *
      * @return T
      */
-    final public static function findOrCreate(array $criteria): object
+    public static function findOrCreate(array $criteria): object
     {
         try {
             $object = static::repository()->findOneBy($criteria);
@@ -66,11 +70,13 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @final
+     *
      * @param Parameters $criteria
      *
      * @return T
      */
-    final public static function randomOrCreate(array $criteria = []): object
+    public static function randomOrCreate(array $criteria = []): object
     {
         try {
             return static::repository()->random($criteria);
@@ -80,72 +86,86 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @final
+     *
      * @param positive-int $count
      * @param Parameters   $criteria
      *
      * @return T[]
      */
-    final public static function randomSet(int $count, array $criteria = []): array
+    public static function randomSet(int $count, array $criteria = []): array
     {
         return static::repository()->randomSet($count, $criteria);
     }
 
     /**
+     * @final
+     *
      * @param positive-int $min
      * @param positive-int $max
      * @param Parameters   $criteria
      *
      * @return T[]
      */
-    final public static function randomRange(int $min, int $max, array $criteria = []): array
+    public static function randomRange(int $min, int $max, array $criteria = []): array
     {
         return static::repository()->randomRange($min, $max, $criteria);
     }
 
     /**
+     * @final
+     *
      * @param Parameters $criteria
      *
      * @return T[]
      */
-    final public static function findBy(array $criteria): array
+    public static function findBy(array $criteria): array
     {
         return static::repository()->findBy($criteria);
     }
 
     /**
+     * @final
+     *
      * @param Parameters $criteria
      *
      * @return T
      */
-    final public static function random(array $criteria = []): object
+    public static function random(array $criteria = []): object
     {
         return static::repository()->random($criteria);
     }
 
     /**
+     * @final
+     *
      * @return T
      *
      * @throws \RuntimeException If no objects exist
      */
-    final public static function first(string $sortBy = 'id'): object
+    public static function first(string $sortBy = 'id'): object
     {
         return static::repository()->first($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
     }
 
     /**
+     * @final
+     *
      * @return T
      *
      * @throws \RuntimeException If no objects exist
      */
-    final public static function last(string $sortBy = 'id'): object
+    public static function last(string $sortBy = 'id'): object
     {
         return static::repository()->last($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', static::class()));
     }
 
     /**
+     * @final
+     *
      * @return T[]
      */
-    final public static function all(): array
+    public static function all(): array
     {
         return static::repository()->findAll();
     }
@@ -181,7 +201,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
         $object = parent::create($attributes);
 
         if (!$this->isPersisting()) {
-            return $object;
+            return $this->proxy($object);
         }
 
         $configuration = Configuration::instance();
@@ -202,7 +222,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
             $callback($object);
         }
 
-        return $object;
+        return $this->proxy($object);
     }
 
     final public function andPersist(): static
@@ -235,7 +255,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     protected function normalizeParameter(mixed $value): mixed
     {
         if (!Configuration::instance()->isPersistenceEnabled()) {
-            return parent::normalizeParameter($value);
+            return unproxy(parent::normalizeParameter($value));
         }
 
         if ($value instanceof self && isset($this->persist)) {
@@ -246,7 +266,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
             $value->persist = false;
         }
 
-        return parent::normalizeParameter($value);
+        return unproxy(parent::normalizeParameter($value));
     }
 
     protected function normalizeCollection(FactoryCollection $collection): array
@@ -275,5 +295,21 @@ abstract class PersistentObjectFactory extends ObjectFactory
         $config = Configuration::instance();
 
         return $this->persist ?? $config->isPersistenceEnabled() && $config->persistence()->autoPersist(static::class());
+    }
+
+    /**
+     * @param T $object
+     *
+     * @return T
+     */
+    private function proxy(object $object): object
+    {
+        if (!$this instanceof PersistentProxyObjectFactory) {
+            return $object;
+        }
+
+        $object = proxy($object);
+
+        return $this->isPersisting() ? $object : $object->_disableAutoRefresh();
     }
 }

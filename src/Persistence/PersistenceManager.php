@@ -143,6 +143,10 @@ final class PersistenceManager
      */
     public function save(object $object): object
     {
+        if ($object instanceof Proxy) {
+            return $object->_save();
+        }
+
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->persist($object);
         $this->flush($om);
@@ -184,6 +188,10 @@ final class PersistenceManager
      */
     public function refresh(object &$object): object
     {
+        if ($object instanceof Proxy) {
+            return $object->_refresh();
+        }
+
         $strategy = $this->strategyFor($object::class);
 
         if ($strategy->hasChanges($object)) {
@@ -216,6 +224,10 @@ final class PersistenceManager
      */
     public function delete(object $object): object
     {
+        if ($object instanceof Proxy) {
+            return $object->_delete();
+        }
+
         $om = $this->strategyFor($object::class)->objectManagerFor($object::class);
         $om->remove($object);
         $this->flush($om);
@@ -228,6 +240,8 @@ final class PersistenceManager
      */
     public function truncate(string $class): void
     {
+        $class = unproxy($class);
+
         $this->strategyFor($class)->truncate($class);
     }
 
@@ -236,7 +250,7 @@ final class PersistenceManager
      */
     public function autoPersist(string $class): bool
     {
-        return $this->strategyFor($class)->autoPersist();
+        return $this->strategyFor(unproxy($class))->autoPersist();
     }
 
     /**
@@ -248,6 +262,8 @@ final class PersistenceManager
      */
     public function repositoryFor(string $class): ObjectRepository
     {
+        $class = unproxy($class);
+
         return $this->strategyFor($class)->objectManagerFor($class)->getRepository($class);
     }
 
@@ -257,6 +273,9 @@ final class PersistenceManager
      */
     public function relationshipMetadata(string $parent, string $child): ?RelationshipMetadata
     {
+        $parent = unproxy($parent);
+        $child = unproxy($child);
+
         return $this->strategyFor($parent)->relationshipMetadata($parent, $child);
     }
 

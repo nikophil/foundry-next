@@ -72,6 +72,20 @@ function proxy(object $object): object
 }
 
 /**
+ * Recursively unwrap all proxies.
+ *
+ * @template T
+ *
+ * @param T $what
+ *
+ * @return T
+ */
+function unproxy(mixed $what): mixed
+{
+    return ProxyGenerator::unwrap($what);
+}
+
+/**
  * @template T of object
  *
  * @param T $object
