@@ -35,7 +35,7 @@ function factory(string $class, array|callable $attributes = []): ObjectFactory
 }
 
 /**
- * Create an object with an anonymous factory.
+ * Instantiate the given class.
  *
  * @template T of object
  *
@@ -65,11 +65,19 @@ function get(object $object, string $property): mixed
     return Mapper::get($object, $property);
 }
 
+/**
+ * Create a "lazy" factory attribute which will only be evaluated
+ * if used.
+ */
 function lazy(callable $factory): LazyValue
 {
     return LazyValue::new($factory);
 }
 
+/**
+ * Same as {@see lazy()} but subsequent evaluations will return the
+ * same value.
+ */
 function memoize(callable $factory): LazyValue
 {
     return LazyValue::memoize($factory);

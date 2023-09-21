@@ -43,7 +43,7 @@ function persistent_factory(string $class, array|callable $attributes = []): Per
 }
 
 /**
- * Create a "persistent" object with an anonymous factory.
+ * Instantiate and "persist" the given class.
  *
  * @template T of object
  *
