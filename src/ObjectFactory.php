@@ -57,6 +57,7 @@ abstract class ObjectFactory extends Factory
             }
         }
 
+        $parameters = $this->normalizeParameters($parameters);
         $instantiator = $this->instantiator ?? Configuration::instance()->instantiator;
         $object = $instantiator($parameters, static::class());
 

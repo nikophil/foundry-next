@@ -121,22 +121,9 @@ abstract class Factory
             }
         }
 
-        $parameters = \array_merge(
+        return \array_merge(
             ...\array_map(static fn(array|callable $attr) => \is_callable($attr) ? $attr($index) : $attr, $attributes)
         );
-
-        // convert lazy values
-        $parameters = \array_map(
-            static fn(mixed $v) => $v instanceof LazyValue ? $v() : $v,
-            $parameters,
-        );
-
-        // normalize values
-        foreach ($parameters as &$value) {
-            $value = $this->normalizeParameter($value);
-        }
-
-        return $parameters;
     }
 
     /**
@@ -149,9 +136,25 @@ abstract class Factory
 
     /**
      * @internal
+     *
+     * @param Parameters $parameters
+     *
+     * @return Parameters
+     */
+    protected function normalizeParameters(array $parameters): array
+    {
+        return \array_map($this->normalizeParameter(...), $parameters);
+    }
+
+    /**
+     * @internal
      */
     protected function normalizeParameter(mixed $value): mixed
     {
+        if ($value instanceof LazyValue) {
+            $value = $value();
+        }
+
         if ($value instanceof self) {
             $value = $value->create();
         }

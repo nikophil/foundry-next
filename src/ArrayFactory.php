@@ -21,6 +21,6 @@ abstract class ArrayFactory extends Factory
 {
     final public function create(callable|array $attributes = []): array
     {
-        return $this->normalizeAttributes($attributes);
+        return $this->normalizeParameters($this->normalizeAttributes($attributes));
     }
 }
