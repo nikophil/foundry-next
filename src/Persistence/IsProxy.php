@@ -55,7 +55,7 @@ trait IsProxy
 
     public function _save(): static
     {
-        Configuration::instance()->persistence()->save($this->_real());
+        Configuration::instance()->persistence()->save($this->initializeLazyObject());
 
         return $this;
     }
@@ -74,25 +74,27 @@ trait IsProxy
 
     public function _delete(): static
     {
-        Configuration::instance()->persistence()->delete($this->_real());
+        Configuration::instance()->persistence()->delete($this->initializeLazyObject());
 
         return $this;
     }
 
     public function _get(string $property): mixed
     {
-        return Mapper::get($this->_real(), $property);
+        return Mapper::get($this->initializeLazyObject(), $property);
     }
 
     public function _set(string $property, mixed $value): static
     {
-        Mapper::set($this->_real(), $property, $value);
+        Mapper::set($this->initializeLazyObject(), $property, $value);
 
         return $this;
     }
 
     public function _real(): object
     {
+        $this->_autoRefresh();
+
         return $this->initializeLazyObject();
     }
 
