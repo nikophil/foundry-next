@@ -81,11 +81,15 @@ trait IsProxy
 
     public function _get(string $property): mixed
     {
+        $this->_autoRefresh();
+
         return Mapper::get($this->initializeLazyObject(), $property);
     }
 
     public function _set(string $property, mixed $value): static
     {
+        $this->_autoRefresh();
+
         Mapper::set($this->initializeLazyObject(), $property, $value);
 
         return $this;
