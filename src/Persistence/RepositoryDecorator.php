@@ -38,6 +38,14 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     {
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
+    public function __call(string $name, array $arguments): mixed
+    {
+        return $this->inner()->$name(...$arguments);
+    }
+
     public function assert(): RepositoryAssertions
     {
         return new RepositoryAssertions($this);
