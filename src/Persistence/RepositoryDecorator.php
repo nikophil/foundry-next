@@ -52,11 +52,27 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
+     * @return T
+     */
+    public function firstOrFail(string $sortBy = 'id'): object
+    {
+        return $this->first($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', $this->class));
+    }
+
+    /**
      * @return T|null
      */
     public function last(string $sortedField = 'id'): ?object
     {
         return $this->findBy([], [$sortedField => 'DESC'], 1)[0] ?? null;
+    }
+
+    /**
+     * @return T
+     */
+    public function lastOrFail(string $sortBy = 'id'): object
+    {
+        return $this->last($sortBy) ?? throw new \RuntimeException(\sprintf('No "%s" objects persisted.', $this->class));
     }
 
     /**
@@ -69,6 +85,14 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         }
 
         return $this->inner()->find(unproxy($id));
+    }
+
+    /**
+     * @return T
+     */
+    public function findOrFail(mixed $id): object
+    {
+        return $this->find($id) ?? throw new \RuntimeException(\sprintf('No "%s" object found for "%s".', $this->class, \get_debug_type($id)));
     }
 
     /**
