@@ -111,12 +111,9 @@ final class RepositoryAssertions
         return $this;
     }
 
-    /**
-     * @param Parameters $criteria
-     */
-    public function exists(array $criteria, string $message = 'Expected {entity} to exist but it does not.'): self
+    public function exists(mixed $criteria, string $message = 'Expected {entity} to exist but it does not.'): self
     {
-        Assert::that($this->repository->findOneBy($criteria))->isNotEmpty($message, [
+        Assert::that($this->repository->find($criteria))->isNotEmpty($message, [
             'entity' => $this->repository->getClassName(),
             'criteria' => $criteria,
         ]);
@@ -124,12 +121,9 @@ final class RepositoryAssertions
         return $this;
     }
 
-    /**
-     * @param Parameters $criteria
-     */
-    public function notExists(array $criteria, string $message = 'Expected {entity} to not exist but it does.'): self
+    public function notExists(mixed $criteria, string $message = 'Expected {entity} to not exist but it does.'): self
     {
-        Assert::that($this->repository->findOneBy($criteria))->isEmpty($message, [
+        Assert::that($this->repository->find($criteria))->isEmpty($message, [
             'entity' => $this->repository->getClassName(),
             'criteria' => $criteria,
         ]);
