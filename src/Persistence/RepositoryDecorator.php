@@ -43,7 +43,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function __call(string $name, array $arguments): mixed
     {
-        return $this->inner()->$name(...$arguments);
+        return $this->inner()->{$name}(...$arguments);
     }
 
     public function assert(): RepositoryAssertions

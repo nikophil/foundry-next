@@ -35,7 +35,7 @@ final class FactoryCollection
      *
      * @return self<T>
      */
-    public static function set(Factory $factory, int $count): self
+    public static function many(Factory $factory, int $count): self
     {
         return new self($factory, $count, $count);
     }

@@ -56,13 +56,23 @@ abstract class Factory
     }
 
     /**
-     * @param Parameters|callable(int):Parameters $attributes
+     * @param Attributes $attributes
      *
      * @return T[]
      */
     final public static function createMany(int $number, array|callable $attributes = []): array
     {
         return static::new()->many($number)->create($attributes);
+    }
+
+    /**
+     * @param Attributes $attributes
+     *
+     * @return T[]
+     */
+    final public static function createRange(int $min, int $max, array|callable $attributes = []): array
+    {
+        return static::new()->range($min, $max)->create($attributes);
     }
 
     /**
@@ -75,12 +85,16 @@ abstract class Factory
     /**
      * @return FactoryCollection<T>
      */
-    final public function many(int $min, ?int $max = null): FactoryCollection
+    final public function many(int $count): FactoryCollection
     {
-        if (!$max) {
-            return FactoryCollection::set($this, $min);
-        }
+        return FactoryCollection::many($this, $count);
+    }
 
+    /**
+     * @return FactoryCollection<T>
+     */
+    final public function range(int $min, int $max): FactoryCollection
+    {
         return FactoryCollection::range($this, $min, $max);
     }
 

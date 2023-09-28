@@ -74,7 +74,7 @@ final class ArrayFactoryTest extends TestCase
             ArrayFactory::createMany(1)[0],
         );
 
-        $range = ArrayFactory::new()->many(2, 4)->create();
+        $range = ArrayFactory::createRange(2, 4);
 
         $this->assertGreaterThanOrEqual(2, \count($range));
         $this->assertLessThanOrEqual(4, \count($range));
