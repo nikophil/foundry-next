@@ -15,10 +15,11 @@ namespace Zenstruck\Foundry;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T
+ * @implements \IteratorAggregate<Factory<T>>
  *
  * @phpstan-import-type Attributes from Factory
  */
-final class FactoryCollection
+final class FactoryCollection implements \IteratorAggregate
 {
     /**
      * @param Factory<T> $factory
@@ -72,5 +73,20 @@ final class FactoryCollection
         }
 
         return $factories;
+    }
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->all());
+    }
+
+    /**
+     * @return iterable<array{Factory<T>}>
+     */
+    public function asDataProvider(): iterable
+    {
+        foreach ($this as $factory) {
+            yield [$factory];
+        }
     }
 }
