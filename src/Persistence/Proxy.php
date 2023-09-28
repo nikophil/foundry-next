@@ -47,5 +47,5 @@ interface Proxy
     /**
      * @return RepositoryDecorator<T,ObjectRepository<T>>
      */
-    public function _repo(): RepositoryDecorator;
+    public function _repository(): RepositoryDecorator;
 }

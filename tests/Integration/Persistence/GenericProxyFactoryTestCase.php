@@ -200,7 +200,7 @@ abstract class GenericProxyFactoryTestCase extends GenericFactoryTestCase
     {
         $object = $this->factory()::createOne();
 
-        $object = $object->_repo()->findOneBy(['prop1' => 'default1']);
+        $object = $object->_repository()->findOneBy(['prop1' => 'default1']);
 
         $this->assertInstanceOf($this->factory()::class(), $object);
     }
@@ -216,7 +216,7 @@ abstract class GenericProxyFactoryTestCase extends GenericFactoryTestCase
 
         $object->_set('prop1', 'new value')->_save();
 
-        $object->_repo()->assert()->exists(['prop1' => 'new value']);
+        $object->_repository()->assert()->exists(['prop1' => 'new value']);
     }
 
     /**

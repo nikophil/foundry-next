@@ -102,7 +102,7 @@ trait IsProxy
         return $this->initializeLazyObject();
     }
 
-    public function _repo(): RepositoryDecorator
+    public function _repository(): RepositoryDecorator
     {
         return new RepositoryDecorator(parent::class);
     }
