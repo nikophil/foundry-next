@@ -22,13 +22,11 @@ namespace Zenstruck\Foundry;
 final class FactoryCollection implements \IteratorAggregate
 {
     /**
-     * @param Factory<T> $factory
+     * @param Factory<T>                      $factory
+     * @param \Closure():iterable<Attributes> $items
      */
-    private function __construct(public readonly Factory $factory, private int $min, private int $max)
+    private function __construct(public readonly Factory $factory, private \Closure $items)
     {
-        if ($min > $max) {
-            throw new \InvalidArgumentException('Min must be less than max.');
-        }
     }
 
     /**
@@ -38,7 +36,7 @@ final class FactoryCollection implements \IteratorAggregate
      */
     public static function many(Factory $factory, int $count): self
     {
-        return new self($factory, $count, $count);
+        return new self($factory, static fn() => \array_fill(0, $count, []));
     }
 
     /**
@@ -48,7 +46,21 @@ final class FactoryCollection implements \IteratorAggregate
      */
     public static function range(Factory $factory, int $min, int $max): self
     {
-        return new self($factory, $min, $max);
+        if ($min > $max) {
+            throw new \InvalidArgumentException('Min must be less than max.');
+        }
+
+        return new self($factory, static fn() => \array_fill(0, \random_int($min, $max), []));
+    }
+
+    /**
+     * @param  Factory<T>           $factory
+     * @param  iterable<Attributes> $items
+     * @return self<T>
+     */
+    public static function sequence(Factory $factory, iterable $items): self
+    {
+        return new self($factory, static fn() => $items);
     }
 
     /**
@@ -68,8 +80,8 @@ final class FactoryCollection implements \IteratorAggregate
     {
         $factories = [];
 
-        foreach (\array_keys(\array_fill(0, \random_int($this->min, $this->max), null)) as $i) {
-            $factories[] = $this->factory->with(['__index' => $i + 1]);
+        foreach (($this->items)() as $i => $attributes) {
+            $factories[] = $this->factory->with($attributes)->with(['__index' => $i + 1]);
         }
 
         return $factories;

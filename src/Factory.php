@@ -76,6 +76,17 @@ abstract class Factory
     }
 
     /**
+     * @param iterable<Attributes> $items
+     * @param Attributes           $attributes
+     *
+     * @return T[]
+     */
+    final public static function createSequence(iterable $items, array|callable $attributes = []): array
+    {
+        return static::new()->sequence($items)->create($attributes);
+    }
+
+    /**
      * @param Attributes $attributes
      *
      * @return T
@@ -96,6 +107,15 @@ abstract class Factory
     final public function range(int $min, int $max): FactoryCollection
     {
         return FactoryCollection::range($this, $min, $max);
+    }
+
+    /**
+     * @param  iterable<Attributes> $items
+     * @return FactoryCollection<T>
+     */
+    final public function sequence(iterable $items): FactoryCollection
+    {
+        return FactoryCollection::sequence($this, $items);
     }
 
     /**

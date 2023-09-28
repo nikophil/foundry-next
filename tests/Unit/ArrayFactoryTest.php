@@ -61,7 +61,7 @@ final class ArrayFactoryTest extends TestCase
     /**
      * @test
      */
-    public function can_create_collections(): void
+    public function can_create_many(): void
     {
         $this->assertCount(2, ArrayFactory::createMany(2));
         $this->assertSame(
@@ -73,10 +73,31 @@ final class ArrayFactoryTest extends TestCase
             ],
             ArrayFactory::createMany(1)[0],
         );
+    }
 
+    /**
+     * @test
+     */
+    public function can_create_range(): void
+    {
         $range = ArrayFactory::createRange(2, 4);
 
         $this->assertGreaterThanOrEqual(2, \count($range));
         $this->assertLessThanOrEqual(4, \count($range));
+    }
+
+    /**
+     * @test
+     */
+    public function can_create_sequence(): void
+    {
+        $sequence = ArrayFactory::createSequence([
+            ['foo' => 'bar'],
+            ['foo' => 'baz'],
+        ]);
+
+        $this->assertCount(2, $sequence);
+        $this->assertSame('bar', $sequence[0]['foo']);
+        $this->assertSame('baz', $sequence[1]['foo']);
     }
 }
