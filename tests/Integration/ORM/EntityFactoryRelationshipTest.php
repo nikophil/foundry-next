@@ -124,6 +124,24 @@ class EntityFactoryRelationshipTest extends KernelTestCase
     /**
      * @test
      */
+    public function many_to_many_owning_as_array(): void
+    {
+        $tag = $this->tagFactory()::createOne([
+            'contacts' => [$this->contactFactory(), $this->contactFactory(), $this->contactFactory()],
+        ]);
+
+        $this->contactFactory()::repository()->assert()->count(3);
+        $this->tagFactory()::repository()->assert()->count(1);
+        $this->assertNotNull($tag->id);
+
+        foreach ($tag->getContacts() as $contact) {
+            $this->assertSame($tag->id, $contact->getTags()[0]?->id);
+        }
+    }
+
+    /**
+     * @test
+     */
     public function many_to_many_inverse(): void
     {
         $contact = $this->contactFactory()::createOne([

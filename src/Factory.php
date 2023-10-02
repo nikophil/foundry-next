@@ -185,6 +185,10 @@ abstract class Factory
      */
     protected function normalizeParameter(mixed $value): mixed
     {
+        if (\is_array($value)) {
+            return \array_map($this->normalizeParameter(...), $value);
+        }
+
         if ($value instanceof LazyValue) {
             $value = $value();
         }
