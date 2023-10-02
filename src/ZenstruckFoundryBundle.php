@@ -86,20 +86,8 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('global_stories')
-                    ->info('Global stories to be loaded before each test.')
-                    ->validate()
-                        ->ifTrue(function(array $stories) {
-                            foreach ($stories as $story) {
-                                if (!\is_a($story, Story::class, true)) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        })
-                        ->thenInvalid(\sprintf('Global stories must extend "%s".', Story::class))
-                    ->end()
+                ->arrayNode('global_state')
+                    ->info('Stories or invokable services to be loaded before each test.')
                     ->scalarPrototype()->end()
                 ->end()
                 ->arrayNode('orm')
@@ -169,10 +157,7 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
         $this->configureInstantiator($config['instantiator'], $container);
         $this->configureMapper($config['mapper'], $container);
         $this->configureFaker($config['faker'], $container);
-
-        $container->getDefinition('.zenstruck_foundry.story_registry')
-            ->replaceArgument(1, $config['global_stories'])
-        ;
+        $this->configureGlobalState($config['global_state'], $container);
 
         $bundles = $container->getParameter('kernel.bundles');
 
@@ -213,6 +198,21 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                 ->addMethodCall('addProvider', [new Reference($id)])
             ;
         }
+    }
+
+    /**
+     * @param string[] $values
+     */
+    private function configureGlobalState(array $values, ContainerBuilder $container): void
+    {
+        $values = \array_map(
+            static fn(string $v) => \is_a($v, Story::class, true) ? $v : new Reference($v),
+            $values
+        );
+
+        $container->getDefinition('.zenstruck_foundry.story_registry')
+            ->replaceArgument(1, $values)
+        ;
     }
 
     /**

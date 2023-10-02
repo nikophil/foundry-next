@@ -76,11 +76,11 @@ final class StoryTest extends KernelTestCase
         }
 
         if (\getenv('DATABASE_URL')) {
-            repository(GlobalEntity::class)->assert()->count(1);
+            repository(GlobalEntity::class)->assert()->count(2);
         }
 
         if (\getenv('MONGO_URL')) {
-            repository(GlobalDocument::class)->assert()->count(1);
+            repository(GlobalDocument::class)->assert()->count(2);
         }
     }
 
@@ -96,11 +96,11 @@ final class StoryTest extends KernelTestCase
         GlobalStory::load();
 
         if (\getenv('DATABASE_URL')) {
-            repository(GlobalEntity::class)->assert()->count(1);
+            repository(GlobalEntity::class)->assert()->count(2);
         }
 
         if (\getenv('MONGO_URL')) {
-            repository(GlobalDocument::class)->assert()->count(1);
+            repository(GlobalDocument::class)->assert()->count(2);
         }
     }
 

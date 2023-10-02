@@ -25,6 +25,7 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
 use Zenstruck\Foundry\Tests\Fixture\Factories\ArrayFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object1Factory;
+use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalInvokableService;
 use Zenstruck\Foundry\Tests\Fixture\Stories\GlobalStory;
 use Zenstruck\Foundry\ZenstruckFoundryBundle;
 
@@ -65,8 +66,9 @@ final class TestKernel extends Kernel
         ]);
 
         $c->loadFromExtension('zenstruck_foundry', [
-            'global_stories' => [
+            'global_state' => [
                 GlobalStory::class,
+                GlobalInvokableService::class,
             ],
             'orm' => [
                 'reset' => [
@@ -138,6 +140,7 @@ final class TestKernel extends Kernel
         }
 
         $c->register('logger', NullLogger::class);
+        $c->register(GlobalInvokableService::class);
         $c->register(ArrayFactory::class)->setAutowired(true)->setAutoconfigured(true);
         $c->register(Object1Factory::class)->setAutowired(true)->setAutoconfigured(true);
     }

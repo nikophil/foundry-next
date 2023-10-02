@@ -25,8 +25,8 @@ final class StoryRegistry
     private static array $instances = [];
 
     /**
-     * @param Story[]                   $stories
-     * @param list<class-string<Story>> $globalStories
+     * @param Story[]                                   $stories
+     * @param list<class-string<Story>|callable():void> $globalStories
      */
     public function __construct(private iterable $stories, private array $globalStories = [])
     {
@@ -60,7 +60,7 @@ final class StoryRegistry
         self::$globalInstances = [];
 
         foreach ($this->globalStories as $story) {
-            $this->load($story);
+            \is_a($story, Story::class, true) ? $this->load($story) : $story(); // @phpstan-ignore-line
         }
 
         self::$globalInstances = self::$instances;
