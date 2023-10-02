@@ -259,7 +259,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
         }
 
         if ($value instanceof self && isset($this->persist)) {
-            $value->persist = $this->persist;
+            $value->persist = $this->persist; // todo - breaks immutability
         }
 
         if ($value instanceof self && Configuration::instance()->persistence()->relationshipMetadata(static::class(), $value::class())?->isCascadePersist) {
@@ -290,7 +290,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
         return parent::normalizeCollection($collection);
     }
 
-    private function isPersisting(): bool
+    final protected function isPersisting(): bool
     {
         $config = Configuration::instance();
 
