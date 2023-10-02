@@ -55,7 +55,7 @@ final class Configuration
         return $this->persistence ?? throw new PersistenceNotAvailable('No persistence managers configured. Note: persistence cannot be used in unit tests.');
     }
 
-    public function isPersistenceEnabled(): bool
+    public function isPersistenceAvailable(): bool
     {
         return (bool) $this->persistence;
     }

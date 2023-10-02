@@ -31,6 +31,7 @@ final class PersistenceManager
     private static bool $ormOnly = false;
 
     private bool $flush = true;
+    private bool $persist = true;
 
     /**
      * @param PersistenceStrategy[] $strategies
@@ -132,6 +133,21 @@ final class PersistenceManager
         $configuration->stories->loadGlobalStories();
 
         $shutdownKernel();
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->persist;
+    }
+
+    public function disablePersisting(): void
+    {
+        $this->persist = false;
+    }
+
+    public function enablePersisting(): void
+    {
+        $this->persist = true;
     }
 
     /**

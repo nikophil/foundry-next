@@ -19,6 +19,8 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 use function Zenstruck\Foundry\Persistence\delete;
+use function Zenstruck\Foundry\Persistence\disable_persisting;
+use function Zenstruck\Foundry\Persistence\enable_persisting;
 use function Zenstruck\Foundry\Persistence\flush_after;
 use function Zenstruck\Foundry\Persistence\persist;
 use function Zenstruck\Foundry\Persistence\refresh;
@@ -435,6 +437,24 @@ abstract class GenericFactoryTestCase extends KernelTestCase
             $this->factory()::repository()->assert()->empty();
         });
 
+        $this->factory()::repository()->assert()->count(1);
+    }
+
+    /**
+     * @test
+     */
+    public function can_disable_and_enable_persisting_globally(): void
+    {
+        $this->factory()::repository()->assert()->empty();
+
+        disable_persisting();
+
+        $this->factory()::createOne();
+        $this->factory()::repository()->assert()->empty();
+
+        enable_persisting();
+
+        $this->factory()::createOne();
         $this->factory()::repository()->assert()->count(1);
     }
 

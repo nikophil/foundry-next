@@ -128,3 +128,19 @@ function flush_after(callable $callback): void
 {
     Configuration::instance()->persistence()->flushAfter($callback);
 }
+
+/**
+ * Disable persisting factories globally.
+ */
+function disable_persisting(): void
+{
+    Configuration::instance()->persistence()->disablePersisting();
+}
+
+/**
+ * Enable persisting factories globally.
+ */
+function enable_persisting(): void
+{
+    Configuration::instance()->persistence()->enablePersisting();
+}

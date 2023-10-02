@@ -206,7 +206,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         $configuration = Configuration::instance();
 
-        if (!$configuration->isPersistenceEnabled()) {
+        if (!$configuration->isPersistenceAvailable()) {
             throw new \LogicException('Persistence cannot be used in unit tests.');
         }
 
@@ -254,7 +254,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
     protected function normalizeParameter(mixed $value): mixed
     {
-        if (!Configuration::instance()->isPersistenceEnabled()) {
+        if (!Configuration::instance()->isPersistenceAvailable()) {
             return unproxy(parent::normalizeParameter($value));
         }
 
@@ -294,7 +294,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         $config = Configuration::instance();
 
-        return $this->persist ?? $config->isPersistenceEnabled() && $config->persistence()->autoPersist(static::class());
+        return $this->persist ?? $config->isPersistenceAvailable() && $config->persistence()->isEnabled() && $config->persistence()->autoPersist(static::class());
     }
 
     /**
