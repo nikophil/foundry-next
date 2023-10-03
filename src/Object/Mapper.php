@@ -32,15 +32,11 @@ final class Mapper
 
     private PropertyAccessorInterface $accessor;
 
-    private bool $allowExtraAttributes = false;
+    /** @var string[]|true */
+    private array|bool $extraAttributes = [];
 
-    /** @var string[] */
-    private array $extraAttributes = [];
-
-    private bool $alwaysForceProperties = false;
-
-    /** @var string[] */
-    private array $forceProperties = [];
+    /** @var string[]|true */
+    private array|bool $forceProperties = [];
 
     public function __construct(?PropertyAccessorInterface $accessor = null)
     {
@@ -58,15 +54,15 @@ final class Mapper
     public function __invoke(object $object, array $parameters): object
     {
         foreach ($parameters as $parameter => $value) {
-            if (\in_array($parameter, $this->extraAttributes, true)) {
+            if (\is_array($this->extraAttributes) && \in_array($parameter, $this->extraAttributes, true)) {
                 continue;
             }
 
-            if ($this->alwaysForceProperties || \in_array($parameter, $this->forceProperties, true)) {
+            if (true === $this->forceProperties || \in_array($parameter, $this->forceProperties, true)) {
                 try {
                     self::set($object, $parameter, $value);
                 } catch (\InvalidArgumentException $e) {
-                    if (!$this->allowExtraAttributes) {
+                    if (true !== $this->extraAttributes) {
                         throw $e;
                     }
                 }
@@ -77,7 +73,7 @@ final class Mapper
             try {
                 $this->accessor->setValue($object, $parameter, $value);
             } catch (NoSuchPropertyException $e) {
-                if (!$this->allowExtraAttributes) {
+                if (true !== $this->extraAttributes) {
                     throw new \InvalidArgumentException(\sprintf('Cannot set attribute "%s" for object "%s" (not public and no setter).', $parameter, $object::class), previous: $e);
                 }
             }
@@ -94,12 +90,7 @@ final class Mapper
     public function allowExtra(string ...$parameters): self
     {
         $clone = clone $this;
-
-        if (!$parameters) {
-            $clone->allowExtraAttributes = true;
-        }
-
-        $clone->extraAttributes = $parameters;
+        $clone->extraAttributes = $parameters ?: true;
 
         return $clone;
     }
@@ -112,12 +103,7 @@ final class Mapper
     public function alwaysForce(string ...$properties): self
     {
         $clone = clone $this;
-
-        if (!$properties) {
-            $clone->alwaysForceProperties = true;
-        }
-
-        $clone->forceProperties = $properties;
+        $clone->forceProperties = $properties ?: true;
 
         return $clone;
     }
