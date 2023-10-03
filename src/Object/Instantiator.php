@@ -16,6 +16,8 @@ use Zenstruck\Foundry\Factory;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
+ * @immutable
+ *
  * @phpstan-import-type Parameters from Factory
  */
 final class Instantiator
@@ -23,8 +25,12 @@ final class Instantiator
     private const WITH_CONSTRUCTOR = '_with_constructor';
     private const WITHOUT_CONSTRUCTOR = '_without_constructor';
 
+    private Hydrator $hydrator;
+    private bool $hydration = true;
+
     private function __construct(private string|\Closure $mode)
     {
+        $this->hydrator = new Hydrator();
     }
 
     /**
@@ -35,7 +41,86 @@ final class Instantiator
      *
      * @return T
      */
-    public function __invoke(array &$parameters, string $class): object
+    public function __invoke(array $parameters, string $class): object
+    {
+        $object = $this->instantiate($parameters, $class);
+
+        return $this->hydration ? ($this->hydrator)($object, $parameters) : $object;
+    }
+
+    public static function withConstructor(): self
+    {
+        return new self(self::WITH_CONSTRUCTOR);
+    }
+
+    public static function withoutConstructor(): self
+    {
+        return new self(self::WITHOUT_CONSTRUCTOR);
+    }
+
+    public static function namedConstructor(string $method): self
+    {
+        return new self($method);
+    }
+
+    public static function use(callable $factory): self
+    {
+        return new self($factory(...));
+    }
+
+    /**
+     * Ignore attributes that can't be set to object.
+     *
+     * @param string ...$parameters The parameters you'd like the hydrator to ignore (if empty, ignore any extra)
+     */
+    public function allowExtra(string ...$parameters): self
+    {
+        $clone = clone $this;
+        $clone->hydrator = $clone->hydrator->allowExtra(...$parameters);
+        $clone->hydration = true;
+
+        return $clone;
+    }
+
+    /**
+     * Always force properties, never use setters (still uses constructor unless disabled).
+     *
+     * @param string ...$properties The properties you'd like the hydrator to "force set" (if empty, force set all)
+     */
+    public function alwaysForce(string ...$properties): self
+    {
+        $clone = clone $this;
+        $clone->hydrator = $clone->hydrator->alwaysForce(...$properties);
+        $clone->hydration = true;
+
+        return $clone;
+    }
+
+    public function enableHydration(): self
+    {
+        $clone = clone $this;
+        $clone->hydration = true;
+
+        return $clone;
+    }
+
+    public function disableHydration(): self
+    {
+        $clone = clone $this;
+        $clone->hydration = false;
+
+        return $clone;
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param Parameters      $parameters
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
+    private function instantiate(array &$parameters, string $class): object
     {
         $refClass = new \ReflectionClass($class);
 
@@ -77,26 +162,6 @@ final class Instantiator
         }
 
         return $object;
-    }
-
-    public static function withConstructor(): self
-    {
-        return new self(self::WITH_CONSTRUCTOR);
-    }
-
-    public static function withoutConstructor(): self
-    {
-        return new self(self::WITHOUT_CONSTRUCTOR);
-    }
-
-    public static function namedConstructor(string $method): self
-    {
-        return new self($method);
-    }
-
-    public static function with(callable $factory): self
-    {
-        return new self($factory(...));
     }
 
     /**

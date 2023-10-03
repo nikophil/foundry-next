@@ -65,17 +65,6 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                             ->info('Use the constructor to instantiate objects.')
                             ->defaultTrue()
                         ->end()
-                        ->scalarNode('service')
-                            ->info('Service id of your custom instantiator.')
-                            ->example('my_instantiator')
-                            ->defaultNull()
-                        ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('mapper')
-                    ->addDefaultsIfNotSet()
-                    ->info('Configure the default property mapper used by your object factories.')
-                    ->children()
                         ->booleanNode('allow_extra_attributes')
                             ->info('Whether or not to skip attributes that do not correspond to properties.')
                             ->defaultFalse()
@@ -83,6 +72,11 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                         ->booleanNode('always_force_properties')
                             ->info('Whether or not to skip setters and force set object properties (public/private/protected) directly.')
                             ->defaultFalse()
+                        ->end()
+                        ->scalarNode('service')
+                            ->info('Service id of your custom instantiator.')
+                            ->example('my_instantiator')
+                            ->defaultNull()
                         ->end()
                     ->end()
                 ->end()
@@ -155,7 +149,6 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
         $configurator->import('../config/services.php');
 
         $this->configureInstantiator($config['instantiator'], $container);
-        $this->configureMapper($config['mapper'], $container);
         $this->configureFaker($config['faker'], $container);
         $this->configureGlobalState($config['global_state'], $container);
 
@@ -231,21 +224,15 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                 ->setFactory([Instantiator::class, 'withoutConstructor'])
             ;
         }
-    }
 
-    /**
-     * @param mixed[] $config
-     */
-    private function configureMapper(array $config, ContainerBuilder $container): void
-    {
         if ($config['allow_extra_attributes']) {
-            $container->getDefinition('.zenstruck_foundry.mapper')
+            $container->getDefinition('.zenstruck_foundry.instantiator')
                 ->addMethodCall('allowExtra', returnsClone: true)
             ;
         }
 
         if ($config['always_force_properties']) {
-            $container->getDefinition('.zenstruck_foundry.mapper')
+            $container->getDefinition('.zenstruck_foundry.instantiator')
                 ->addMethodCall('alwaysForce', returnsClone: true)
             ;
         }

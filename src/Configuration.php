@@ -14,7 +14,6 @@ namespace Zenstruck\Foundry;
 use Faker;
 use Zenstruck\Foundry\Exception\FoundryNotBooted;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
-use Zenstruck\Foundry\Object\Mapper;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
@@ -43,7 +42,6 @@ final class Configuration
         public readonly FactoryRegistry $factories,
         public readonly Faker\Generator $faker,
         callable $instantiator,
-        public readonly Mapper $mapper,
         public readonly StoryRegistry $stories,
         private readonly ?PersistenceManager $persistence = null,
     ) {

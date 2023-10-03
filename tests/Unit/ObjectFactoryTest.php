@@ -13,7 +13,6 @@ namespace Zenstruck\Foundry\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Foundry\Object\Instantiator;
-use Zenstruck\Foundry\Object\Mapper;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object1Factory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Object2Factory;
@@ -58,7 +57,7 @@ final class ObjectFactoryTest extends TestCase
     /**
      * @test
      */
-    public function default_instantiator_and_mapper(): void
+    public function default_instantiator_and_hydrator(): void
     {
         $object = Object1Factory::createOne([
             'prop1' => 'override1',
@@ -93,7 +92,7 @@ final class ObjectFactoryTest extends TestCase
     public function with_closure_factory_constructor(): void
     {
         $object = Object1Factory::new()
-            ->instantiateWith(Instantiator::with(fn(string $prop1) => new Object1($prop1)))
+            ->instantiateWith(Instantiator::use(fn(string $prop1) => new Object1($prop1)))
             ->create([
                 'prop1' => 'override1',
                 'prop2' => 'override2',
@@ -112,7 +111,7 @@ final class ObjectFactoryTest extends TestCase
     public function with_method_factory_constructor(): void
     {
         $object = Object1Factory::new()
-            ->instantiateWith(Instantiator::with(Object1::factory(...)))
+            ->instantiateWith(Instantiator::use(Object1::factory(...)))
             ->create([
                 'prop1' => 'override1',
                 'prop2' => 'override2',
@@ -147,8 +146,7 @@ final class ObjectFactoryTest extends TestCase
     public function with_extra_and_force_mode_without_constructor(): void
     {
         $object = Object1Factory::new()
-            ->instantiateWith(Instantiator::withoutConstructor())
-            ->configureMapping(Mapper::ALLOW_EXTRA_ATTRIBUTES | Mapper::ALWAYS_FORCE_PROPERTIES)
+            ->instantiateWith(Instantiator::withoutConstructor()->allowExtra()->alwaysForce())
             ->create([
                 'prop1' => 'override1',
                 'prop2' => 'override2',
@@ -165,11 +163,10 @@ final class ObjectFactoryTest extends TestCase
     /**
      * @test
      */
-    public function with_configured_mapper(): void
+    public function with_configured_hydrator(): void
     {
         $object = Object1Factory::new()
-            ->instantiateWith(Instantiator::withoutConstructor())
-            ->configureMapping(fn(Mapper $m) => $m->allowExtra('extra')->alwaysForce('prop2'))
+            ->instantiateWith(Instantiator::withoutConstructor()->allowExtra('extra')->alwaysForce('prop2'))
             ->create([
                 'prop1' => 'override1',
                 'prop2' => 'override2',
@@ -186,10 +183,10 @@ final class ObjectFactoryTest extends TestCase
     /**
      * @test
      */
-    public function with_mapper_disabled(): void
+    public function with_hydration_disabled(): void
     {
         $object = Object1Factory::new()
-            ->disableMapping()
+            ->instantiateWith(Instantiator::withConstructor()->disableHydration())
             ->create([
                 'prop1' => 'override1',
                 'prop2' => 'override2',
@@ -254,7 +251,7 @@ final class ObjectFactoryTest extends TestCase
     {
         $object = Object1Factory::new()
             ->afterInstantiate(function(Object1 $object, array $parameters) {
-                $this->assertSame([], $parameters);
+                $this->assertSame(['prop1' => 'value1'], $parameters);
 
                 $object->setProp3('custom3');
             })

@@ -13,7 +13,7 @@ namespace Zenstruck\Foundry\Persistence;
 
 use Symfony\Component\VarExporter\Internal\LazyObjectState;
 use Zenstruck\Foundry\Configuration;
-use Zenstruck\Foundry\Object\Mapper;
+use Zenstruck\Foundry\Object\Hydrator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -83,14 +83,14 @@ trait IsProxy
     {
         $this->_autoRefresh();
 
-        return Mapper::get($this->initializeLazyObject(), $property);
+        return Hydrator::get($this->initializeLazyObject(), $property);
     }
 
     public function _set(string $property, mixed $value): static
     {
         $this->_autoRefresh();
 
-        Mapper::set($this->initializeLazyObject(), $property, $value);
+        Hydrator::set($this->initializeLazyObject(), $property, $value);
 
         return $this;
     }

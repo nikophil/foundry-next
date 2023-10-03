@@ -12,7 +12,7 @@
 namespace Zenstruck\Foundry;
 
 use Faker;
-use Zenstruck\Foundry\Object\Mapper;
+use Zenstruck\Foundry\Object\Hydrator;
 
 function faker(): Faker\Generator
 {
@@ -54,7 +54,7 @@ function object(string $class, array|callable $attributes = []): object
  */
 function set(object $object, string $property, mixed $value): void
 {
-    Mapper::set($object, $property, $value);
+    Hydrator::set($object, $property, $value);
 }
 
 /**
@@ -62,7 +62,7 @@ function set(object $object, string $property, mixed $value): void
  */
 function get(object $object, string $property): mixed
 {
-    return Mapper::get($object, $property);
+    return Hydrator::get($object, $property);
 }
 
 /**

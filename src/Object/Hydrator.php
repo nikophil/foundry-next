@@ -13,35 +13,25 @@ namespace Zenstruck\Foundry\Object;
 
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Zenstruck\Foundry\Factory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
+ * @internal
  * @immutable
  *
  * @phpstan-import-type Parameters from Factory
  */
-final class Mapper
+final class Hydrator
 {
-    public const ALLOW_EXTRA_ATTRIBUTES = 1;
-    public const ALWAYS_FORCE_PROPERTIES = 2;
-
-    private static PropertyAccessor $defaultAccessor;
-
-    private PropertyAccessorInterface $accessor;
+    private static PropertyAccessor $accessor;
 
     /** @var string[]|true */
     private array|bool $extraAttributes = [];
 
     /** @var string[]|true */
     private array|bool $forceProperties = [];
-
-    public function __construct(?PropertyAccessorInterface $accessor = null)
-    {
-        $this->accessor = $accessor ?? self::$defaultAccessor ??= new PropertyAccessor();
-    }
 
     /**
      * @template T of object
@@ -70,8 +60,10 @@ final class Mapper
                 continue;
             }
 
+            self::$accessor ??= new PropertyAccessor();
+
             try {
-                $this->accessor->setValue($object, $parameter, $value);
+                self::$accessor->setValue($object, $parameter, $value);
             } catch (NoSuchPropertyException $e) {
                 if (true !== $this->extraAttributes) {
                     throw new \InvalidArgumentException(\sprintf('Cannot set attribute "%s" for object "%s" (not public and no setter).', $parameter, $object::class), previous: $e);
@@ -82,11 +74,6 @@ final class Mapper
         return $object;
     }
 
-    /**
-     * Ignore attributes that can't be set to object.
-     *
-     * @param string ...$parameters The parameters you'd like the mapper to ignore (if empty, ignore any extra)
-     */
     public function allowExtra(string ...$parameters): self
     {
         $clone = clone $this;
@@ -95,11 +82,6 @@ final class Mapper
         return $clone;
     }
 
-    /**
-     * Always force properties, never use setters (still uses constructor unless disabled).
-     *
-     * @param string ...$properties The properties you'd like the mapper to "force set" (if empty, force set all)
-     */
     public function alwaysForce(string ...$properties): self
     {
         $clone = clone $this;
@@ -108,35 +90,11 @@ final class Mapper
         return $clone;
     }
 
-    /**
-     * @param int-mask-of<self::*> $mode
-     */
-    public function withMode(int $mode): self
-    {
-        $clone = clone $this;
-
-        if ($mode & self::ALLOW_EXTRA_ATTRIBUTES) {
-            $clone = $clone->allowExtra();
-        }
-
-        if ($mode & self::ALWAYS_FORCE_PROPERTIES) {
-            $clone = $clone->alwaysForce();
-        }
-
-        return $clone;
-    }
-
-    /**
-     * @internal
-     */
     public static function set(object $object, string $property, mixed $value): void
     {
         self::accessibleProperty($object, $property)->setValue($object, $value);
     }
 
-    /**
-     * @internal
-     */
     public static function get(object $object, string $property): mixed
     {
         return self::accessibleProperty($object, $property)->getValue($object);
