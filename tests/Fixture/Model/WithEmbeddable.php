@@ -9,33 +9,35 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Foundry\Tests\Fixture\Document;
+namespace Zenstruck\Foundry\Tests\Fixture\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Zenstruck\Foundry\Tests\Fixture\Model\Base;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[MongoDB\Document]
-class Document extends Base
+#[ORM\MappedSuperclass]
+#[MongoDB\MappedSuperclass]
+abstract class WithEmbeddable extends Base
 {
-    #[MongoDB\EmbedOne(nullable: true, targetDocument: Embeddable::class)]
-    private ?Embeddable $embeddable;
+    #[MongoDB\EmbedOne(targetDocument: Embeddable::class)]
+    #[ORM\Embedded(class: Embeddable::class)]
+    private Embeddable $embeddable;
 
     /** @var Collection<int,Embeddable> */
     #[MongoDB\EmbedMany(targetDocument: Embeddable::class)]
     private Collection $embeddables;
 
-    public function __construct(?Embeddable $embeddable = null)
+    public function __construct(Embeddable $embeddable)
     {
         $this->embeddable = $embeddable;
         $this->embeddables = new ArrayCollection();
     }
 
-    public function getEmbeddable(): ?Embeddable
+    public function getEmbeddable(): Embeddable
     {
         return $this->embeddable;
     }

@@ -11,11 +11,10 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\Mongo;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
-use Zenstruck\Foundry\Tests\Fixture\Document\Document;
-use Zenstruck\Foundry\Tests\Fixture\Document\Embeddable;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+use Zenstruck\Foundry\Tests\Fixture\Document\WithEmbeddableDocument;
+use Zenstruck\Foundry\Tests\Fixture\Model\Embeddable;
+use Zenstruck\Foundry\Tests\Integration\Persistence\EmbeddableFactoryTestCase;
 use Zenstruck\Foundry\Tests\Integration\RequiresMongo;
 
 use function Zenstruck\Foundry\factory;
@@ -26,45 +25,36 @@ use function Zenstruck\Foundry\Persistence\repository;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class DocumentFactoryEmbedTest extends KernelTestCase
+final class EmbeddableDocumentFactoryTest extends EmbeddableFactoryTestCase
 {
-    use Factories, RequiresMongo, ResetDatabase;
-
-    /**
-     * @test
-     */
-    public function embed_one(): void
-    {
-        $document = persist(Document::class, ['embeddable' => factory(Embeddable::class, ['prop1' => 'value1'])]);
-
-        $this->assertSame('value1', $document->getEmbeddable()?->getProp1());
-        repository(Document::class)->assert()->count(1);
-
-        self::ensureKernelShutdown();
-
-        $document = persistent_factory(Document::class)::first();
-
-        $this->assertSame('value1', $document->getEmbeddable()?->getProp1());
-    }
+    use RequiresMongo;
 
     /**
      * @test
      */
     public function embed_many(): void
     {
-        $document = persist(Document::class, ['embeddables' => factory(Embeddable::class, fn($i) => ['prop1' => 'value'.$i])->many(2)]);
+        $document = persist(WithEmbeddableDocument::class, [
+            'embeddable' => factory(Embeddable::class, ['prop1' => 'value1']),
+            'embeddables' => factory(Embeddable::class, fn($i) => ['prop1' => 'value'.$i])->many(2),
+        ]);
 
         $this->assertCount(2, $document->getEmbeddables());
         $this->assertSame('value1', $document->getEmbeddables()[0]?->getProp1());
         $this->assertSame('value2', $document->getEmbeddables()[1]?->getProp1());
-        repository(Document::class)->assert()->count(1);
+        repository(WithEmbeddableDocument::class)->assert()->count(1);
 
         self::ensureKernelShutdown();
 
-        $document = persistent_factory(Document::class)::first();
+        $document = persistent_factory(WithEmbeddableDocument::class)::first();
 
         $this->assertCount(2, $document->getEmbeddables());
         $this->assertSame('value1', $document->getEmbeddables()[0]?->getProp1());
         $this->assertSame('value2', $document->getEmbeddables()[1]?->getProp1());
+    }
+
+    protected function withEmbeddableFactory(): PersistentObjectFactory
+    {
+        return persistent_factory(WithEmbeddableDocument::class); // @phpstan-ignore-line
     }
 }
