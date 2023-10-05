@@ -12,7 +12,6 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zenstruck\Foundry\Tests\Fixture\Model\Embeddable;
 use Zenstruck\Foundry\Tests\Fixture\Model\WithEmbeddable;
 
 /**
@@ -21,6 +20,4 @@ use Zenstruck\Foundry\Tests\Fixture\Model\WithEmbeddable;
 #[ORM\Entity]
 class WithEmbeddableEntity extends WithEmbeddable
 {
-    #[ORM\Embedded(class: ORMEmbeddable::class)]
-    protected Embeddable $embeddable;
 }

@@ -11,9 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Fixture\Document;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Zenstruck\Foundry\Tests\Fixture\Model\Embeddable;
 use Zenstruck\Foundry\Tests\Fixture\Model\WithEmbeddable;
 
 /**
@@ -22,9 +20,4 @@ use Zenstruck\Foundry\Tests\Fixture\Model\WithEmbeddable;
 #[MongoDB\Document]
 class WithEmbeddableDocument extends WithEmbeddable
 {
-    #[MongoDB\EmbedOne(targetDocument: MongoEmbeddable::class)]
-    protected Embeddable $embeddable;
-
-    #[MongoDB\EmbedMany(targetDocument: MongoEmbeddable::class)]
-    protected Collection $embeddables;
 }

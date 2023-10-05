@@ -11,14 +11,11 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\ORM;
 
-use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
-use Zenstruck\Foundry\Tests\Fixture\Entity\ORMEmbeddable;
 use Zenstruck\Foundry\Tests\Fixture\Entity\WithEmbeddableEntity;
 use Zenstruck\Foundry\Tests\Integration\Persistence\EmbeddableFactoryTestCase;
-
 use Zenstruck\Foundry\Tests\Integration\RequiresORM;
-use function Zenstruck\Foundry\factory;
+
 use function Zenstruck\Foundry\Persistence\persistent_factory;
 
 /**
@@ -31,10 +28,5 @@ final class EmbeddableEntityFactoryTest extends EmbeddableFactoryTestCase
     protected function withEmbeddableFactory(): PersistentObjectFactory
     {
         return persistent_factory(WithEmbeddableEntity::class); // @phpstan-ignore-line
-    }
-
-    protected function embeddableFactory(): ObjectFactory
-    {
-        return factory(ORMEmbeddable::class); // @phpstan-ignore-line
     }
 }

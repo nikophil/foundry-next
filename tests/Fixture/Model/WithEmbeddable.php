@@ -23,10 +23,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[MongoDB\MappedSuperclass]
 abstract class WithEmbeddable extends Base
 {
-    protected Embeddable $embeddable;
+    #[ORM\Embedded(class: Embeddable::class)]
+    #[MongoDB\EmbedOne(targetDocument: Embeddable::class)]
+    private Embeddable $embeddable;
 
     /** @var Collection<int,Embeddable> */
-    protected Collection $embeddables;
+    #[MongoDB\EmbedMany(targetDocument: Embeddable::class)]
+    private Collection $embeddables;
 
     public function __construct(Embeddable $embeddable)
     {
