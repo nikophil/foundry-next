@@ -14,6 +14,7 @@ namespace Zenstruck\Foundry\ORM;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
@@ -49,6 +50,27 @@ final class ORMPersistenceStrategy extends PersistenceStrategy
     public function truncate(string $class): void
     {
         $this->objectManagerFor($class)->createQuery("DELETE {$class} e")->execute();
+    }
+
+    public function embeddablePropertiesFor(object $object, string $owner): ?array
+    {
+        try {
+            $metadata = $this->objectManagerFor($owner)->getClassMetadata($object::class);
+        } catch (MappingException) {
+            return null;
+        }
+
+        if (!$metadata->isEmbeddedClass) {
+            return null;
+        }
+
+        $properties = [];
+
+        foreach ($metadata->getFieldNames() as $field) {
+            $properties[$field] = $metadata->getFieldValue($object, $field);
+        }
+
+        return $properties;
     }
 
     public function resetDatabase(KernelInterface $kernel): void

@@ -79,6 +79,13 @@ abstract class PersistenceStrategy
     abstract public function truncate(string $class): void;
 
     /**
+     * @param class-string $owner
+     *
+     * @return array<string,mixed>|null
+     */
+    abstract public function embeddablePropertiesFor(object $object, string $owner): ?array;
+
+    /**
      * @param array<string,scalar> $parameters
      */
     final protected static function runCommand(Application $application, string $command, array $parameters = [], bool $canFail = false): void

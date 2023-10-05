@@ -119,7 +119,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->inner()->findBy(unproxy($criteria), $orderBy, $limit, $offset);
+        return $this->inner()->findBy($this->normalize($criteria), $orderBy, $limit, $offset);
     }
 
     /**
@@ -127,7 +127,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function findOneBy(array $criteria): ?object
     {
-        return $this->inner()->findOneBy(unproxy($criteria));
+        return $this->inner()->findOneBy($this->normalize($criteria));
     }
 
     public function getClassName(): string
@@ -144,7 +144,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
 
         if ($inner instanceof EntityRepository) {
             // use query to avoid loading all entities
-            return $inner->count(unproxy($criteria));
+            return $inner->count($this->normalize($criteria));
         }
 
         return \count($this->findBy($criteria));
@@ -214,5 +214,40 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     private function inner(): ObjectRepository
     {
         return Configuration::instance()->persistence()->repositoryFor($this->class);
+    }
+
+    /**
+     * @param Parameters $criteria
+     *
+     * @return Parameters
+     */
+    private function normalize(array $criteria): array
+    {
+        $normalized = [];
+
+        foreach ($criteria as $key => $value) {
+            if ($value instanceof Factory) {
+                // create factories
+                $value = $value instanceof PersistentObjectFactory ? $value->withoutPersisting()->create() : $value->create();
+            }
+
+            if ($value instanceof Proxy) {
+                // unwrap proxies
+                $value = $value->_real();
+            }
+
+            if (!\is_object($value) || null === $embeddableProps = Configuration::instance()->persistence()->embeddablePropertiesFor($value, $this->getClassName())) {
+                $normalized[$key] = $value;
+
+                continue;
+            }
+
+            // expand embeddables
+            foreach ($embeddableProps as $subKey => $subValue) {
+                $normalized["{$key}.{$subKey}"] = $subValue;
+            }
+        }
+
+        return $normalized;
     }
 }

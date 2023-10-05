@@ -12,6 +12,7 @@
 namespace Zenstruck\Foundry\Mongo;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceStrategy;
 
@@ -41,6 +42,27 @@ final class MongoPersistenceStrategy extends PersistenceStrategy
     public function truncate(string $class): void
     {
         $this->objectManagerFor($class)->getDocumentCollection($class)->deleteMany([]);
+    }
+
+    public function embeddablePropertiesFor(object $object, string $owner): ?array
+    {
+        try {
+            $metadata = $this->objectManagerFor($owner)->getClassMetadata($object::class);
+        } catch (MappingException) {
+            return null;
+        }
+
+        if (!$metadata->isEmbeddedDocument) {
+            return null;
+        }
+
+        $properties = [];
+
+        foreach ($metadata->getFieldNames() as $field) {
+            $properties[$field] = $metadata->getFieldValue($object, $field);
+        }
+
+        return $properties;
     }
 
     public function resetDatabase(KernelInterface $kernel): void

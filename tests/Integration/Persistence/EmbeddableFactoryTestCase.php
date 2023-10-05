@@ -45,6 +45,22 @@ abstract class EmbeddableFactoryTestCase extends KernelTestCase
     }
 
     /**
+     * @test
+     */
+    public function can_find_using_embeddable_object(): void
+    {
+        $factory = $this->withEmbeddableFactory();
+        $embeddableFactory = $this->embeddableFactory()->with(['prop1' => 'value1']);
+        $factory->create(['embeddable' => $embeddableFactory]);
+
+        $object = $factory::find(['embeddable' => $embeddableFactory]);
+
+        $this->assertSame('value1', $object->getEmbeddable()->getProp1());
+
+        $this->assertSame(0, $factory::count(['embeddable' => $this->embeddableFactory()->with(['prop1' => 'value2'])]));
+    }
+
+    /**
      * @return PersistentObjectFactory<WithEmbeddable>
      */
     abstract protected function withEmbeddableFactory(): PersistentObjectFactory;

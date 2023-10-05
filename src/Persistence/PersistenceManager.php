@@ -295,6 +295,22 @@ final class PersistenceManager
         return $this->strategyFor($parent)->relationshipMetadata($parent, $child);
     }
 
+    /**
+     * @param class-string $owner
+     *
+     * @return array<string,mixed>|null
+     */
+    public function embeddablePropertiesFor(object $object, string $owner): ?array
+    {
+        $owner = unproxy($owner);
+
+        try {
+            return $this->strategyFor($owner)->embeddablePropertiesFor(unproxy($object), $owner);
+        } catch (\LogicException) {
+            return null;
+        }
+    }
+
     private static function canSkipSchemaReset(): bool
     {
         return self::$ormOnly && self::isDAMADoctrineTestBundleEnabled();
