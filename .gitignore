@@ -8,3 +8,4 @@
 /.phpunit.result.cache
 /.env.local
 /tests/Fixture/Migrations/
+/tests/Fixture/Maker/

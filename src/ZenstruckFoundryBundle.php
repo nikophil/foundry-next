@@ -154,9 +154,9 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
 
         $bundles = $container->getParameter('kernel.bundles');
 
-        if (!isset($bundles['MakerBundle'])) {
-            $configurator->import('../config/command_stubs.php');
-        }
+        $configurator->import(\sprintf('../config/%s.php',
+            isset($bundles['MakerBundle']) ? 'makers' : 'command_stubs'
+        ));
 
         if (isset($bundles['DoctrineBundle']) || isset($bundles['DoctrineMongoDBBundle'])) {
             $configurator->import('../config/persistence.php');
