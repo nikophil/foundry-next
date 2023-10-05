@@ -17,13 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[MongoDB\EmbeddedDocument]
-#[ORM\Embeddable]
-final class Embeddable
+abstract class Embeddable
 {
     #[MongoDB\Field(type: 'string')]
     #[ORM\Column(type: 'string')]
-    private string $prop1;
+    protected string $prop1;
 
     public function __construct(string $prop1)
     {
