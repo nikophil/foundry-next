@@ -43,7 +43,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->categoryFactory()::repository()->assert()->count(1);
 
         $this->assertNotNull($contact->id);
-        $this->assertNotNull($contact->getCategory()?->id);
+        $this->assertNotNull($contact->getCategory()->id);
     }
 
     /**
@@ -61,8 +61,8 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->addressFactory()::repository()->assert()->empty();
 
         $this->assertNull($contact->id);
-        $this->assertNull($contact->getCategory()?->id);
-        $this->assertNull($contact->getAddress()?->id);
+        $this->assertNull($contact->getCategory()->id);
+        $this->assertNull($contact->getAddress()->id);
         $this->assertCount(3, $contact->getTags());
 
         foreach ($contact->getTags() as $tag) {
@@ -80,7 +80,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->assertCount(3, $category->getContacts());
 
         foreach ($category->getContacts() as $contact) {
-            $this->assertSame($category->getName(), $contact->getCategory()?->getName());
+            $this->assertSame($category->getName(), $contact->getCategory()->getName());
         }
     }
 
@@ -99,7 +99,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->assertCount(3, $category->getContacts());
 
         foreach ($category->getContacts() as $contact) {
-            $this->assertSame($category->id, $contact->getCategory()?->id);
+            $this->assertSame($category->id, $contact->getCategory()->id);
         }
     }
 
@@ -169,7 +169,7 @@ class EntityFactoryRelationshipTest extends KernelTestCase
         $this->addressFactory()::repository()->assert()->count(1);
 
         $this->assertNotNull($contact->id);
-        $this->assertNotNull($contact->getAddress()?->id);
+        $this->assertNotNull($contact->getAddress()->id);
     }
 
     /**

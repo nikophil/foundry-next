@@ -13,8 +13,6 @@ namespace Zenstruck\Foundry\Tests\Fixture\Entity\Address;
 
 use Doctrine\ORM\Mapping as ORM;
 use Zenstruck\Foundry\Tests\Fixture\Entity\Address;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Contact;
-use Zenstruck\Foundry\Tests\Fixture\Entity\Contact\StandardContact;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -22,6 +20,4 @@ use Zenstruck\Foundry\Tests\Fixture\Entity\Contact\StandardContact;
 #[ORM\Entity]
 class StandardAddress extends Address
 {
-    #[ORM\OneToOne(mappedBy: 'address', targetEntity: StandardContact::class)]
-    protected ?Contact $contact = null;
 }

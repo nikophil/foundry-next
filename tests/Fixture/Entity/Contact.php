@@ -22,18 +22,21 @@ use Zenstruck\Foundry\Tests\Fixture\Model\Base;
 #[ORM\MappedSuperclass]
 abstract class Contact extends Base
 {
-    protected ?Category $category = null;
+    protected Category $category;
 
     /** @var Collection<int,Tag> */
     protected Collection $tags;
 
-    protected ?Address $address = null;
+    protected Address $address;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
-    public function __construct()
+    public function __construct(string $name, Category $category, Address $address)
     {
+        $this->name = $name;
+        $this->category = $category;
+        $this->address = $address;
         $this->tags = new ArrayCollection();
     }
 
@@ -49,12 +52,12 @@ abstract class Contact extends Base
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(Category $category): static
     {
         $this->category = $category;
 
@@ -85,7 +88,7 @@ abstract class Contact extends Base
         return $this;
     }
 
-    public function getAddress(): ?Address
+    public function getAddress(): Address
     {
         return $this->address;
     }

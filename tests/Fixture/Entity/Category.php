@@ -26,10 +26,11 @@ abstract class Category extends Base
     protected Collection $contacts;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
-    public function __construct()
+    public function __construct(string $name)
     {
+        $this->name = $name;
         $this->contacts = new ArrayCollection();
     }
 
@@ -65,12 +66,7 @@ abstract class Category extends Base
 
     public function removeContact(Contact $contact): static
     {
-        if ($this->contacts->removeElement($contact)) {
-            // set the owning side to null (unless already changed)
-            if ($contact->getCategory() === $this) {
-                $contact->setCategory(null);
-            }
-        }
+        $this->contacts->removeElement($contact);
 
         return $this;
     }

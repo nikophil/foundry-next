@@ -27,12 +27,12 @@ class CascadeContact extends Contact
 {
     #[ORM\ManyToOne(targetEntity: Category\CascadeCategory::class, cascade: ['persist', 'remove'], inversedBy: 'contacts')]
     #[ORM\JoinColumn(nullable: false)]
-    protected ?Category $category = null;
+    protected Category $category;
 
     #[ORM\ManyToMany(targetEntity: CascadeTag::class, inversedBy: 'contacts', cascade: ['persist', 'remove'])]
     protected Collection $tags;
 
-    #[ORM\OneToOne(inversedBy: 'contact', targetEntity: CascadeAddress::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: CascadeAddress::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    protected ?Address $address = null;
+    protected Address $address;
 }

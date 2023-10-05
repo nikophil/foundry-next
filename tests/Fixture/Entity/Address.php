@@ -20,12 +20,15 @@ use Zenstruck\Foundry\Tests\Fixture\Model\Base;
 #[ORM\MappedSuperclass]
 abstract class Address extends Base
 {
-    protected ?Contact $contact = null;
-
     #[ORM\Column(length: 255)]
-    private ?string $city = null;
+    private string $city;
 
-    public function getCity(): ?string
+    public function __construct(string $city)
+    {
+        $this->city = $city;
+    }
+
+    public function getCity(): string
     {
         return $this->city;
     }
@@ -33,23 +36,6 @@ abstract class Address extends Base
     public function setCity(string $city): static
     {
         $this->city = $city;
-
-        return $this;
-    }
-
-    public function getContact(): ?Contact
-    {
-        return $this->contact;
-    }
-
-    public function setContact(Contact $contact): static
-    {
-        // set the owning side of the relation if necessary
-        if ($contact->getAddress() !== $this) {
-            $contact->setAddress($this);
-        }
-
-        $this->contact = $contact;
 
         return $this;
     }

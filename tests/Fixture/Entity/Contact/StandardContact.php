@@ -28,12 +28,12 @@ class StandardContact extends Contact
 {
     #[ORM\ManyToOne(targetEntity: StandardCategory::class, inversedBy: 'contacts')]
     #[ORM\JoinColumn(nullable: false)]
-    protected ?Category $category = null;
+    protected Category $category;
 
     #[ORM\ManyToMany(targetEntity: StandardTag::class, inversedBy: 'contacts')]
     protected Collection $tags;
 
-    #[ORM\OneToOne(inversedBy: 'contact', targetEntity: StandardAddress::class)]
+    #[ORM\OneToOne(targetEntity: StandardAddress::class)]
     #[ORM\JoinColumn(nullable: false)]
-    protected ?Address $address = null;
+    protected Address $address;
 }
