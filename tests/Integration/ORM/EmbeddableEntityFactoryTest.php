@@ -17,6 +17,7 @@ use Zenstruck\Foundry\Tests\Fixture\Entity\ORMEmbeddable;
 use Zenstruck\Foundry\Tests\Fixture\Entity\WithEmbeddableEntity;
 use Zenstruck\Foundry\Tests\Integration\Persistence\EmbeddableFactoryTestCase;
 
+use Zenstruck\Foundry\Tests\Integration\RequiresORM;
 use function Zenstruck\Foundry\factory;
 use function Zenstruck\Foundry\Persistence\persistent_factory;
 
@@ -25,6 +26,8 @@ use function Zenstruck\Foundry\Persistence\persistent_factory;
  */
 final class EmbeddableEntityFactoryTest extends EmbeddableFactoryTestCase
 {
+    use RequiresORM;
+
     protected function withEmbeddableFactory(): PersistentObjectFactory
     {
         return persistent_factory(WithEmbeddableEntity::class); // @phpstan-ignore-line
