@@ -16,7 +16,7 @@ namespace Zenstruck\Foundry;
  *
  * @internal
  */
-final class FactoryRegistry
+final class FactoryRegistry implements FactoryRegistryInterface
 {
     /**
      * @param Factory<mixed>[] $factories
@@ -25,21 +25,14 @@ final class FactoryRegistry
     {
     }
 
-    /**
-     * @template T of Factory
-     *
-     * @param class-string<T> $class
-     *
-     * @return T|null
-     */
-    public function get(string $class): ?Factory
+    public function get(string $class): Factory
     {
         foreach ($this->factories as $factory) {
             if ($class === $factory::class) {
-                return $factory; // @phpstan-ignore-line
+                return $factory;
             }
         }
 
-        return null;
+        return new $class();
     }
 }

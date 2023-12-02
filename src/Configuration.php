@@ -39,7 +39,7 @@ final class Configuration
      * @param InstantiatorCallable $instantiator
      */
     public function __construct(
-        public readonly FactoryRegistry $factories,
+        public readonly FactoryRegistryInterface $factories,
         public readonly Faker\Generator $faker,
         callable $instantiator,
         public readonly StoryRegistry $stories,

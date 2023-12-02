@@ -32,6 +32,7 @@ final class PersistenceManager
 
     private bool $flush = true;
     private bool $persist = true;
+    private bool $inMemory = false;
 
     /**
      * @param PersistenceStrategy[] $strategies
@@ -148,6 +149,17 @@ final class PersistenceManager
     public function enablePersisting(): void
     {
         $this->persist = true;
+    }
+
+    public function isInMemoryEnabled(): bool
+    {
+        return $this->inMemory;
+    }
+
+    public function enableInMemory(): void
+    {
+        $this->persist = false;
+        $this->inMemory = true;
     }
 
     /**

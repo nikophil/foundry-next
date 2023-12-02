@@ -144,3 +144,11 @@ function enable_persisting(): void
 {
     Configuration::instance()->persistence()->enablePersisting();
 }
+
+/**
+ * Enable "in memory" repositories globally.
+ */
+function enable_in_memory(): void
+{
+    Configuration::instance()->persistence()->enableInMemory();
+}

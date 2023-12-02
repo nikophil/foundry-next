@@ -12,11 +12,16 @@
 namespace Zenstruck\Foundry;
 
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Zenstruck\Foundry\InMemory\AsInMemoryRepository;
+use Zenstruck\Foundry\InMemory\DependencyInjection\InMemoryCompilerPass;
+use Zenstruck\Foundry\InMemory\InMemoryRepository;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
 
@@ -177,6 +182,19 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
                 ->replaceArgument(1, $config['mongo'])
             ;
         }
+
+        // todo: should we find a way to decouple Foundry from its "plugins"?
+        // tag with "foundry.in_memory.repository" all classes using attribute "AsInMemoryRepository"
+        $container->registerAttributeForAutoconfiguration(
+            AsInMemoryRepository::class,
+            static function (ChildDefinition $definition, AsInMemoryRepository $attribute, \ReflectionClass $reflector) {
+                if (!is_a($reflector->name, InMemoryRepository::class, true)) {
+                    throw new \LogicException(sprintf("Service \"%s\" with attribute \"AsInMemoryRepository\" must implement \"%s\".", $reflector->name, InMemoryRepository::class));
+                }
+
+                $definition->addTag('foundry.in_memory.repository', ['class' => $attribute->class]);
+            }
+        );
     }
 
     public function build(ContainerBuilder $container): void
@@ -184,6 +202,9 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
         parent::build($container);
 
         $container->addCompilerPass($this);
+
+        // todo: should we find a way to decouple Foundry from its "plugins"?
+        $container->addCompilerPass(new InMemoryCompilerPass());
     }
 
     public function process(ContainerBuilder $container): void
