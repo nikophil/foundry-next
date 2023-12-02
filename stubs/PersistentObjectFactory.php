@@ -2,7 +2,7 @@
 
 use Doctrine\ORM\EntityRepository;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
-use Zenstruck\Foundry\Persistence\RepositoryDecorator;
+use Zenstruck\Foundry\Persistence\PersistenceRepositoryDecorator;
 
 use function PHPStan\Testing\assertType;
 use function Zenstruck\Foundry\Persistence\proxy;
@@ -30,9 +30,9 @@ class UserRepository extends EntityRepository
  * @extends PersistentObjectFactory<User>
  *
  * @method User create(array|callable $attributes = [])
- * @method static RepositoryDecorator|UserRepository repository()
+ * @method static PersistenceRepositoryDecorator|UserRepository repository()
  *
- * @phpstan-method static RepositoryDecorator<User,UserRepository> repository()
+ * @phpstan-method static PersistenceRepositoryDecorator<User,UserRepository> repository()
  */
 final class UserFactory extends PersistentObjectFactory
 {

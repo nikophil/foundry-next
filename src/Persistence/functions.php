@@ -24,7 +24,7 @@ use Zenstruck\Foundry\Configuration;
  */
 function repository(string $class): RepositoryDecorator
 {
-    return new RepositoryDecorator($class); // @phpstan-ignore-line
+    return new PersistenceRepositoryDecorator($class); // @phpstan-ignore-line
 }
 
 /**
@@ -143,12 +143,4 @@ function disable_persisting(): void
 function enable_persisting(): void
 {
     Configuration::instance()->persistence()->enablePersisting();
-}
-
-/**
- * Enable "in memory" repositories globally.
- */
-function enable_in_memory(): void
-{
-    Configuration::instance()->persistence()->enableInMemory();
 }

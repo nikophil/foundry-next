@@ -151,17 +151,6 @@ final class PersistenceManager
         $this->persist = true;
     }
 
-    public function isInMemoryEnabled(): bool
-    {
-        return $this->inMemory;
-    }
-
-    public function enableInMemory(): void
-    {
-        $this->persist = false;
-        $this->inMemory = true;
-    }
-
     /**
      * @template T of object
      *

@@ -16,6 +16,7 @@ use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\FactoryCollection;
+use Zenstruck\Foundry\InMemory\InMemoryRepositoryDecorator;
 use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 
@@ -175,7 +176,16 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function repository(): RepositoryDecorator
     {
-        return new RepositoryDecorator(static::class()); // @phpstan-ignore-line
+        $configuration = Configuration::instance();
+
+        if (
+            $configuration->isInMemoryAvailable()
+            && $configuration->inMemory()->isInMemoryEnabled()
+        ) {
+            return new InMemoryRepositoryDecorator(static::class(), $configuration->inMemory()->getInMemoryRepository(static::class)); // @phpstan-ignore-line
+        }
+
+        return new PersistenceRepositoryDecorator(static::class()); // @phpstan-ignore-line
     }
 
     final public static function assert(): RepositoryAssertions

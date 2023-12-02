@@ -13,4 +13,9 @@ interface InMemoryRepository
      * @param T $element
      */
     public function _save(object $element): void;
+
+    /**
+     * @return list<T>
+     */
+    public function _all(): array;
 }

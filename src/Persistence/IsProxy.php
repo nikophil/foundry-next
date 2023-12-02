@@ -104,7 +104,7 @@ trait IsProxy
 
     public function _repository(): RepositoryDecorator
     {
-        return new RepositoryDecorator(parent::class);
+        return new PersistenceRepositoryDecorator(parent::class);
     }
 
     private function _autoRefresh(): void

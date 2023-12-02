@@ -13,7 +13,9 @@ namespace Zenstruck\Foundry;
 
 use Faker;
 use Zenstruck\Foundry\Exception\FoundryNotBooted;
+use Zenstruck\Foundry\Exception\InMemoryNotAvailable;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
+use Zenstruck\Foundry\InMemory\InMemoryManager;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
 
 /**
@@ -44,6 +46,7 @@ final class Configuration
         callable $instantiator,
         public readonly StoryRegistry $stories,
         private readonly ?PersistenceManager $persistence = null,
+        private readonly ?InMemoryManager $inMemory = null,
     ) {
         $this->instantiator = $instantiator;
     }
@@ -54,6 +57,16 @@ final class Configuration
     }
 
     public function isPersistenceAvailable(): bool
+    {
+        return (bool) $this->persistence;
+    }
+
+    public function inMemory(): InMemoryManager
+    {
+        return $this->inMemory ?? throw new InMemoryNotAvailable('No in memory manager configured. Note: in-memory behavior cannot be used in unit tests.');
+    }
+
+    public function isInMemoryAvailable(): bool
     {
         return (bool) $this->persistence;
     }

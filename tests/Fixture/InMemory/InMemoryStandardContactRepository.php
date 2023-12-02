@@ -29,7 +29,7 @@ final class InMemoryStandardContactRepository implements InMemoryRepository
     /**
      * @var list<StandardContact>
      */
-    public function all(): array
+    public function _all(): array
     {
         return $this->elements;
     }

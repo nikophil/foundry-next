@@ -29,7 +29,7 @@ final class InMemoryStandardAddressRepository implements InMemoryRepository
     /**
      * @return list<StandardAddress>
      */
-    public function all(): array
+    public function _all(): array
     {
         return $this->elements;
     }

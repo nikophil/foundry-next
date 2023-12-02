@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Zenstruck\Foundry\InMemory\AsInMemoryRepository;
 use Zenstruck\Foundry\InMemory\InMemoryFactoryRegistry;
+use Zenstruck\Foundry\InMemory\InMemoryManager;
 use Zenstruck\Foundry\InMemory\InMemoryRepository;
 
 /**
@@ -44,11 +45,16 @@ final class InMemoryCompilerPass implements CompilerPassInterface
 
         // todo: should we check we only have a 1 repository per class?
 
+        $container->register('.zenstruck_foundry.in_memory.manager')
+            ->setClass(InMemoryManager::class)
+            ->setArgument('$inMemoryRepositories', $inMemoryRepositoriesLocator)
+        ;
+
         $container->register('.zenstruck_foundry.in_memory.factory_registry')
             ->setClass(InMemoryFactoryRegistry::class)
             ->setDecoratedService('.zenstruck_foundry.factory_registry')
             ->setArgument('$decorated', $container->getDefinition('.zenstruck_foundry.factory_registry'))
-            ->setArgument('$inMemoryRepositories', $inMemoryRepositoriesLocator)
+            ->setArgument('$inMemoryManager', new Reference('.zenstruck_foundry.in_memory.manager'))
         ;
     }
 }

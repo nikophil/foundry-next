@@ -23,9 +23,9 @@ use Zenstruck\Foundry\Factory;
 final class RepositoryAssertions
 {
     /**
+     * @param RepositoryDecorator<object,ObjectRepository<object>> $repository
      * @internal
      *
-     * @param RepositoryDecorator<object,ObjectRepository<object>> $repository
      */
     public function __construct(private RepositoryDecorator $repository)
     {

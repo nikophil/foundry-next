@@ -17,7 +17,7 @@ final class InMemoryFactoryRegistry implements FactoryRegistryInterface
 {
     public function __construct(
         private readonly FactoryRegistryInterface $decorated,
-        private readonly ServiceLocator $inMemoryRepositories,
+        private readonly InMemoryManager $inMemoryManager,
     ) {
     }
 
@@ -28,8 +28,8 @@ final class InMemoryFactoryRegistry implements FactoryRegistryInterface
         $configuration = Configuration::instance();
 
         if (
-            !$configuration->isPersistenceAvailable()
-            || !$configuration->persistence()->isInMemoryEnabled()
+            !$configuration->isInMemoryAvailable()
+            || !$configuration->inMemory()->isInMemoryEnabled()
             || !$factory instanceof PersistentObjectFactory
         ) {
             return $factory;
@@ -37,30 +37,12 @@ final class InMemoryFactoryRegistry implements FactoryRegistryInterface
 
         $factory = $factory->withoutPersisting();
 
-        if ($inMemoryRepository = $this->findInMemoryRepository($class)) {
+        if ($inMemoryRepository = $this->inMemoryManager->getInMemoryRepository($class)) {
             $factory = $factory->afterInstantiate(
                 static fn(object $object) => $inMemoryRepository->_save($object)
             );
         }
 
         return $factory->withoutPersisting();
-    }
-
-    /**
-     * @param class-string<Factory> $class
-     *
-     * @return InMemoryRepository<T>|null
-     */
-    private function findInMemoryRepository(string $class): InMemoryRepository|null
-    {
-        $targetClass = $class::class();
-        if (!$this->inMemoryRepositories->has($targetClass)) {
-            // todo: should this behavior be opt-in from bundle's configuration?
-            // ie: maybe user will want to throw an exception here.
-            // but nullability could help adhesion to the feature
-            return null;
-        }
-
-        return $this->inMemoryRepositories->get($targetClass);
     }
 }
