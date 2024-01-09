@@ -101,8 +101,8 @@ abstract class PersistentObjectFactory extends ObjectFactory
     /**
      * @final
      *
-     * @param positive-int $min
-     * @param positive-int $max
+     * @param int<0, max> $min
+     * @param int<0, max> $max
      * @param Parameters   $criteria
      *
      * @return T[]
@@ -220,6 +220,10 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         foreach ($this->afterPersist as $callback) {
             $callback($object);
+        }
+
+        if ($this->afterPersist) {
+            $configuration->persistence()->save($object);
         }
 
         return $this->proxy($object);

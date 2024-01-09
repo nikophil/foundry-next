@@ -152,6 +152,7 @@ final class ZenstruckFoundryBundle extends AbstractBundle implements CompilerPas
         $this->configureFaker($config['faker'], $container);
         $this->configureGlobalState($config['global_state'], $container);
 
+        /** @var array<string, string> $bundles */
         $bundles = $container->getParameter('kernel.bundles');
 
         $configurator->import(\sprintf('../config/%s.php',

@@ -204,6 +204,10 @@ final class PersistenceManager
      */
     public function refresh(object &$object): object
     {
+        if (!$this->flush) {
+            return $object;
+        }
+
         if ($object instanceof Proxy) {
             return $object->_refresh();
         }

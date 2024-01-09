@@ -309,18 +309,18 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         $this->factory()->create(['prop1' => 'b']);
         $this->factory()->create(['prop1' => 'b']);
 
-        $range = $this->factory()::randomRange(1, 3);
+        $range = $this->factory()::randomRange(0, 3);
 
-        $this->assertGreaterThanOrEqual(1, \count($this));
+        $this->assertGreaterThanOrEqual(0, \count($this));
         $this->assertLessThanOrEqual(3, \count($this));
 
         foreach ($range as $object) {
             $this->assertContains($object->getProp1(), ['a', 'b']);
         }
 
-        $range = $this->factory()::randomRange(1, 3, ['prop1' => 'b']);
+        $range = $this->factory()::randomRange(0, 3, ['prop1' => 'b']);
 
-        $this->assertGreaterThanOrEqual(1, \count($this));
+        $this->assertGreaterThanOrEqual(0, \count($this));
         $this->assertLessThanOrEqual(3, \count($this));
 
         foreach ($range as $object) {
@@ -432,7 +432,10 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         $this->factory()::repository()->assert()->empty();
 
         flush_after(function() {
-            $this->factory()::createOne();
+            $object = $this->factory()::createOne();
+
+            // ensure auto-refresh does not break when in flush_after
+            $object->getProp1();
 
             $this->factory()::repository()->assert()->empty();
         });

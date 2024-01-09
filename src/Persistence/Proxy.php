@@ -17,6 +17,7 @@ use Doctrine\Persistence\ObjectRepository;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T of object
+ * @mixin T
  */
 interface Proxy
 {

@@ -27,6 +27,12 @@ abstract class Factory
     /** @var Attributes[] */
     private array $attributes;
 
+    // keep an empty constructor for BC
+    public function __construct()
+    {
+    }
+
+
     /**
      * @param Attributes $attributes
      */
@@ -38,7 +44,7 @@ abstract class Factory
 
         try {
             $factory ??= new static(); // @phpstan-ignore-line
-        } catch (\ArgumentCountError $e) { // @phpstan-ignore-line
+        } catch (\ArgumentCountError $e) {
             throw new \LogicException('Factories with dependencies (services) cannot be created before foundry is booted.', previous: $e);
         }
 

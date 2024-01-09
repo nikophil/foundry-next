@@ -33,6 +33,7 @@ trait Factories
         }
 
         // integration test
+        // @phpstan-ignore-next-line
         Configuration::boot(static function() {
             if (!static::getContainer()->has('.zenstruck_foundry.configuration')) { // @phpstan-ignore-line
                 throw new \LogicException('ZenstruckFoundryBundle is not enabled. Ensure it is added to your config/bundles.php.');

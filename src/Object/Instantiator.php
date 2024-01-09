@@ -185,7 +185,9 @@ final class Instantiator
      */
     private static function namedConstructorFor(\ReflectionClass $class, string $name): \ReflectionMethod
     {
-        if (!$method = $class->getMethod($name)) {
+        try {
+            $method = $class->getMethod($name);
+        } catch (\ReflectionException) {
             throw new \LogicException(\sprintf('Named constructor "%s" for "%s" does not exist.', $name, $class->getName()));
         }
 
