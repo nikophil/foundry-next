@@ -43,6 +43,21 @@ function persistent_factory(string $class, array|callable $attributes = []): Per
 }
 
 /**
+ * Create an anonymous "persistent with proxy" factory for the given class.
+ *
+ * @template T of object
+ *
+ * @param class-string<T>                                       $class
+ * @param array<string,mixed>|callable(int):array<string,mixed> $attributes
+ *
+ * @return PersistentProxyObjectFactory<T>
+ */
+function proxy_factory(string $class, array|callable $attributes = []): PersistentProxyObjectFactory
+{
+    return AnonymousFactoryGenerator::create($class, PersistentProxyObjectFactory::class)::new($attributes);
+}
+
+/**
  * Instantiate and "persist" the given class.
  *
  * @template T of object

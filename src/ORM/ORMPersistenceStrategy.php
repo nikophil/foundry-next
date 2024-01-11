@@ -14,7 +14,8 @@ namespace Zenstruck\Foundry\ORM;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
@@ -56,7 +57,7 @@ final class ORMPersistenceStrategy extends PersistenceStrategy
     {
         try {
             $metadata = $this->objectManagerFor($owner)->getClassMetadata($object::class);
-        } catch (MappingException) {
+        } catch (MappingException|ORMMappingException) {
             return null;
         }
 

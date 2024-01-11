@@ -173,7 +173,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function randomSet(int $count, array $criteria = []): array
     {
-        if ($count < 1) {
+        if ($count < 1) { // @phpstan-ignore-line
             throw new \InvalidArgumentException(\sprintf('$number must be positive (%d given).', $count));
         }
 
@@ -181,15 +181,15 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
     }
 
     /**
-     * @param positive-int $min
-     * @param positive-int $max
+     * @param int<0, max> $min
+     * @param int<0, max> $max
      * @param Parameters   $criteria
      *
      * @return T[]
      */
     public function randomRange(int $min, int $max, array $criteria = []): array
     {
-        if ($min < 1) {
+        if ($min < 0) { // @phpstan-ignore-line
             throw new \InvalidArgumentException(\sprintf('$min must be positive (%d given).', $min));
         }
 
