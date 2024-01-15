@@ -12,20 +12,22 @@
 namespace Zenstruck\Foundry\Tests\Fixture\Stories;
 
 use Zenstruck\Foundry\Story;
-use Zenstruck\Foundry\Tests\Fixture\Entity\GenericEntity;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\GenericEntityFactory;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @method static GenericEntity foo()
- * @method static GenericEntity bar()
  */
-final class EntityStory extends Story
+final class EntityPoolStory extends Story
 {
     public function build(): void
     {
-        $this->addState('foo', GenericEntityFactory::createOne(['prop1' => 'foo']), 'pool');
-        $this->addState('bar', GenericEntityFactory::createOne(['prop1' => 'bar']), 'pool');
+        $this->addState('foo', GenericEntityFactory::createOne(['prop1' => 'foo']), self::class);
+        $this->addToPool(self::class, GenericEntityFactory::createMany(2));
+
+        // story can access its own state
+        $this->addState('foo2', self::getState('foo'), self::class);
+
+        // story can access its own pool
+        $this->addState('random-from-own-pool', self::getRandom(self::class));
     }
 }
