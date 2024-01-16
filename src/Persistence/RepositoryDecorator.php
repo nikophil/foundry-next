@@ -27,7 +27,7 @@ use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
  *
  * @phpstan-import-type Parameters from Factory
  */
-final class RepositoryDecorator implements ObjectRepository, \Countable
+final class RepositoryDecorator implements ObjectRepository, \IteratorAggregate, \Countable
 {
     /**
      * @internal
@@ -88,7 +88,7 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
      */
     public function find($id): ?object
     {
-        if (\is_array($id) && !\array_is_list($id)) {
+        if (\is_array($id) && (empty($id) || !\array_is_list($id))) {
             return $this->findOneBy($id);
         }
 
@@ -249,5 +249,14 @@ final class RepositoryDecorator implements ObjectRepository, \Countable
         }
 
         return $normalized;
+    }
+
+    public function getIterator(): \Traversable
+    {
+        if (\is_iterable($this->inner())) {
+            return yield from $this->inner();
+        }
+
+        yield from $this->findAll();
     }
 }
