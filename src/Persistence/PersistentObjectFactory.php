@@ -19,6 +19,7 @@ use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\FactoryCollection;
 use Zenstruck\Foundry\ObjectFactory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
+use Zenstruck\Foundry\Persistence\Exception\RefreshObjectFailed;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -312,7 +313,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
 
         try {
             return proxy($object)->_refresh()->_real();
-        } catch (\RuntimeException) {
+        } catch (PersistenceNotAvailable|RefreshObjectFailed) {
             return $object;
         }
     }

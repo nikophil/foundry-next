@@ -36,8 +36,6 @@ final class UnitTestConfig
     {
         self::$instantiator = $instantiator;
         self::$faker = $faker;
-
-        Configuration::boot(self::build());
     }
 
     /**

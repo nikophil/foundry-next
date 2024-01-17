@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
+use Zenstruck\Foundry\Persistence\Exception\RefreshObjectFailed;
 use Zenstruck\Foundry\Tests\Fixture\TestKernel;
 
 /**
@@ -215,7 +216,7 @@ final class PersistenceManager
         $strategy = $this->strategyFor($object::class);
 
         if ($strategy->hasChanges($object)) {
-            throw new \RuntimeException(\sprintf('Cannot auto refresh "%s" as there are unsaved changes. Be sure to call ->_save() or disable auto refreshing (see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#auto-refresh for details).', $object::class));
+            throw RefreshObjectFailed::objectHasUnsavedChanges($object::class);
         }
 
         $om = $strategy->objectManagerFor($object::class);
@@ -229,7 +230,7 @@ final class PersistenceManager
         $id = $om->getClassMetadata($object::class)->getIdentifierValues($object);
 
         if (!$id || !$object = $om->find($object::class, $id)) {
-            throw new \RuntimeException('object no longer exists...');
+            throw RefreshObjectFailed::objectNoLongExists();
         }
 
         return $object;
