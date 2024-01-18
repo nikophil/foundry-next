@@ -134,10 +134,15 @@ final class Instantiator
 
         $arguments = [];
 
+        /** @var \ReflectionParameter $parameter */
         foreach ($factory->getParameters() as $parameter) {
-            /** @var \ReflectionParameter $parameter */
             if (\array_key_exists($parameter->name, $parameters)) {
-                $arguments[] = $parameters[$parameter->name];
+                if ($parameter->isVariadic()) {
+                    $arguments = \array_merge($arguments, $parameters[$parameter->name]);
+                } else {
+                    $arguments[] = $parameters[$parameter->name];
+                }
+
                 unset($parameters[$parameter->name]);
 
                 continue;
