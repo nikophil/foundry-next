@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Persistence;
 
 use Doctrine\Persistence\ObjectRepository;
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Exception\PersistenceDisabled;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\FactoryCollection;
@@ -62,7 +63,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         try {
             $object = static::repository()->findOneBy($criteria);
-        } catch (PersistenceNotAvailable) {
+        } catch (PersistenceNotAvailable|PersistenceDisabled) {
             $object = null;
         }
 
@@ -80,7 +81,7 @@ abstract class PersistentObjectFactory extends ObjectFactory
     {
         try {
             return static::repository()->random($criteria);
-        } catch (NotEnoughObjects|PersistenceNotAvailable) {
+        } catch (NotEnoughObjects|PersistenceNotAvailable|PersistenceDisabled) {
             return static::createOne($criteria);
         }
     }
@@ -175,6 +176,12 @@ abstract class PersistentObjectFactory extends ObjectFactory
      */
     final public static function repository(): RepositoryDecorator
     {
+        $configuration = Configuration::instance();
+
+        if (!$configuration->isPersistenceAvailable() || !$configuration->persistence()->isEnabled()) {
+            throw new PersistenceDisabled('Cannot get repository when persist is disabled.');
+        }
+
         return new RepositoryDecorator(static::class()); // @phpstan-ignore-line
     }
 
