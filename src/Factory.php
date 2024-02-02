@@ -207,7 +207,7 @@ abstract class Factory
             $value = $this->normalizeCollection($value);
         }
 
-        return $value;
+        return \is_object($value) ? $this->normalizeObject($value) : $value;
     }
 
     /**
@@ -220,6 +220,14 @@ abstract class Factory
     protected function normalizeCollection(FactoryCollection $collection): array
     {
         return \array_map(fn(Factory $f) => $this->normalizeParameter($f), $collection->all());
+    }
+
+    /**
+     * @internal
+     */
+    protected function normalizeObject(object $object): object
+    {
+        return $object;
     }
 
     /**

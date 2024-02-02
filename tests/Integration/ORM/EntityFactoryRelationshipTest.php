@@ -11,6 +11,7 @@
 
 namespace Zenstruck\Foundry\Tests\Integration\ORM;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Test\Factories;
@@ -24,6 +25,8 @@ use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Category\StandardCategoryFa
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Contact\StandardContactFactory;
 use Zenstruck\Foundry\Tests\Fixture\Factories\Entity\Tag\StandardTagFactory;
 use Zenstruck\Foundry\Tests\Integration\RequiresORM;
+
+use function Zenstruck\Foundry\Persistence\unproxy;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -178,6 +181,22 @@ class EntityFactoryRelationshipTest extends KernelTestCase
     public function one_to_one_inverse(): void
     {
         $this->markTestSkipped('Not supported. Should it be?');
+    }
+
+    /**
+     * @test
+     */
+    public function many_to_one_unmanaged_raw_entity(): void
+    {
+        $address = unproxy($this->addressFactory()->create(['city' => 'Some city']));
+
+        /** @var EntityManagerInterface $em */
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+
+        $contact = $this->contactFactory()->create(['address' => $address]);
+
+        $this->assertSame('Some city', $contact->getAddress()->getCity());
     }
 
     /**
