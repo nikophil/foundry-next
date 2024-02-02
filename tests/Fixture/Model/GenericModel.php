@@ -43,8 +43,9 @@ abstract class GenericModel
         return $this->prop1;
     }
 
-    public function setProp1(string $prop1): void
+    public function setProp1(string $prop1): string
     {
         $this->prop1 = $prop1;
+        return $this->getProp1();
     }
 }

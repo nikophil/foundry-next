@@ -23,6 +23,16 @@ final class GenericEntityProxyFactoryTest extends GenericProxyFactoryTestCase
 {
     use RequiresORM;
 
+    /**
+     * @test
+     */
+    public function test_modifier_which_calls_other_internal_method(): void
+    {
+        $object = $this->factory()->create();
+        $object->setProp1('foo');
+        $object->_save();
+    }
+
     protected function factory(): PersistentProxyObjectFactory
     {
         return GenericProxyEntityFactory::new();
