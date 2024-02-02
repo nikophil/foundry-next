@@ -32,7 +32,7 @@ final class UnitTestConfig
     /**
      * @param InstantiatorCallable|null $instantiator
      */
-    public static function configure(?callable $instantiator = null, ?Faker\Generator $faker = null): void
+    public static function configure(Instantiator|callable|null $instantiator = null, ?Faker\Generator $faker = null): void
     {
         self::$instantiator = $instantiator;
         self::$faker = $faker;

@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry\Persistence;
 
 use Symfony\Component\VarExporter\Internal\LazyObjectState;
 use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Object\Hydrator;
 
 /**
@@ -109,8 +110,14 @@ trait IsProxy
 
     private function _autoRefresh(): void
     {
-        if ($this->_autoRefresh) {
+        if (!$this->_autoRefresh) {
+            return;
+        }
+
+        try {
+            // we don't want that "transparent" calls to _refresh() to trigger a PersistenceNotAvailable
             $this->_refresh();
+        } catch (PersistenceNotAvailable) {
         }
     }
 }
