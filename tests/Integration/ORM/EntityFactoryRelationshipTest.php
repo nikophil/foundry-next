@@ -175,6 +175,25 @@ class EntityFactoryRelationshipTest extends KernelTestCase
     /**
      * @test
      */
+    public function inverse_one_to_many_relationship(): void
+    {
+        $this->categoryFactory()::assert()->count(0);
+        $this->contactFactory()::assert()->count(0);
+
+        $this->categoryFactory()->create([
+            'contacts' => [
+                $this->contactFactory(),
+                $this->contactFactory()->create(),
+            ],
+        ]);
+
+        $this->categoryFactory()::assert()->count(1);
+        $this->contactFactory()::assert()->count(2);
+    }
+
+    /**
+     * @test
+     */
     public function one_to_one_inverse(): void
     {
         $this->markTestSkipped('Not supported. Should it be?');
