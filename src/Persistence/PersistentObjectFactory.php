@@ -301,6 +301,22 @@ abstract class PersistentObjectFactory extends ObjectFactory
         return parent::normalizeCollection($collection);
     }
 
+    /**
+     * @internal
+     */
+    protected function normalizeObject(object $object): object
+    {
+        if ((new \ReflectionClass($object::class))->isFinal()) {
+            return $object;
+        }
+
+        try {
+            return proxy($object)->_refresh()->_real();
+        } catch (\RuntimeException) {
+            return $object;
+        }
+    }
+
     final protected function isPersisting(): bool
     {
         $config = Configuration::instance();
