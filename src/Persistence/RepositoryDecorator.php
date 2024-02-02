@@ -23,6 +23,7 @@ use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
  * @template T of object
  * @template I of ObjectRepository
  * @implements I<T>
+ * @implements \IteratorAggregate<array-key, T>
  * @mixin I
  *
  * @phpstan-import-type Parameters from Factory
@@ -173,7 +174,7 @@ final class RepositoryDecorator implements ObjectRepository, \IteratorAggregate,
      */
     public function randomSet(int $count, array $criteria = []): array
     {
-        if ($count < 1) { // @phpstan-ignore-line
+        if ($count < 1) {
             throw new \InvalidArgumentException(\sprintf('$number must be positive (%d given).', $count));
         }
 
@@ -189,7 +190,7 @@ final class RepositoryDecorator implements ObjectRepository, \IteratorAggregate,
      */
     public function randomRange(int $min, int $max, array $criteria = []): array
     {
-        if ($min < 0) { // @phpstan-ignore-line
+        if ($min < 0) {
             throw new \InvalidArgumentException(\sprintf('$min must be positive (%d given).', $min));
         }
 

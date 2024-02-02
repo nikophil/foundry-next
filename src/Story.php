@@ -25,6 +25,14 @@ abstract class Story
     /**
      * @param mixed[] $arguments
      */
+    final public function __call(string $method, array $arguments): mixed
+    {
+        return $this->getState($method);
+    }
+
+    /**
+     * @param mixed[] $arguments
+     */
     final public static function __callStatic(string $name, array $arguments): mixed
     {
         return static::get($name);
