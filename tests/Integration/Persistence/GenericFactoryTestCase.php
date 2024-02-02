@@ -12,6 +12,9 @@
 namespace Zenstruck\Foundry\Tests\Integration\Persistence;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Configuration;
+use Zenstruck\Foundry\Exception\PersistenceDisabled;
+use Zenstruck\Foundry\Factory;
 use Zenstruck\Foundry\Persistence\Exception\NotEnoughObjects;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Test\Factories;
@@ -453,12 +456,54 @@ abstract class GenericFactoryTestCase extends KernelTestCase
         disable_persisting();
 
         $this->factory()::createOne();
-        $this->factory()::repository()->assert()->empty();
 
         enable_persisting();
 
         $this->factory()::createOne();
         $this->factory()::repository()->assert()->count(1);
+    }
+
+    /**
+     * @test
+     */
+    public function cannot_access_repository_method_when_persist_disabled(): void
+    {
+        disable_persisting();
+
+        $countErrors = 0;
+        try {
+            $this->factory()::assert();
+        } catch (PersistenceDisabled) {
+            ++$countErrors;
+        }
+
+        try {
+            $this->factory()::repository();
+        } catch (PersistenceDisabled) {
+            ++$countErrors;
+        }
+
+        try {
+            $this->factory()::findBy([]);
+        } catch (PersistenceDisabled) {
+            ++$countErrors;
+        }
+
+        self::assertSame(3, $countErrors);
+    }
+
+    /**
+     * @test
+     * @depends cannot_access_repository_method_when_persist_disabled
+     */
+    public function assert_persist_is_re_enabled_automatically(): void
+    {
+        $configuration = Configuration::instance();
+        self::assertTrue($configuration->isPersistenceAvailable());
+        self::assertTrue($configuration->persistence()->isEnabled());
+
+        persist($this->modelClass(), ['prop1' => 'value']);
+        $this->factory()::assert()->count(1);
     }
 
     /**
