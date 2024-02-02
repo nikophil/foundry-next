@@ -41,6 +41,14 @@ final class LazyValue
 
         $value = ($this->factory)();
 
+        if ($value instanceof self) {
+            $value = ($value)();
+        }
+
+        if (\is_array($value)) {
+            $value = self::normalizeArray($value);
+        }
+
         if ($this->memoize) {
             return $this->memoizedValue = $value;
         }
@@ -56,5 +64,20 @@ final class LazyValue
     public static function memoize(callable $factory): self
     {
         return new self($factory, true);
+    }
+
+    /**
+     * @param array<array-key, mixed> $value
+     * @return array<array-key, mixed>
+     */
+    private static function normalizeArray(array $value): array
+    {
+        \array_walk_recursive($value, static function(mixed &$v): void {
+            if ($v instanceof self) {
+                $v = $v();
+            }
+        });
+
+        return $value;
     }
 }
