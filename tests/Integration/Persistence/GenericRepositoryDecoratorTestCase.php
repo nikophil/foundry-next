@@ -11,6 +11,7 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 use Zenstruck\Foundry\Tests\Fixture\Model\GenericModel;
 
 use function Zenstruck\Foundry\Persistence\repository;
+use function Zenstruck\Foundry\Persistence\unproxy;
 
 abstract class GenericRepositoryDecoratorTestCase extends KernelTestCase
 {
@@ -56,7 +57,7 @@ abstract class GenericRepositoryDecoratorTestCase extends KernelTestCase
 
         $repository = repository($this->modelClass());
 
-        $this->assertSame($object, $repository->find([]));
+        $this->assertSame(unproxy($object), unproxy($repository->find([])));
     }
 
     /**

@@ -13,6 +13,7 @@ namespace Zenstruck\Foundry;
 
 use Faker;
 use Zenstruck\Foundry\Exception\FoundryNotBooted;
+use Zenstruck\Foundry\Exception\PersistenceDisabled;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\Persistence\PersistenceManager;
 
@@ -56,6 +57,13 @@ final class Configuration
     public function isPersistenceAvailable(): bool
     {
         return (bool) $this->persistence;
+    }
+
+    public function assertPersistanceEnabled(): void
+    {
+        if (!$this->isPersistenceAvailable() || !$this->persistence()->isEnabled()) {
+            throw new PersistenceDisabled('Cannot get repository when persist is disabled.');
+        }
     }
 
     public static function instance(): self

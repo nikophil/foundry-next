@@ -5,3 +5,7 @@ parameters:
         - src
         - tests
         - stubs
+    ignoreErrors:
+        # suppress strange behavior of PHPStan where it considers proxy() return type as *NEVER*
+        - message: '#Return type of call to function Zenstruck\\Foundry\\Persistence\\proxy contains unresolvable type#'
+          path: src/Persistence/ProxyRepositoryDecorator.php

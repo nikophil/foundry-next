@@ -173,15 +173,13 @@ abstract class PersistentObjectFactory extends ObjectFactory
     }
 
     /**
+     * @final
+     *
      * @return RepositoryDecorator<T,ObjectRepository<T>>
      */
-    final public static function repository(): RepositoryDecorator
+    public static function repository(): ObjectRepository
     {
-        $configuration = Configuration::instance();
-
-        if (!$configuration->isPersistenceAvailable() || !$configuration->persistence()->isEnabled()) {
-            throw new PersistenceDisabled('Cannot get repository when persist is disabled.');
-        }
+        Configuration::instance()->assertPersistanceEnabled();
 
         return new RepositoryDecorator(static::class()); // @phpstan-ignore-line
     }

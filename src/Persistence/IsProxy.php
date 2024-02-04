@@ -103,9 +103,9 @@ trait IsProxy
         return $this->initializeLazyObject();
     }
 
-    public function _repository(): RepositoryDecorator
+    public function _repository(): ProxyRepositoryDecorator
     {
-        return new RepositoryDecorator(parent::class);
+        return new ProxyRepositoryDecorator(parent::class);
     }
 
     private function _autoRefresh(): void

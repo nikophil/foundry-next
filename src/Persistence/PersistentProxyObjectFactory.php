@@ -11,6 +11,9 @@
 
 namespace Zenstruck\Foundry\Persistence;
 
+use Doctrine\Persistence\ObjectRepository;
+use Zenstruck\Foundry\Configuration;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -102,5 +105,15 @@ abstract class PersistentProxyObjectFactory extends PersistentObjectFactory
     final public static function all(): array
     {
         return \array_map(proxy(...), parent::all()); // @phpstan-ignore-line
+    }
+
+    /**
+     * @return ProxyRepositoryDecorator<T,ObjectRepository<T>>
+     */
+    final public static function repository(): ObjectRepository
+    {
+        Configuration::instance()->assertPersistanceEnabled();
+
+        return new ProxyRepositoryDecorator(static::class()); // @phpstan-ignore-line
     }
 }

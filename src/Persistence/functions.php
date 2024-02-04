@@ -28,6 +28,18 @@ function repository(string $class): RepositoryDecorator
 }
 
 /**
+ * @template T of object
+ *
+ * @param class-string<T> $class
+ *
+ * @return ProxyRepositoryDecorator<T,ObjectRepository<T>>
+ */
+function proxy_repository(string $class): ProxyRepositoryDecorator
+{
+    return new ProxyRepositoryDecorator($class); // @phpstan-ignore-line
+}
+
+/**
  * Create an anonymous "persistent" factory for the given class.
  *
  * @template T of object
