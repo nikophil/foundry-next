@@ -76,7 +76,7 @@
         "bamarni-bin": {
             "target-directory": "bin/tools",
             "bin-links": true,
-            "forward-command": false
+            "forward-command": true
         }
     },
     "minimum-stability": "dev",

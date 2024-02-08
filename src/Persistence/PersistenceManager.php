@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Zenstruck\Foundry\Configuration;
 use Zenstruck\Foundry\Exception\PersistenceNotAvailable;
 use Zenstruck\Foundry\ORM\ORMPersistenceStrategy;
+use Zenstruck\Foundry\Persistence\Exception\NoPersistenceStrategy;
 use Zenstruck\Foundry\Persistence\Exception\RefreshObjectFailed;
 use Zenstruck\Foundry\Tests\Fixture\TestKernel;
 
@@ -311,7 +312,7 @@ final class PersistenceManager
 
         try {
             return $this->strategyFor($owner)->embeddablePropertiesFor(unproxy($object), $owner);
-        } catch (\LogicException) {
+        } catch (NoPersistenceStrategy) {
             return null;
         }
     }
@@ -323,6 +324,8 @@ final class PersistenceManager
 
     /**
      * @param class-string $class
+     *
+     * @throws NoPersistenceStrategy if no persistence strategy found
      */
     private function strategyFor(string $class): PersistenceStrategy
     {
@@ -332,6 +335,6 @@ final class PersistenceManager
             }
         }
 
-        throw new \LogicException(\sprintf('No persistence strategy found for "%s".', $class));
+        throw new NoPersistenceStrategy($class);
     }
 }

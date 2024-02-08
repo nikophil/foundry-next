@@ -507,6 +507,15 @@ abstract class GenericFactoryTestCase extends KernelTestCase
     }
 
     /**
+     * @test
+     */
+    public function assert_it_ca_create_object_with_dates(): void
+    {
+        $object = $this->factory()->create(['date' => $date = new \DateTimeImmutable()]);
+        self::assertSame($date->format(\DateTimeInterface::ATOM), $object->getDate()?->format(\DateTimeInterface::ATOM));
+    }
+
+    /**
      * @return class-string<GenericModel>
      */
     protected function modelClass(): string
