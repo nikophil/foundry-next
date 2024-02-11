@@ -9,3 +9,4 @@
 /.env.local
 /tests/Fixture/Migrations/
 /tests/Fixture/Maker/
+/bin/tools/*/vendor/
